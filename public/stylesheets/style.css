@@ -1,0 +1,89 @@
+body {
+  padding: 0;
+  margin: 0;
+  color: #08192d;
+  background-color: #fffffb;
+}
+a {
+  color: #48b2dc;
+  text-decoration: none;
+}
+h3 {
+  margin: 0;
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+li {
+  display: inline-block;
+}
+.header {
+  color: #fffffb;
+  background-color: #08192d;
+  padding: 20px;
+  line-height: 1.2em;
+  overflow-x: hidden;
+}
+.header h3 {
+  display: inline-block;
+  font-size: 1.2em;
+}
+.header ul {
+  float: right;
+  text-align: right;
+}
+.header li {
+  margin-left: 20px;
+}
+.alert {
+  margin: 20px auto 0;
+  padding: 6px;
+  width: 60%;
+  background-color: #f596aa;
+  color: #cb1b45;
+  border-radius: 5px;
+}
+.main {
+  padding: 20px;
+}
+.pure-form .pure-control-group {
+  margin-bottom: 1em;
+}
+.pure-form .pure-controls {
+  margin: 0 0 20px 11em;
+}
+.pure-form .pure-control-group input,
+.pure-form .pure-control-group label,
+.pure-form .pure-control-group select {
+  line-height: 1.2em;
+  font-size: 1em;
+}
+.pure-form .pure-control-group textarea {
+  font-size: 1em;
+  resize: none;
+}
+.pure-button {
+  color: #fffffb;
+}
+.button-add {
+  background-color: #005caf;
+}
+.button-edit {
+  background-color: #947a6d;
+}
+.button-delete {
+  background-color: #cb1b45;
+}
+.button-save {
+  background-color: #227d51;
+}
+.button-cancel {
+  background-color: #828282;
+}
+@media (max-width: 480px) {
+  .pure-form .pure-controls {
+    margin: 0 0 20px;
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "cookieKey": "7f899d48-9a28-11e3-a631-20c9d0456a53",
+    "sessionKey": "d24e2f12-9a28-11e3-b2bb-20c9d0456a53",
+    "dbhost": "localhost/pdp",
+    "errorMessages": {
+        "emailExists": "Email already taken!",
+        "notNTUEmail": "Require a NTU email for registration!",
+        "userNotFound": "User not found!",
+        "passwordIncorrect": "Password Incorrect"
+    },
+    "pageTitles": {
+        "login": "PDP Course Site - Login",
+        "index": "PDP Course Site"
+    }
+}

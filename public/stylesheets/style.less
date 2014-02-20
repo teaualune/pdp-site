@@ -1,0 +1,128 @@
+@color-white: #fffffb;
+@color-black: #08192d;
+@color-link: #48b2dc;
+@color-alert: #cb1b45;
+@color-alert-dark: #f596aa;
+@color-button-primary: #005caf;
+@color-button-secondary: #947a6d;
+@color-button-safe: #227d51;
+@color-button-danger: @color-alert;
+@color-button-cancel: #828282;
+
+@padding-base: 20px;
+
+body {
+    padding: 0;
+    margin: 0;
+    color: @color-black;
+    background-color: @color-white;
+}
+
+a {
+    color: @color-link;
+    text-decoration: none;
+}
+
+h3 {
+    margin: 0;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+}
+
+.header {
+    color: @color-white;
+    background-color: @color-black;
+    padding: @padding-base;
+    line-height: 1.2em;
+    overflow-x: hidden;
+
+    h3 {
+        display: inline-block;
+        font-size: 1.2em;
+    }
+
+    ul {
+        float: right;
+        text-align: right;
+    }
+
+    li {
+        margin-left: @padding-base;
+    }
+}
+
+.alert {
+    margin: @padding-base auto 0;
+    padding: 6px;
+    width: 60%;
+    background-color: @color-alert-dark;
+    color: @color-alert;
+    border-radius: 5px;
+}
+
+.main {
+    padding: @padding-base;
+}
+
+.pure-form {
+    .pure-control-group {
+        margin-bottom: 1em;
+    }
+
+    .pure-controls {
+        margin: 0 0 @padding-base 11em;
+    }
+
+    .pure-control-group {
+        input, label, select {
+            line-height: 1.2em;
+            font-size: 1em;
+        }
+
+        textarea {
+            font-size: 1em;
+            resize: none;
+        }
+    }
+}
+
+.pure-button {
+    color: @color-white;
+}
+
+.button-add {
+    background-color: @color-button-primary;
+}
+
+.button-edit {
+    background-color: @color-button-secondary;
+}
+
+.button-delete {
+    background-color: @color-button-danger;
+}
+
+.button-save {
+    background-color: @color-button-safe;
+}
+
+.button-cancel {
+    background-color: @color-button-cancel;
+}
+
+@media (max-width: 767px) {
+}
+
+@media (max-width: 480px) {
+    .pure-form .pure-controls {
+        margin: 0 0 @padding-base;
+    }
+}

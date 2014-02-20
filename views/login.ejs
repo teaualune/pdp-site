@@ -1,0 +1,40 @@
+<% include header %>
+<div class="main pure-g-r">
+    <div class="pure-u-1-2">
+        <h3>Login</h3>
+        <form class="pure-form pure-form-aligned" action="/login" method="post">
+            <fieldset>
+                <div class="pure-control-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" placeholder="email..." required />
+                </div>
+                <div class="pure-control-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" placeholder="password..." required />
+                </div>
+                <div class="pure-controls">
+                    <button type="submit" class="pure-button pure-button-primary">Login</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="pure-u-1-2">
+        <h3>Create Account</h3>
+        <form class="pure-form pure-form-aligned" action="/signup" method="post">
+            <fieldset>
+                <div class="pure-control-group">
+                    <label for="email">Email (NTU email only)</label>
+                    <input type="email" name="email" placeholder="email..." autocomplete="off" required />
+                </div>
+                <div class="pure-control-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" placeholder="password..." autocomplete="off" required />
+                </div>
+                <div class="pure-controls">
+                    <button type="submit" class="pure-button pure-button-primary">Sign Up</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<% include footer %>
