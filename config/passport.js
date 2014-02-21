@@ -21,7 +21,7 @@ module.exports = function (passport) {
         });
     });
 
-    passport.use('local-signup', new LocalStrategy(strategyConfig, function (req, email, password, done) {
+    passport.use('local-signup', new LocalStrategy(strategyConfig, function (req, email, nickname, password, done) {
         User.findOne({
             email: email
         }, function (err, user) {
@@ -36,6 +36,7 @@ module.exports = function (passport) {
                 newUser = new User();
                 newUser._id = new mongoose.Types.ObjectId;
                 newUser.email = email;
+                newUser.nickname = nickname;
                 newUser.password = newUser.generateHash(password);
                 newUser.save(function (err) {
                     if (err) {

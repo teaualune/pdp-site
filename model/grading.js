@@ -1,9 +1,10 @@
 var mongoose = require('mongoose'),
+    utils = require('./model-utils'),
     Schema = mongoose.Schema,
 
     gradingSchema = new Schema({
         _id: Schema.Types.ObjectId,
-        hw: {
+        homework: {
             type: Schema.Types.ObjectId,
             ref: 'Homework'
         },
@@ -11,8 +12,63 @@ var mongoose = require('mongoose'),
             type: Schema.Types.ObjectId,
             ref: 'User'
         },
-        rate: Number,
+        rating: Number,
         comment: String
-    });
+    }),
+    Grading;
 
-exports.Model = mongoose.model('Grading', gradingSchema);
+exports.Model = Grading = mongoose.model('Grading', gradingSchema);
+
+exports.index = function (req, res) {
+    Grading.find({}, utils.defaultHandler(res));
+};
+
+exports.indexByAuthor = function (req, res) {
+    Grading.find({
+        author: req.params.userID
+    }, utils.defaultHandler(res));
+};
+
+exports.indexByHomework = function (req, res) {
+    Grading.find({
+        homework: req.params.hwID
+    }, utils.defaultHandler(res));
+};
+
+exports.create = function (req, res) {
+    Grading.create({
+        author: req.body.userID,
+        homework: req.body.hwID,
+        rating: req.body.rating,
+        comment: req.body.comment
+    }, utils.defaultHandler(res));
+};
+
+exports.show = function (req, res) {
+    Grading.findOne({
+        _id: req.params.gradingID
+    }, utils.defaultHandler(res));
+};
+
+exports.showByAuthorAndHomework = function (req, res) {
+    Grading.findOne({
+        author: req.params.userID,
+        homework: req.params.hwID
+    }, utils.defaultHandler(res));
+};
+
+exports.update = function (req, res) {
+    Grading.findOne({
+        _id: req.params.gradingID
+    }, function (err, grading) {
+        if (err) {
+            res.send(500);
+        } else if (grading) {
+            grading.rating = req.body.rating || grading.rating;
+            grading.comment = req.body.comment || grading.comment;
+            grading.save(utils.defaultHandler(res));
+        } else {
+            res.send(404);
+        }
+    });
+};
