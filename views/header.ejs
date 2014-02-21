@@ -3,18 +3,14 @@
     <head>
         <title><%= title %></title>
         <link rel="stylesheet" href="/stylesheets/pure-min.css" />
-        <link rel='stylesheet' href='/stylesheets/style.css' />
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+        <link rel="stylesheet" href="/stylesheets/style.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     </head>
     <body>
         <div class="header">
             <h3><%= title %></h3>
-            <% if (locals.user) { %>
-            <ul>
-                <li><%= locals.user.email %></li>
-                <li><a href="/logout">Logout</a></li>
-            </ul>
-            <% } %>
+            <% if (locals.user) { %><% include menu %><% } %>
         </div>
         <% if (locals.errorMessage) { %>
         <aside class="alert"><%= locals.errorMessage %></aside>

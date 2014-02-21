@@ -1,15 +1,19 @@
 @color-white: #fffffb;
-@color-black: #08192d;
+@color-black: #0b1013;
+@color-grey: #434343;
 @color-link: #48b2dc;
 @color-alert: #cb1b45;
 @color-alert-dark: #f596aa;
 @color-button-primary: #005caf;
-@color-button-secondary: #947a6d;
+@color-button-secondary: #6e75a4;
 @color-button-safe: #227d51;
 @color-button-danger: @color-alert;
 @color-button-cancel: #828282;
 
 @padding-base: 20px;
+@padding-small: 10px;
+
+@line-height-tall: 1.2em;
 
 body {
     padding: 0;
@@ -28,35 +32,53 @@ h3 {
 }
 
 ul {
+    background-color: @color-black;
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
 li {
-    display: inline-block;
+    display: block;
 }
 
 .header {
     color: @color-white;
     background-color: @color-black;
-    padding: @padding-base;
-    line-height: 1.2em;
-    overflow-x: hidden;
+    position: relative;
+    line-height: @line-height-tall;
 
     h3 {
         display: inline-block;
-        font-size: 1.2em;
+        font-size: @line-height-tall;
+        padding: @padding-base;
     }
 
-    ul {
-        float: right;
-        text-align: right;
+    a:hover {
+        background-color: @color-grey;
     }
 
-    li {
-        margin-left: @padding-base;
+}
+
+.settings-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 0;
+    text-align: center;
+
+    &.on {
+        display: block;
     }
+
+    .item {
+        display: inline-block;
+        width: 100%;
+        padding: @padding-base;
+        box-sizing: border-box;
+    }
+
 }
 
 .alert {
@@ -72,6 +94,12 @@ li {
     padding: @padding-base;
 }
 
+.settings {
+    float: right;
+    padding: @padding-base;
+    font-size: 1.2em;
+}
+
 .pure-form {
     .pure-control-group {
         margin-bottom: 1em;
@@ -83,7 +111,7 @@ li {
 
     .pure-control-group {
         input, label, select {
-            line-height: 1.2em;
+            line-height: @line-height-tall;
             font-size: 1em;
         }
 

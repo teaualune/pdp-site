@@ -4,9 +4,9 @@ var mongoose = require('mongoose'),
 
     gradingSchema = new Schema({
         _id: Schema.Types.ObjectId,
-        homework: {
+        homeworkSubmission: {
             type: Schema.Types.ObjectId,
-            ref: 'Homework'
+            ref: 'HomeworkSubmission'
         },
         author: {
             type: Schema.Types.ObjectId,
@@ -29,16 +29,16 @@ exports.indexByAuthor = function (req, res) {
     }, utils.defaultHandler(res));
 };
 
-exports.indexByHomework = function (req, res) {
+exports.indexByHomeworkSubmission = function (req, res) {
     Grading.find({
-        homework: req.params.hwID
+        homeworkSubmission: req.params.hwsID
     }, utils.defaultHandler(res));
 };
 
 exports.create = function (req, res) {
     Grading.create({
         author: req.body.userID,
-        homework: req.body.hwID,
+        homeworkSubmission: req.body.hwsID,
         rating: req.body.rating,
         comment: req.body.comment
     }, utils.defaultHandler(res));
@@ -50,10 +50,10 @@ exports.show = function (req, res) {
     }, utils.defaultHandler(res));
 };
 
-exports.showByAuthorAndHomework = function (req, res) {
+exports.showByAuthorAndHomeworkSubmission = function (req, res) {
     Grading.findOne({
         author: req.params.userID,
-        homework: req.params.hwID
+        homeworkSubmission: req.params.hwsID
     }, utils.defaultHandler(res));
 };
 

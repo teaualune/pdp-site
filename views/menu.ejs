@@ -1,0 +1,14 @@
+<a href="javascript:void(0)" id="settings-toggle" class="settings fa fa-bars"></a>
+<div id="settings-menu" class="settings-menu">
+    <ul>
+        <li class="item">
+        <% if (locals.user.nickname) { %>
+            <%= locals.user.nickname %>
+        <% } else { %>
+            <%= locals.user.email %>
+        <% } %>
+        </li>
+        <li><a href="#/settings" class="item">Settings</a></li>
+        <li><a href="/logout" class="item">Logout</a></li>
+    </ul>
+</div>

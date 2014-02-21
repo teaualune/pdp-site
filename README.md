@@ -1,4 +1,4 @@
-Parallel and Distributed Programming Site
+Parallel and Distributed Programming Course Site
 =========================================
 
 Express web app for assignments upload and cross grading for PDP course in NTU CSIE.

@@ -1,7 +1,7 @@
 body {
   padding: 0;
   margin: 0;
-  color: #08192d;
+  color: #0b1013;
   background-color: #fffffb;
 }
 a {
@@ -12,30 +12,44 @@ h3 {
   margin: 0;
 }
 ul {
+  background-color: #0b1013;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 li {
-  display: inline-block;
+  display: block;
 }
 .header {
   color: #fffffb;
-  background-color: #08192d;
-  padding: 20px;
+  background-color: #0b1013;
+  position: relative;
   line-height: 1.2em;
-  overflow-x: hidden;
 }
 .header h3 {
   display: inline-block;
   font-size: 1.2em;
+  padding: 20px;
 }
-.header ul {
-  float: right;
-  text-align: right;
+.header a:hover {
+  background-color: #434343;
 }
-.header li {
-  margin-left: 20px;
+.settings-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  text-align: center;
+}
+.settings-menu.on {
+  display: block;
+}
+.settings-menu .item {
+  display: inline-block;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
 .alert {
   margin: 20px auto 0;
@@ -47,6 +61,11 @@ li {
 }
 .main {
   padding: 20px;
+}
+.settings {
+  float: right;
+  padding: 20px;
+  font-size: 1.2em;
 }
 .pure-form .pure-control-group {
   margin-bottom: 1em;
@@ -71,7 +90,7 @@ li {
   background-color: #005caf;
 }
 .button-edit {
-  background-color: #947a6d;
+  background-color: #6e75a4;
 }
 .button-delete {
   background-color: #cb1b45;
@@ -81,6 +100,11 @@ li {
 }
 .button-cancel {
   background-color: #828282;
+}
+@media (max-width: 767px) {
+  .settings-menu {
+    width: 100%;
+  }
 }
 @media (max-width: 480px) {
   .pure-form .pure-controls {
