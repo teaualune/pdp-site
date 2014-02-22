@@ -7,4 +7,9 @@
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.min.js"></script>
 <script type="text/javascript" src="/javascripts/pdp-resource.js"></script>
 <script type="text/javascript" src="/javascripts/app.js"></script>
+<% if (locals.user.admin) { %>
+<script type="text/javascript" src="/javascripts/app-admin.js"></script>
+<% } else { %>
+<script type="text/javascript" src="/javascripts/app-students.js"></script>
+<% } %>
 <% include footer %>

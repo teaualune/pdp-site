@@ -77,7 +77,7 @@ exports.homeworkSubmission = {
         }, utils.defaultHandler(res));
     },
 
-    indexByHomework: function (req, res) {
+    indexByTarget: function (req, res) {
         HomeworkSubmission.find({
             target: req.params.hwID
         }, utils.defaultHandler(res));
@@ -97,7 +97,7 @@ exports.homeworkSubmission = {
         }, utils.defaultHandler(res));
     },
 
-    showByAuthorAndHomework: function (req, res) {
+    showByAuthorAndTarget: function (req, res) {
         HomeworkSubmission.findOne({
             author: req.params.userID,
             target: req.params.hwID

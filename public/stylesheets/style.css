@@ -101,11 +101,6 @@ li {
 .button-cancel {
   background-color: #828282;
 }
-@media (max-width: 767px) {
-  .settings-menu {
-    width: 100%;
-  }
-}
 @media (max-width: 480px) {
   .pure-form .pure-controls {
     margin: 0 0 20px;

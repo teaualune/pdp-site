@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    utils = require('./ model-utils'),
+    utils = require('./model-utils'),
     submission = require('./submission'),
     Schema = mongoose.Schema,
 
@@ -75,7 +75,7 @@ exports.problemSubmission = {
         }, utils.defaultHandler(res));
     },
 
-    indexByProblem: function (req, res) {
+    indexByTarget: function (req, res) {
         ProblemSubmission.find({
             target: req.params.problemID
         }, utils.defaultHandler(res));
@@ -95,7 +95,7 @@ exports.problemSubmission = {
         }, utils.defaultHandler(res));
     },
 
-    showByAuthorAndHomework: function (req, res) {
+    showByAuthorAndTarget: function (req, res) {
         ProblemSubmission.findOne({
             author: req.params.userID,
             target: req.params.hwID
