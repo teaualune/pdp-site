@@ -21,3 +21,16 @@ build
 .grunt
 
 node_modules
+
+# bower
+
+public/lib
+
+# LESS
+
+style.css
+
+# uploaded files
+# change this location via settings.json
+
+upload

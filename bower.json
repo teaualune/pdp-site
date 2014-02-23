@@ -1,0 +1,10 @@
+{
+    "name": "pdp-site",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "angular": "latest",
+        "angular-ui-router": "0.2.8-bowratic-tedium",
+        "restangular": "latest"
+    }
+}

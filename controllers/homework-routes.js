@@ -13,11 +13,11 @@ module.exports = function (app) {
 
     // POST /api/hw
     // create a new homework
-    app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile), function (req, res) {
+    app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
         Homework.create({
             title: req.body.title,
             description: req.body.description,
-            manualFilePath: req.manualFilePath || ''
+            manualFilePath: req.body.filePath || ''
         }, utils.defaultHandler(res));
     });
 
@@ -36,7 +36,6 @@ module.exports = function (app) {
             } else if (hw) {
                 hw.title = req.body.title || hw.title;
                 hw.description = req.body.description || hw.description;
-                hw.manualFilePath = req.manualFilePath || hw.manualFilePath;
                 hw.save(utils.defaultHandler(res));
             } else {
                 res.send(404);
@@ -70,7 +69,7 @@ module.exports = function (app) {
 
     // POST /api/user/:uid/hw
     // create or update a homework submission
-    app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile), function (req, res) {
+    app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile('hws')), function (req, res) {
         HomeworkSubmission.findByHomework(req.body.hwid, function (err, hws) {
             if (err) {
                 res.send(500);
@@ -83,7 +82,7 @@ module.exports = function (app) {
                 HomeworkSubmission.create({
                     author: req.params.uid,
                     target: req.body.hwid,
-                    filePath: req.filePath
+                    filePath: req.body.filePath
                 }, utils.defaultHandler(res));
             }
         });

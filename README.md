@@ -18,6 +18,7 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 
 * [Node.js](http://nodejs.org)
 * [MongoDB](http://www.mongodb.org)
+* [Bower](http://bower.io)
 
 ### Installation and Running
 
@@ -25,4 +26,5 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 2. Clone this repository.
 3. Run `npm install` in repository folder.
 4. Start MongoDB by `mongod /path/to/db` where `mongod` resides in `bin` folder of MongoDB path and `/path/to/db` an abitrary folder to place database records.
-5. Run `node app` in repository folder.
+5. Run `bower install` in repository folder.
+6. Run `node app` in repository folder.

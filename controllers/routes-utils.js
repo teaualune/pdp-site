@@ -1,4 +1,7 @@
-var auth = require('./auth');
+var multiparty = require('multiparty'),
+    path = require('path'),
+    auth = require('./auth'),
+    settings = require('../settings.json');
 
 module.exports = {
     auth: {
@@ -6,9 +9,27 @@ module.exports = {
         admin: [ auth.api, auth.app, auth.admin ],
         self: [auth.api, auth.app, auth.self ]
     },
-    uploadFile: function () {
+    uploadFile: function (folder) {
         return function (req, res, next) {
-            // TODO handle uploaded file
+            (new multiparty.Form({
+                autoFiles: true,
+                uploadDir: path.join(__dirname, '..', settings.uploadDir, folder)
+            })).parse(req, function (err, fields, files) {
+                var body, v;
+                if (err) {
+                    res.send(500);
+                } else {
+                    body = {};
+                    for (v in fields) {
+                        if (fields.hasOwnProperty(v)) {
+                            body[v] = fields[v][0];
+                        }
+                    }
+                    body.filePath = files[0].path;
+                    req.body = body;
+                    next();
+                }
+            });
         };
     },
     defaultHandler: function (res) {

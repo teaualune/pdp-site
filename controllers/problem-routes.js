@@ -13,13 +13,13 @@ module.exports = function (app) {
 
     // POST /api/problem
     // create a new problem
-    app.post('/api/problem', utils.auth.admin.concat(utils.uploadFile), function (req, res) {
+    app.post('/api/problem', utils.auth.admin.concat(utils.uploadFile()), function (req, res) {
         Problem.create({
             title: req.body.title,
             description: req.body.description,
             sampleInput: req.body.sampleInput,
             sampleOutput: req.body.sampleOutput,
-            manualFilePath: req.manualFilePath || ''
+            manualFilePath: req.body.filepath || ''
         }, utils.defaultHandler(res));
     });
 
@@ -40,7 +40,6 @@ module.exports = function (app) {
                 problem.description = req.body.description || problem.description;
                 problem.sampleInput = req.body.sampleInput || problem.sampleInput;
                 problem.sampleOutput = req.body.sampleOutput || problem.sampleOutput;
-                problem.manualFilePath = req.manualFilePath || problem.manualFilePath;
                 problem.save(utils.defaultHandler(res));
             } else {
                 res.send(404);
@@ -74,7 +73,7 @@ module.exports = function (app) {
 
     // POST /api/user/:uid/ps
     // create or update a problem submission
-    app.post('/api/user/:uid/ps', utils.auth.self.concat(utils.uploadFile), function (req, res) {
+    app.post('/api/user/:uid/ps', utils.auth.self.concat(utils.uploadFile()), function (req, res) {
         ProblemSubmission.findByProblem(req.body.pid, function (err, ps) {
             if (err) {
                 res.send(500);
