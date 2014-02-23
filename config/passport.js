@@ -1,6 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
     mongoose = require('mongoose'),
-    User = require('../model/user').Model,
+    User = require('../model/user'),
     emailValidation = require('./email-validation'),
     errorMessages = require('../settings.json').errorMessages,
     strategyConfig = {
@@ -16,15 +16,11 @@ module.exports = function (passport) {
     });
 
     passport.deserializeUser(function (id, done) {
-        User.findById(id, function (err, user) {
-            done(err, user);
-        });
+        User.findById(id, done);
     });
 
     passport.use('local-signup', new LocalStrategy(strategyConfig, function (req, email, password, done) {
-        User.findOne({
-            email: email
-        }, function (err, user) {
+        User.findByEmail(email, function (err, user) {
             var newUser;
             if (err) {
                 return done(err);
@@ -49,9 +45,7 @@ module.exports = function (passport) {
     }));
 
     passport.use('local-login', new LocalStrategy(strategyConfig, function (req, email, password, done) {
-        User.findOne({
-            email: email
-        }, function (err, user) {
+        User.findByEmail(email, function (err, user) {
             if (err) {
                 return done(err);
             } else if (!user) {

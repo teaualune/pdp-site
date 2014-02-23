@@ -1,5 +1,4 @@
 var mongoose = require('mongoose'),
-    utils = require('./model-utils'),
     Schema = mongoose.Schema,
 
     gradingSchema = new Schema({
@@ -19,6 +18,7 @@ var mongoose = require('mongoose'),
 
 exports.Model = Grading = mongoose.model('Grading', gradingSchema);
 
+/*
 exports.index = function (req, res) {
     Grading.find({}, utils.defaultHandler(res));
 };
@@ -72,3 +72,4 @@ exports.update = function (req, res) {
         }
     });
 };
+*/

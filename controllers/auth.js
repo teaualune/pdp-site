@@ -25,5 +25,16 @@ module.exports = {
         } else {
             res.send(401);
         }
+    },
+    self: function (req, res, next) {
+        if (!req.user) {
+            res.send(401);
+        } else if (req.user._id === req.params.uid) {
+            next();
+        } else if (req.user.admin) {
+            next();
+        } else {
+            res.send(401);
+        }
     }
 };

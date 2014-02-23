@@ -1,39 +1,127 @@
 var P = require('../model/problem'),
     utils = require('./routes-utils'),
-    problem = P.problem,
-    submission = P.problemSubmission;
+    Problem = P.Problem,
+    ProblemSubmission = P.ProblemSubmission;
 
 module.exports = function (app) {
-    var pRoot = '/api/problem',
-        pID = 'pID',
-        psRoot = '/api/ps',
-        psID = 'psID';
 
-    // problem
+    // GET /api/problem
+    // get all problems
+    app.get('/api/problem', utils.auth.basic, function (req, res) {
+        Problem.find({}, utils.defaultHandler(res));
+    });
 
-    app.get(pRoot, utils.basicAuth, problem.index);
+    // POST /api/problem
+    // create a new problem
+    app.post('/api/problem', utils.auth.admin.concat(utils.uploadFile), function (req, res) {
+        Problem.create({
+            title: req.body.title,
+            description: req.body.description,
+            sampleInput: req.body.sampleInput,
+            sampleOutput: req.body.sampleOutput,
+            manualFilePath: req.manualFilePath || ''
+        }, utils.defaultHandler(res));
+    });
 
-    app.post(pRoot, utils.adminAuth.concat(utils.uploadFile), problem.create);
+    // GET /api/problem/:pid
+    // get problem by id
+    app.get('/api/problem/:pid', utils.auth.basic, function (req, res) {
+        Problem.findById(req.params.pid, utils.defaultHandler(res));
+    });
 
-    app.get(pRoot + '/:' + pID, utils.basicAuth, problem.show);
+    // PUT /api/problem/:pid
+    // update problem
+    app.put('/api/problem/:pid', utils.auth.admin, function (req, res) {
+        Problem.findById(req.params.pid, function (err, problem) {
+            if (err) {
+                res.send(500);
+            } else if (problem) {
+                problem.title = req.body.title || problem.title;
+                problem.description = req.body.description || problem.description;
+                problem.sampleInput = req.body.sampleInput || problem.sampleInput;
+                problem.sampleOutput = req.body.sampleOutput || problem.sampleOutput;
+                problem.manualFilePath = req.manualFilePath || problem.manualFilePath;
+                problem.save(utils.defaultHandler(res));
+            } else {
+                res.send(404);
+            }
+        });
+    });
 
-    app.put(pRoot + '/:' + pID, utils.adminAuth, problem.update);
+    // DELETE /api/problem/:pid
+    // delete problem
+    app.delete('/api/problem/:pid', utils.auth.admin, function (req, res) {
+        Problem.findByIdAndRemove(req.params.pid, utils.destroyHandler(res));
+    });
 
-    app.delete(pRoot + '/:' + pID, utils.adminAuth, problem.destroy);
+    // GET /api/ps
+    // get all problem submissions
+    app.get('/api/ps', utils.auth.admin, function (req, res) {
+        Submission.find({}, utils.defaultHandler(res));
+    });
 
-    // problemSubmission
+    // GET /api/problem/:pid/ps
+    // get all problem submissions of a problem
+    app.get('/api/problem/:pid/ps', utils.auth.admin, function (req, res) {
+        ProblemSubmission.findByProblem(req.params.pid, utils.defaultHandler(res));
+    });
 
-    app.get(psRoot, utils.adminAuth, submission.index);
+    // GET /api/user/:uid/ps
+    // get all problem submissions of a user
+    app.get('/api/user/:uid/ps', utils.auth.self, function (req, res) {
+        ProblemSubmission.findByAuthor(req.params.uid, utils.defaultHandler(res));
+    });
 
-    app.get('/api/user/:userID/problem', utils.basicAuth, submission.indexByAuthor);
+    // POST /api/user/:uid/ps
+    // create or update a problem submission
+    app.post('/api/user/:uid/ps', utils.auth.self.concat(utils.uploadFile), function (req, res) {
+        ProblemSubmission.findByProblem(req.body.pid, function (err, ps) {
+            if (err) {
+                res.send(500);
+            } else if (ps) {
+                // update
+                // no attributes are changed, only file uploaded
+                res.send(ps);
+            } else {
+                // create
+                ProblemSubmission.create({
+                    author: req.params.uid,
+                    target: req.body.pid,
+                    filePath: req.filePath
+                }, utils.defaultHandler(res));
+            }
+        });
+    });
 
-    app.get(pRoot + '/:' + pID + '/submission', utils.adminAuth, submission.indexByTarget);
+    // GET /api/user/:uid/ps/:psid
+    // get problem submission by id
+    app.get('/api/user/:uid/ps/:psid', utils.auth.self, function (req, res) {
+        ProblemSubmission.findById(req.params.psid, utils.defaultHandler(res));
+    });
 
-    app.post('/api/user/:userID/problem/:' + pID, utils.basicAuth.concat(utils.uploadFile), submission.create);
+    // GET /api/ps/:uid/:pid
+    // get problem submission by user and problem id
+    app.get('/api/ps/:uid/:psid', utils.auth.self, function (req, res) {
+        ProblemSubmission.findOne({
+            author: req.params.uid,
+            target: req.params.pid
+        }, utils.defaultHandler(res));
+    });
 
-    app.get(psRoot + '/:' + psID, utils.basicAuth, submission.show);
+    // PUT /api/ps/:psid
+    // grades a problem submission (admin only)
+    app.put('/api/ps/:psid', utils.auth.admin, function (req, res) {
+        ProblemSubmission.findById(req.params.psid, function (err, ps) {
+            if (err) {
+                res.send(500);
+            } else if (ps) {
+                ps.grading = req.body.grading || ps.grading;
+                ps.comment = req.body.comment || ps.comment;
+                ps.save(utils.defaultHandler(res));
+            } else {
+                res.send(404);
+            }
+        });
+    });
 
-    app.get('/api/user/:userID/problem/:' + pID, utils.basicAuth, submission.showByAuthorAndTarget);
-
-    app.put(psRoot + '/:' + psID, utils.basicAuth, submission.update);
 };

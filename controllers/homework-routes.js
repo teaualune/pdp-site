@@ -1,39 +1,123 @@
 var H = require('../model/homework'),
     utils = require('./routes-utils'),
-    homework = H.homework,
-    submission = H.homeworkSubmission;
+    Homework = H.Homework,
+    HomeworkSubmission = H.HomeworkSubmission;
 
 module.exports = function (app) {
-    var hwRoot = '/api/hw',
-        hwID = 'hwID',
-        hwsRoot = '/api/hws',
-        hwsID = 'hwsID';
 
-    // homework
+    // GET /api/hw
+    // get all homeworks
+    app.get('/api/hw', utils.auth.basic, function (req, res) {
+        Homework.find({}, utils.defaultHandler(res));
+    });
 
-    app.get(hwRoot, utils.basicAuth, homework.index);
+    // POST /api/hw
+    // create a new homework
+    app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile), function (req, res) {
+        Homework.create({
+            title: req.body.title,
+            description: req.body.description,
+            manualFilePath: req.manualFilePath || ''
+        }, utils.defaultHandler(res));
+    });
 
-    app.post(hwRoot, utils.adminAuth.concat(utils.uploadFile), homework.create);
+    // GET /api/hw/:hwid
+    // get homework by id
+    app.get('/api/hw/:hwid', utils.auth.basic, function (req, res) {
+        Homework.findById(req.params.hwid, utils.defaultHandler(res));
+    });
 
-    app.get(hwRoot + '/:' + hwID, utils.basicAuth, homework.show);
+    // PUT /api/hw/:hwid
+    // update homework
+    app.put('/api/hw/:hwid', utils.auth.admin, function (req, res) {
+        Homework.findById(req.params.hwid, function (err, hw) {
+            if (err) {
+                res.send(500);
+            } else if (hw) {
+                hw.title = req.body.title || hw.title;
+                hw.description = req.body.description || hw.description;
+                hw.manualFilePath = req.manualFilePath || hw.manualFilePath;
+                hw.save(utils.defaultHandler(res));
+            } else {
+                res.send(404);
+            }
+        });
+    });
 
-    app.put(hwRoot + '/:' + hwID, utils.adminAuth, homework.update);
+    // DELETE /api/hw/:hwid
+    // delete homework
+    app.delete('/api/hw/:hwid', utils.auth.admin, function (req, res) {
+        Homework.findByIdAndRemove(req.params.hwid, utils.destroyHandler(res));
+    });
 
-    app.delete(hwRoot + '/:' + hwID, utils.adminAuth, homework.destroy);
+    // GET /api/hws
+    // get all homework submissions
+    app.get('/api/hws', utils.auth.admin, function (req, res) {
+        HomeworkSubmission.find({}, utils.defaultHandler(res));
+    });
 
-    // homeworkSubmission
+    // GET /api/hw/:hwid/hws
+    // get all homework submissions of a homework
+    app.get('/api/hw/:hwid/hws', utils.auth.admin, function (req, res) {
+        HomeworkSubmission.findByHomework(req.params.hwid, utils.defaultHandler(res));
+    });
 
-    app.get(hwsRoot, utils.adminAuth, submission.index);
+    // GET /api/user/:uid/hw
+    // get all homework submissions of a user
+    app.get('/api/user/:uid/hw', utils.auth.self, function (req, res) {
+        HomeworkSubmission.findByAuthor(req.params.uid, utils.defaultHandler(res));
+    });
 
-    app.get('/api/user/:userID/hw', utils.basicAuth, submission.indexByAuthor);
+    // POST /api/user/:uid/hw
+    // create or update a homework submission
+    app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile), function (req, res) {
+        HomeworkSubmission.findByHomework(req.body.hwid, function (err, hws) {
+            if (err) {
+                res.send(500);
+            } else if (hws) {
+                // update
+                // no attributes are changed, only file uploaded
+                res.send(hws);
+            } else {
+                // create
+                HomeworkSubmission.create({
+                    author: req.params.uid,
+                    target: req.body.hwid,
+                    filePath: req.filePath
+                }, utils.defaultHandler(res));
+            }
+        });
+    });
 
-    app.get(hwRoot + '/:' + hwID + '/submission', utils.adminAuth, submission.indexByTarget);
+    // GET /api/user/:uid/hws/:hwsid
+    // get homework submission by id
+    app.get('/api/user/:uid/hws/:hwsid', utils.auth.self, function (req, res) {
+        HomeworkSubmission.findById(req.params.hwsid, utils.defaultHandler(res));
+    });
 
-    app.post('/api/user/:userID/hw/:' + hwID, utils.basicAuth.concat(utils.uploadFile), submission.create);
+    // GET /api/hw/:uid/:hwid
+    // get homework submission by user and homework id
+    app.get('/api/hw/:uid/:hwid', utils.auth.self, function (req, res) {
+        HomeworkSubmission.findOne({
+            author: req.params.uid,
+            target: req.params.hwid
+        }, utils.defaultHandler(res));
+    });
 
-    app.get(hwsRoot + '/:' + hwsID, utils.basicAuth, submission.show);
+    // PUT /api/hws/:hwsid
+    // grades a homework submission (admin only)
+    app.put('/api/hws/:hwsid', utils.auth.admin, function (req, res) {
+        HomeworkSubmission.findById(req.params.hwsid, function (err, hws) {
+            if (err) {
+                res.send(500);
+            } else if (hws) {
+                hws.grading = req.body.grading || hws.grading;
+                hws.comment = req.body.comment || hws.comment;
+                hws.save(utils.defaultHandler(res));
+            } else {
+                res.send(404);
+            }
+        });
+    });
 
-    app.get('/api/user/:userID/hw/:' + hwID, utils.basicAuth, submission.showByAuthorAndTarget);
-
-    app.put(hwsRoot + '/:' + hwsID, utils.basicAuth, submission.update);
 };
