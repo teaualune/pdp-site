@@ -1,5 +1,6 @@
 var multiparty = require('multiparty'),
     path = require('path'),
+    ObjectId = require('mongoose').Types.ObjectId,
     auth = require('./auth'),
     settings = require('../settings.json');
 
@@ -51,5 +52,8 @@ module.exports = {
                 res.send(200);
             }
         };
+    },
+    toObjectId: function (id) {
+        return new ObjectId(id);
     }
 };

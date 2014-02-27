@@ -22,6 +22,22 @@ userSchema.methods.validPassword = function (password) {
     return bcrypt.compareSync(password, this.password);
 };
 
+userSchema.methods.strip = function () {
+    return {
+        _id: this._id,
+        email: this.email,
+        nickname: this.nickname
+    };
+};
+
+userSchema.statics.stripUsers = function (users) {
+    var stripped = [], i = 0;
+    for (i; i < users.length; i = i + 1) {
+        stripped[i] = users[i].strip();
+    }
+    return stripped;
+};
+
 userSchema.statics.findByEmail = function (email, callback) {
     this.findOne({ email: email } ,callback);
 };

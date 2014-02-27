@@ -1,14 +1,10 @@
-<a href="javascript:void(0)" id="settings-toggle" class="settings fa fa-bars"></a>
-<div id="settings-menu" class="settings-menu">
+<a href="javascript:void(0)" id="menu-toggle" class="menu-toggle fa fa-bars"></a>
+<div id="menu" class="menu">
     <ul>
-        <li class="item">
-        <% if (locals.user.nickname) { %>
-            <%= locals.user.nickname %>
-        <% } else { %>
-            <%= locals.user.email %>
-        <% } %>
-        </li>
-        <li><a href="#/settings" class="item">Settings</a></li>
+        <li><a href="#/homework" class="item">Homework</a></li>
+        <li><a href="#/problems" class="item">Problems</a></li>
+        <li><a href="#/cross-gradings" class="item">Cross Gradings</a></li>
+        <li><a href="#/settings" class="item fa fa-gear"></a></li>
         <li><a href="/logout" class="item">Logout</a></li>
     </ul>
 </div>

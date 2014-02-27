@@ -14,8 +14,8 @@
             index: function (callback) {
                 return R.all('user').then(callback);
             },
-            show: function (uid, callback) {
-                return R.one('user', uid).then(callback);
+            me: function (callback) {
+                return R.all('user').customGET('me').then(callback);
             }
         }
     }]);
@@ -31,6 +31,16 @@
                 }).then(callback);
             }
         }
+    }]);
+
+    p.factory('Global', [function () {
+        return {};
+    }]);
+
+    p.run(['Global', 'User', function (Global, User) {
+        User.me(function (me) {
+            Global.me = me;
+        });
     }]);
 
 }(angular));

@@ -28,8 +28,7 @@ module.exports = {
     },
     self: function (req, res, next) {
         if (!req.user) {
-            res.send(401);
-        } else if (req.user._id === req.params.uid) {
+        } else if (req.user._id == req.params.uid) {
             next();
         } else if (req.user.admin) {
             next();

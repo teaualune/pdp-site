@@ -32,14 +32,9 @@ h3 {
 }
 
 ul {
-    background-color: @color-black;
     list-style: none;
     margin: 0;
     padding: 0;
-}
-
-li {
-    display: block;
 }
 
 .header {
@@ -49,9 +44,16 @@ li {
     line-height: @line-height-tall;
 
     h3 {
-        display: inline-block;
         font-size: @line-height-tall;
         padding: @padding-base;
+    }
+
+    ul {
+        background-color: @color-black;
+    }
+
+    li {
+        display: inline-block;
     }
 
     a:hover {
@@ -60,12 +62,19 @@ li {
 
 }
 
-.settings-menu {
+.menu-toggle {
     display: none;
     position: absolute;
     right: 0;
-    bottom: 0;
-    height: 0;
+    top: 0;
+    padding: @padding-base;
+    font-size: 1.2em;
+}
+
+.menu {
+    position: absolute;
+    right: 0;
+    top: 0;
     text-align: center;
 
     &.on {
@@ -75,6 +84,7 @@ li {
     .item {
         display: inline-block;
         width: 100%;
+        line-height: 1.2em;
         padding: @padding-base;
         box-sizing: border-box;
     }
@@ -92,12 +102,6 @@ li {
 
 .main {
     padding: @padding-base;
-}
-
-.settings {
-    float: right;
-    padding: @padding-base;
-    font-size: 1.2em;
 }
 
 .pure-form {
@@ -146,7 +150,42 @@ li {
     background-color: @color-button-cancel;
 }
 
+.settings {
+    span {
+        float: left;
+    }
+
+    div {
+        margin-left: 6em;
+    }
+}
+
 @media (max-width: 767px) {
+    .header {
+        h3 {
+            text-align: center;
+        }
+    }
+
+    .menu-toggle {
+        display: inline-block;
+    }
+
+    .menu {
+        display: none;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        height: 0;
+
+        li {
+            display: block;
+        }
+
+        .item {
+            padding: @padding-base;
+        }
+    }
 }
 
 @media (max-width: 480px) {

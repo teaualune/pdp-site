@@ -1,0 +1,22 @@
+<div ng-controller="SettingsCtrl">
+    <h3>Settings</h3>
+    <ul class="settings">
+        <li>
+            <span>Email</span>
+            <div>
+                <strong>{{ user.email }}</strong>
+            </div>
+        </li>
+        <li>
+            <span>Nickname</span>
+            <div>
+                <strong ng-hide="editing">{{ user.nickname }}</strong>
+                <form ng-show="editing">
+                    <input type="text" ng-model="nickname" />
+                    <button ng-click="submit()" class="pure-button">Change</button>
+                </form>
+                <button ng-click="edit()">Edit</button>
+            </div>
+        </li>
+    </ul>
+</div>
