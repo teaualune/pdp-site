@@ -1,0 +1,17 @@
+<div ng-controller="HomeworkCtrl">
+    <h3>Homework</h3>
+    <div class="pure-g-r">
+        <div class="pure-u-1-5 grid-master">
+            <ul>
+                <li ng-repeat="hw in hws">
+                    <a ui-sref=".detail({ hwid: hw._id })">{{ hw.title }}</a>
+                </li>
+                <li>
+                    <a ui-sref=".new">New Homework</a>
+                </li>
+            </ul>
+        </div>
+        <div class="pure-u-4-5 grid-detail" ui-view>
+        </div>
+    </div>
+</div>

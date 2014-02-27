@@ -11,6 +11,7 @@
         "multiparty": "*",
         "less-middleware": "*",
         "mongoose": "*",
+        "async": "*",
         "passport": "*",
         "passport-local": "*",
         "connect-flash": "*",

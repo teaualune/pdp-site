@@ -27,8 +27,7 @@ module.exports = function (app) {
     // GET /api/user/:uid
     // get user by id
     app.get('/api/user/:uid', utils.auth.basic, function (req, res) {
-        var uid = utils.toObjectId(req.params.uid);
-        User.findById(uid, function (err, user) {
+        User.findById(req.params.uid, function (err, user) {
             if (err) {
                 res.send(500);
             } else if (user) {
@@ -42,8 +41,7 @@ module.exports = function (app) {
     // PUT /api/user/:uid
     // update user
     app.put('/api/user/:uid', utils.auth.self, function (req, res) {
-        var uid = utils.toObjectId(req.params.uid);
-        User.findById(uid, function (err, user) {
+        User.findById(req.params.uid, function (err, user) {
             if (err) {
                 res.send(500);
             } else if (user) {
@@ -64,8 +62,7 @@ module.exports = function (app) {
     // DELETE /api/user/:uid
     // delete user
     app.delete('/api/user/:uid', utils.auth.admin, function (req, res) {
-        var uid = utils.toObjectId(req.params.uid);
-        User.findByIdAndRemove(uid, utils.destroyHandler(res));
+        User.findByIdAndRemove(req.params.uid, utils.destroyHandler(res));
     });
 
 };

@@ -1,4 +1,5 @@
 var multiparty = require('multiparty'),
+    fs = require('fs'),
     path = require('path'),
     ObjectId = require('mongoose').Types.ObjectId,
     auth = require('./auth'),
@@ -26,12 +27,30 @@ module.exports = {
                             body[v] = fields[v][0];
                         }
                     }
-                    body.filePath = files[0].path;
+                    try {
+                        for (v in files) {
+                            if (files.hasOwnProperty(v)) {
+                                body.filePath = files[v][0].path;
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        body.filePath = '';
+                    }
                     req.body = body;
                     next();
                 }
             });
         };
+    },
+    replaceFile: function (oldFile, newFile, callback) {
+        fs.unlink(oldFile, function (err) {
+            if (err) {
+                callback(err);
+            } else {
+                fs.rename(oldFile, newFile, callback);
+            }
+        });
     },
     defaultHandler: function (res) {
         return function (err, resource) {
@@ -52,8 +71,5 @@ module.exports = {
                 res.send(200);
             }
         };
-    },
-    toObjectId: function (id) {
-        return new ObjectId(id);
     }
 };

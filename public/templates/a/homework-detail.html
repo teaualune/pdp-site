@@ -1,0 +1,7 @@
+<form>
+    <input type="text" ng-model="detailHW.title" required />
+    <textarea ng-model="detailHW.description" required></textarea>
+    <a href="/{{ detailHW.manualFilePath }}"></a>
+    <input type="file" name="file" id="file" />
+    <button ng-click="save()" class="pure-button beacon-button-save">Save</button>
+</form>

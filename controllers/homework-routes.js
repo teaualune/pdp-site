@@ -1,4 +1,6 @@
-var H = require('../model/homework'),
+var async = require('async'),
+    mongoose = require('mongoose'),
+    H = require('../model/homework'),
     utils = require('./routes-utils'),
     Homework = H.Homework,
     HomeworkSubmission = H.HomeworkSubmission;
@@ -15,9 +17,10 @@ module.exports = function (app) {
     // create a new homework
     app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
         Homework.create({
+            _id: new mongoose.Types.ObjectId,
             title: req.body.title,
             description: req.body.description,
-            manualFilePath: req.body.filePath || ''
+            manualFilePath: req.body.filePath
         }, utils.defaultHandler(res));
     });
 
@@ -29,14 +32,16 @@ module.exports = function (app) {
 
     // PUT /api/hw/:hwid
     // update homework
-    app.put('/api/hw/:hwid', utils.auth.admin, function (req, res) {
+    app.put('/api/hw/:hwid', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
         Homework.findById(req.params.hwid, function (err, hw) {
             if (err) {
                 res.send(500);
             } else if (hw) {
                 hw.title = req.body.title || hw.title;
                 hw.description = req.body.description || hw.description;
-                hw.save(utils.defaultHandler(res));
+                utils.replaceFile(hw.manualFilePath, req.body.filePath, function (err) {
+                    hw.save(utils.defaultHandler(res));
+                });
             } else {
                 res.send(404);
             }
@@ -62,9 +67,34 @@ module.exports = function (app) {
     });
 
     // GET /api/user/:uid/hw
-    // get all homework submissions of a user
+    // get all {homework, homework submission} of a user
     app.get('/api/user/:uid/hw', utils.auth.self, function (req, res) {
-        HomeworkSubmission.findByAuthor(req.params.uid, utils.defaultHandler(res));
+        Homework.find({}, function (err, homeworks) {
+            if (err) {
+                res.send(500);
+            } else if (homeworks) {
+                async.map(homeworks, function (hw, callback) {
+                    HomeworkSubmission.findOne({
+                        author: req.params.uid,
+                        target: hw._id
+                    }, function (err, hws) {
+                        var result = {
+                                hw: hw
+                            };
+                        if (err) {
+                            callback(err);
+                        } else if (hws) {
+                            result.hws = hws;
+                            callback(null, result);
+                        } else {
+                            callback(null, result);
+                        }
+                    });
+                }, utils.defaultHandler(res));
+            } else {
+                res.send(404);
+            }
+        });
     });
 
     // POST /api/user/:uid/hw

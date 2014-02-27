@@ -1,0 +1,18 @@
+<div ng-controller="HomeworkCtrl">
+    <h3>Homework</h3>
+    <div class="pure-g-r">
+        <div class="pure-u-1-5">
+            <ul>
+                <li ng-repeat="hw in hws">
+                    <a href="javascript:void(0)">{{ hw.hw.title }}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="pure-u-4-5">
+            <h3>{{ detailHW.hw.title }}</h3>
+            <p>{{ detailHW.hw.description }}</p>
+            <a href="/{{ detailHW.hw.manualFilePath }}"></a>
+            <div class="submission-section"></div>
+        </div>
+    </div>
+</div>

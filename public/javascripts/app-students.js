@@ -18,4 +18,15 @@
         });
     }]);
 
+    app.controller('HomeworkCtrl', [
+        '$scope',
+        'Homework',
+        'Global',
+        function (s, HW, Global) {
+            HW.studentIndex(Global.me._id, function (hws) {
+                s.hws = hws;
+            });
+        }
+    ]);
+
 }(angular));
