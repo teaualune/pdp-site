@@ -52,6 +52,9 @@ module.exports = {
             }
         });
     },
+    filePathToFileURL: function (filePath) {
+        ;
+    },
     defaultHandler: function (res) {
         return function (err, resource) {
             if (err) {

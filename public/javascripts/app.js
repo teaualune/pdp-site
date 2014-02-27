@@ -21,4 +21,14 @@
         };
     }]);
 
+    app.service('LocationIDExtracter', ['$location', function (location) {
+        this.findHwid = function () {
+            var hwid = /\/homework\/detail\/([A-Za-z0-9]+)/.exec(location.path());
+            if (hwid) {
+                hwid = hwid[1];
+            }
+            return hwid;
+        };
+    }]);
+
 }(angular, document));

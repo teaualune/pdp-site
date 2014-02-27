@@ -39,13 +39,32 @@
         'Homework',
         'Global',
         '$state',
-        function (s, HW, Global, state) {
+        'LocationIDExtracter',
+        function (s, HW, Global, state, lie) {
             HW.index(function (homeworks) {
                 s.hws = homeworks;
-                state.go('homework.detail', {
-                    hwid: s.hws[0]._id
-                });
+                if (s.hws.length > 0) {
+                    state.go('homework.detail', {
+                        hwid: s.hws[0]._id
+                    });
+                }
             });
+            s.toggleHeader = function () {
+                var hwid = lie.findHwid(),
+                    i = 0,
+                    hw;
+                if (s.hws) {
+                    for (i; i < s.hws.length; i = i + 1) {
+                        s.hws[i].active = false;
+                        if (s.hws[i]._id === hwid) {
+                            hw = s.hws[i];
+                        }
+                    }
+                    if (hw) {
+                        hw.active = true;
+                    }
+                }
+            };
         }
     ]);
 
@@ -54,16 +73,33 @@
         '$stateParams',
         'Homework',
         '$state',
-        function (s, sp, HW, state) {
+        'DestroyAlert',
+        function (s, sp, HW, state, da) {
+            s.editing = false;
             HW.show(sp.hwid, function (hw) {
                 s.detailHW = hw;
+                s.toggleHeader();
             });
             s.loading = false;
             s.save = function () {
                 s.loading = true;
                 HW.update(s.detailHW._id, prepareFormData(s.detailHW), function () {
                     s.loading = false;
+                    state.go('homework.detail', {
+                        hwid: s.detailHW._id
+                    });
                 });
+            };
+            s.edit = function () {
+                s.editing = !s.editing;
+            };
+            s.destroy = function () {
+                if (confirm(da[0]) && confirm(da[1]) && confirm(da[2])) {
+                    s.detailHW.remove();
+                    state.go('homework', {}, {
+                        reload: true
+                    });
+                }
             };
         }
     ]);
@@ -73,6 +109,8 @@
         'Homework',
         '$state',
         function (s, HW, state) {
+            s.toggleHeader();
+            s.editing = s.editingNew = true;
             s.detailHW = {
                 title: '',
                 description: ''
@@ -80,11 +118,9 @@
             s.loading = false;
             s.save = function () {
                 s.loading = true;
-                HW.create(prepareFormData(s.detailHW), function (hw) {
-                    s.hws.push(hw);
-                    s.loading = false;
-                    state.go('homework.detail', {
-                        hwid: hw._id
+                HW.create(prepareFormData(s.detailHW), function () {
+                    state.go('homework', {}, {
+                        reload: true
                     });
                 });
             };

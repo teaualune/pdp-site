@@ -60,4 +60,12 @@
         });
     }]);
 
+    p.factory('DestroyAlert', function () {
+        return [
+            'Are you sure you want to delete it?',
+            'Are you really sure you want to delete it?',
+            'Are you really really sure you want to delete it?'
+        ];
+    });
+
 }(angular));
