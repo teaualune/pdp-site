@@ -3,8 +3,8 @@ var express = require('express'),
     path = require('path'),
     passport = require('passport'),
     mongoose = require('mongoose'),
+    autoIncrement = require('mongoose-auto-increment'),
     settings = require('./settings.json'),
-    routes = require('./controllers'),
 
     app = express(),
     publicPath = path.join(__dirname, 'public');
@@ -38,8 +38,9 @@ if ('development' === app.get('env')) {
 }
 
 mongoose.connect('mongodb://' + settings.dbhost);
+autoIncrement.initialize(mongoose.connection);
 
-routes(app, passport);
+require('./controllers')(app, passport);
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));

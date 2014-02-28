@@ -1,11 +1,11 @@
 (function (A, D) {
     var app = A.module('app'),
-        uploadData = function (hwid) {
+        uploadData = function (key, id) {
             var data = null,
                 file = D.getElementById('file').files[0];
             if (file) {
                 data = new FormData();
-                data.append('hwid', hwid);
+                data.append(key, id);
                 data.append('file', file);
             }
             return data;
@@ -20,9 +20,13 @@
             url: '/detail/:hwid',
             templateUrl: '/templates/s/homework-detail.html',
             controller: 'DetailHWCtrl'
-        }).state('problems', {
-            url: '/problems',
-            templateUrl: '/templates/s/problems.html'
+        }).state('problem', {
+            url: '/problem',
+            templateUrl: '/templates/s/problem.html'
+        }).state('problem.detail', {
+            url: '/detail/:pid',
+            templateUrl: '/templates/s/problem-detail.html',
+            controller: 'DetailProblemCtrl'
         }).state('crossgradings', {
             url: '/cross-gradings',
             templateUrl: '/templates/s/cross-gradings.html'
@@ -44,20 +48,59 @@
                 s.detailHW = hw;
                 HW.showSubmission(Global.me._id, sp.hwid, function (submission) {
                     s.submission = submission;
-                    console.log(hw);
-                    console.log(submission);
+                    s.loading = false;
+                    s.toggleHeader();
+                }, function () {
                     s.loading = false;
                     s.toggleHeader();
                 });
-            })
+            });
             s.upload = function () {
-                var data = uploadData(s.detailHW._id);
+                var data = uploadData('hwid', s.detailHW._id);
                 if (data) {
                     s.loading = true;
                     HW.uploadSubmission(Global.me._id, data, function () {
                         s.loading = false;
                         state.go('homework.detail', {
                             hwid: s.detailHW._id
+                        }, {
+                            reload: true
+                        });
+                    });
+                } else {
+                    alert('Please choose file to upload.');
+                }
+            };
+        }
+    ]);
+
+    app.controller('DetailProblemCtrl', [
+        '$scope',
+        '$stateParams',
+        'Problem',
+        '$state',
+        'Global',
+        function (s, sp, Problem, state, Global) {
+            s.loading = true;
+            Problem.show(sp.pid, function (problem) {
+                s.detailProblem = problem;
+                Problem.showSubmission(Global.me._id, sp.pid, function (submission) {
+                    s.submission = submission;
+                    s.loading = false;
+                    s.toggleHeader();
+                }, function () {
+                    s.loading = false;
+                    s.toggleHeader();
+                });
+            });
+            s.upload = function () {
+                var data = uploadData('pid', s.detailProblem._id);
+                if (data) {
+                    s.loading = true;
+                    Problem.uploadSubmission(Global.me._id, data, function () {
+                        s.loading = false;
+                        state.go('problem.detail', {
+                            pid: s.detailProblem._id
                         }, {
                             reload: true
                         });

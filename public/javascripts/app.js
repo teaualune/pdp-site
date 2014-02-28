@@ -29,6 +29,13 @@
             }
             return hwid;
         };
+        this.findPid = function () {
+            var pid = /\/problem\/detail\/([0-9]+)/.exec(location.path());
+            if (pid) {
+                pid = pid[1];
+            }
+            return pid;
+        };
     }]);
 
     app.controller('HomeworkCtrl', [
@@ -59,6 +66,40 @@
                     }
                     if (hw) {
                         hw.active = true;
+                    }
+                }
+            };
+        }
+    ]);
+
+    app.controller('ProblemCtrl', [
+        '$scope',
+        'Problem',
+        'Global',
+        '$state',
+        'LocationIDExtracter',
+        function (s, Problem, Global, state, lie) {
+            Problem.index(function (problems) {
+                s.problems = problems;
+                if (s.problems.length > 0) {
+                    state.go('problem.detail', {
+                        pid: s.problems[0]._id
+                    });
+                }
+            });
+            s.toggleHeader = function () {
+                var pid = lie.findPid(),
+                    i = 0,
+                    problem;
+                if (s.problems) {
+                    for (i; i < s.problems.length; i = i + 1) {
+                        s.problems[i].active = false;
+                        if (s.problems[i]._id + '' === pid) {
+                            problem = s.problems[i];
+                        }
+                    }
+                    if (problem) {
+                        problem.active = true;
                     }
                 }
             };

@@ -1,0 +1,37 @@
+<div class="loading" ng-show="loading">
+    <img src="/images/indicator.gif" alt="loading" width="33" height="33" />
+</div>
+<form class="pdp-form pure-form pure-form-aligned" name="problemForm" ng-hide="loading">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="title">* Title</label>
+            <input type="text" name="title" ng-model="detailProblem.title" required ng-readonly="!editing" />
+        </div>
+        <div class="pure-control-group">
+            <label for="description">* Description</label>
+            <textarea rows="10" name="description" ng-model="detailProblem.description" required ng-readonly="!editing"></textarea>
+        </div>
+        <div class="pure-control-group">
+            <label for="sampleInput">* Sample Input</label>
+            <textarea rows="5" name="sampleInput" ng-model="detailProblem.sampleInput" required ng-readonly="!editing"></textarea>
+        </div>
+        <div class="pure-control-group">
+            <label for="sampleOutput">* Sample Output</label>
+            <textarea rows="5" name="sampleOutput" ng-model="detailProblem.sampleOutput" required ng-readonly="!editing"></textarea>
+        </div>
+        <div class="pure-control-group" ng-show="(detailProblem.manualFilePath != '' && !editing) || !editingNew">
+            <label>File<br />(Uploaded)</label>
+            <a href="{{ detailProblem.manualFilePath }}">File</a>
+        </div>
+        <div class="pure-control-group" ng-show="editing">
+            <label for="file">Upload File</label>
+            <input type="file" name="file" id="file" />
+        </div>
+        <div class="pure-controls">
+            <button ng-click="save()" ng-show="editing" ng-disabled="problemForm.$invalid" class="pure-button button-save">Save</button>
+            <button ng-click="edit()" ng-show="editing && !editingNew" class="pure-button button-cancel">Cancel</button>
+            <button ng-click="destroy()" ng-show="editing && !editingNew" class="pure-button button-delete">Delete</button>
+            <button ng-click="edit()" ng-hide="editing || editingNew" class="pure-button button-edit">Edit</button>
+        </div>
+    </fieldset>
+</form>

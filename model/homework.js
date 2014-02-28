@@ -12,8 +12,6 @@ var mongoose = require('mongoose'),
     _hwSubmissionSchema = submission.schema('Homework'),
     homeworkSubmissionSchema;
 
-autoIncrement.initialize(mongoose.connection);
-
 homeworkSchema.plugin(autoIncrement.plugin, {
     model: 'Homework',
     startAt: 1

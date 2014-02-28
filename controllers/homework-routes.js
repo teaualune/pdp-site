@@ -7,7 +7,7 @@ var async = require('async'),
     emailValidation = require('../config/email-validation'),
     getSubmissionFilePath = function (submissionFileName, extension) {
         return path.join(utils.uploadDir(), 'hws', submissionFileName + extension);
-    }
+    },
     Homework = H.Homework,
     HomeworkSubmission = H.HomeworkSubmission,
 
