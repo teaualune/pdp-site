@@ -179,8 +179,28 @@ module.exports = function (app) {
 
     // GET /api/user/:uid/hw/:hwid
     // get homework submission by user and homework id
+    // hws is put under hw
     app.get('/api/user/:uid/hw/:hwid', utils.auth.self, function (req, res) {
-        HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.params.hwid, utils.defaultHandler(res, stripOne));
+        async.waterfall([
+            function (callback) {
+                Homework.findById(req.params.hwid, callback);
+            },
+            function (hw, callback) {
+                callback(null, hw.strip());
+            },
+            function (hw, callback) {
+                HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.params.hwid, function (err, hws) {
+                    if (err) {
+                        callback(err);
+                    } else if (hws) {
+                        hw.submission = hws.strip();
+                        callback(null, hw);
+                    } else {
+                        callback(null, hw);
+                    }
+                });
+            }
+        ], utils.defaultHandler(res));
     });
 
     // PUT /api/hws/:hwsid

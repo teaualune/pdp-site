@@ -44,16 +44,14 @@
         'Global',
         function (s, sp, HW, state, Global) {
             s.loading = true;
-            HW.show(sp.hwid, function (hw) {
+            HW.showSubmission(Global.me._id, sp.hwid, function (hw) {
                 s.detailHW = hw;
-                HW.showSubmission(Global.me._id, sp.hwid, function (submission) {
-                    s.submission = submission;
-                    s.loading = false;
-                    s.toggleHeader();
-                }, function () {
-                    s.loading = false;
-                    s.toggleHeader();
-                });
+                s.submission = hw.submission;
+                s.loading = false;
+                s.toggleHeader();
+            }, function () {
+                s.loading = false;
+                s.toggleHeader();
             });
             s.upload = function () {
                 var data = uploadData('hwid', s.detailHW._id);
@@ -82,16 +80,14 @@
         'Global',
         function (s, sp, Problem, state, Global) {
             s.loading = true;
-            Problem.show(sp.pid, function (problem) {
+            Problem.showSubmission(Global.me._id, sp.pid, function (problem) {
                 s.detailProblem = problem;
-                Problem.showSubmission(Global.me._id, sp.pid, function (submission) {
-                    s.submission = submission;
-                    s.loading = false;
-                    s.toggleHeader();
-                }, function () {
-                    s.loading = false;
-                    s.toggleHeader();
-                });
+                s.submission = problem.submission;
+                s.loading = false;
+                s.toggleHeader();
+            }, function () {
+                s.loading = false;
+                s.toggleHeader();
             });
             s.upload = function () {
                 var data = uploadData('pid', s.detailProblem._id);

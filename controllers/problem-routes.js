@@ -183,8 +183,28 @@ module.exports = function (app) {
 
     // GET /api/user/:uid/problem/:pid
     // get problem submission by user and problem id
+    // ps is under problem
     app.get('/api/user/:uid/problem/:pid', utils.auth.self, function (req, res) {
-        ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.params.pid, utils.defaultHandler(res, stripOne));
+        async.waterfall([
+            function (callback) {
+                Problem.findById(req.params.pid, callback);
+            },
+            function (problem, callback) {
+                callback(null, problem.strip());
+            },
+            function (problem, callback) {
+                ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.params.pid, function (err, ps) {
+                    if (err) {
+                        callback(err);
+                    } else if (ps) {
+                        problem.submission = ps.strip();
+                        callback(null, problem);
+                    } else {
+                        callback(null, problem);
+                    }
+                });
+            }
+        ], utils.defaultHandler(res));
     });
 
     // PUT /api/ps/:psid
