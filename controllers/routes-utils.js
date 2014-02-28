@@ -35,29 +35,21 @@ module.exports = {
                     try {
                         for (v in files) {
                             if (files.hasOwnProperty(v)) {
-                                body.filePath = files[v][0].path;
-                                body.fileExtension = extension.exec(body.filePath)[1];
+                                body.file = {
+                                    path: files[v][0].path,
+                                    extension: extension.exec(files[v][0].path)[1]
+                                };
                                 break;
                             }
                         }
                     } catch (e) {
-                        body.filePath = '';
+                        body.file = null;
                     }
                     req.body = body;
                     next();
                 }
             });
         };
-    },
-    replaceFile: function (oldFile, newFile, callback) {
-        fs.unlink(oldFile, function (err) {
-            if (err) {
-                console.log(err);
-                callback(err);
-            } else {
-                fs.rename(oldFile, newFile, callback);
-            }
-        });
     },
     filePathToFileURL: function (filePath) {
         ;
@@ -70,7 +62,7 @@ module.exports = {
             } else if (resource) {
                 res.send(resource);
             } else {
-                res.send(404);
+                res.send(400);
             }
         };
     },

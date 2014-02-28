@@ -11,7 +11,7 @@
             <label for="description">* Description</label>
             <textarea rows="10" name="description" ng-model="detailHW.description" required ng-readonly="!editing"></textarea>
         </div>
-        <div class="pure-control-group" ng-show="(detailHW.manualFilePath && !editing) || !editingNew">
+        <div class="pure-control-group" ng-show="(detailHW.manualFilePath != '' && !editing) || !editingNew">
             <label>File<br />(Uploaded)</label>
             <a href="/{{ detailHW.manualFilePath }}">File</a>
         </div>

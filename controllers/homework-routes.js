@@ -5,7 +5,7 @@ var async = require('async'),
     H = require('../model/homework'),
     utils = require('./routes-utils'),
     emailValidation = require('../config/email-validation'),
-    submissionFilePath = function (submissionFileName, extension) {
+    getSubmissionFilePath = function (submissionFileName, extension) {
         return path.join(utils.uploadDir(), 'hws', submissionFileName + extension);
     }
     Homework = H.Homework,
@@ -22,10 +22,16 @@ module.exports = function (app) {
     // POST /api/hw
     // create a new homework
     app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
+        var filePath;
+        if (req.body.file) {
+            filePath = req.body.file.path;
+        } else {
+            filePath = '';
+        }
         Homework.create({
             title: req.body.title,
             description: req.body.description,
-            manualFilePath: req.body.filePath
+            manualFilePath: filePath
         }, utils.defaultHandler(res));
     });
 
@@ -38,19 +44,35 @@ module.exports = function (app) {
     // PUT /api/hw/:hwid
     // update homework
     app.put('/api/hw/:hwid', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
-        Homework.findById(req.params.hwid, function (err, hw) {
-            if (err) {
-                res.send(500);
-            } else if (hw) {
+        async.waterfall([
+            function (callback) {
+                Homework.findById(req.params.hwid, callback);
+            },
+            function (hw, callback) {
+                if (!hw) {
+                    callback('attempt to update unexist homework');
+                } else if (req.body.file) {
+                    if (hw.manualFilePath == '') {
+                        hw.manualFilePath = req.body.file.path;
+                        callback(null, hw);
+                    } else {
+                        fs.unlink(hw.manualFilePath, function (err) {
+                            // ignore this error
+                            console.log(err);
+                            hw.manualFilePath = req.body.file.path;
+                            callback(null, hw);
+                        });
+                    }
+                } else {
+                    callback(null, hw);
+                }
+            },
+            function (hw, callback) {
                 hw.title = req.body.title || hw.title;
                 hw.description = req.body.description || hw.description;
-                utils.replaceFile(hw.manualFilePath, req.body.filePath, function (err) {
-                    hw.save(utils.defaultHandler(res));
-                });
-            } else {
-                res.send(404);
+                hw.save(callback);
             }
-        });
+        ], utils.defaultHandler(res));
     });
 
     // DELETE /api/hw/:hwid
@@ -95,7 +117,7 @@ module.exports = function (app) {
                     });
                 }, utils.defaultHandler(res));
             } else {
-                res.send(404);
+                res.send(400);
             }
         });
     });
@@ -103,35 +125,39 @@ module.exports = function (app) {
     // POST /api/user/:uid/hw
     // create or update a homework submission
     app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile('hws')), function (req, res) {
-        var studentID = emailValidation.getStudentID(req.user.email),
-            submissionFileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid);
-        HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, function (err, hws) {
-            var filePath;
-            if (err) {
-                console.log(err);
-                res.send(500);
-            } else if (hws) {
-                console.log(hws);
-                console.log('only update');
-                // update
-                // no attributes are changed, only file uploaded
-                utils.replaceFile(hws.filePath, req.body.filePath, function (err) {
-                    hws.save(utils.defaultHandler(res));
-                });
-            } else {
-                // create
-                filePath = submissionFilePath(submissionFileName, req.body.fileExtension);
-                fs.rename(req.body.filePath, filePath, function (err) {
-                    var hwid = parseInt(req.body.hwid, 10);
-                    HomeworkSubmission.create({
-                        _id: new mongoose.Types.ObjectId,
-                        author: req.params.uid,
-                        target: hwid,
-                        filePath: filePath
-                    }, utils.defaultHandler(res));
-                });
-            }
-        });
+        if (req.body.file) {
+            HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, function (err, hws) {
+                var studentID = emailValidation.getStudentID(req.user.email),
+                    fileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid),
+                    filePath = getSubmissionFilePath(fileName, req.body.file.extension);
+                if (err) {
+                    res.send(500);
+                } else if (hws) {
+                    // update
+                    fs.unlink(hws.filePath, function (err) {
+                        // ignore err
+                        fs.rename(req.body.file.path, filePath, function (err) {
+                            // ignore err
+                            hws.filePath = filePath;
+                            hws.save(utils.defaultHandler(res));
+                        });
+                    });
+                } else {
+                    // create
+                    fs.rename(req.body.file.path, filePath, function (err) {
+                        var hwid = parseInt(req.body.hwid, 10);
+                        HomeworkSubmission.create({
+                            _id: new mongoose.Types.ObjectId,
+                            author: req.params.uid,
+                            target: hwid,
+                            filePath: filePath
+                        }, utils.defaultHandler(res));
+                    });
+                }
+            });
+        } else {
+            res.send(400);
+        }
     });
 
     // GET /api/user/:uid/hws/:hwsid

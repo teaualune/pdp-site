@@ -5,7 +5,9 @@
                 file = D.getElementById('file').files[0];
             data.append('title', hw.title);
             data.append('description', hw.description);
-            data.append('file', file);
+            if (file) {
+                data.append('file', file);
+            }
             return data;
         };
 
@@ -54,6 +56,8 @@
                     s.loading = false;
                     state.go('homework.detail', {
                         hwid: s.detailHW._id
+                    }, {
+                        reload: true
                     });
                 });
             };
