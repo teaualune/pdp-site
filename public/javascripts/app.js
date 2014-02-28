@@ -23,14 +23,14 @@
 
     app.service('LocationIDExtracter', ['$location', function (location) {
         this.findHwid = function () {
-            var hwid = /\/homework\/detail\/([0-9]+)/.exec(location.path());
+            var hwid = /\/homework\/([a-z\-]+)\/([0-9]+)/.exec(location.path());
             if (hwid) {
-                hwid = hwid[1];
+                hwid = hwid[2];
             }
             return hwid;
         };
         this.findPid = function () {
-            var pid = /\/problem\/detail\/([0-9]+)/.exec(location.path());
+            var pid = /\/problem\/([a-z\-]+)\/([0-9]+)/.exec(location.path());
             if (pid) {
                 pid = pid[1];
             }

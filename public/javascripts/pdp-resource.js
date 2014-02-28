@@ -51,6 +51,9 @@
             showSubmission: function (uid, hwid, done, fail) {
                 return R.one('user', uid).one('hw', hwid).get().then(done, fail);
             },
+            showStatus: function (hwid, done, fail) {
+                return R.one('hw', hwid).customGET('hws').then(done, fail);
+            },
             uploadSubmission: function (uid, data, done, fail) {
                 var request = new XMLHttpRequest(),
                     path = '/api/user/' + uid + '/hw';
@@ -92,6 +95,9 @@
             },
             showSubmission: function (uid, pid, done, fail) {
                 return R.one('user', uid).one('problem', pid).get().then(done, fail);
+            },
+            showStatus: function (pid, done, fail) {
+                return R.one('problem', pid).customGET('ps').then(done, fail);
             },
             uploadSubmission: function (uid, data, done, fail) {
                 var request = new XMLHttpRequest(),

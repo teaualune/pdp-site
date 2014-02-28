@@ -3,7 +3,9 @@
     <ul>
         <li><a href="#/homework" class="item">Homework</a></li>
         <li><a href="#/problem" class="item">Problems</a></li>
+        <% if (!locals.user.admin) { %>
         <li><a href="#/cross-gradings" class="item">Cross Gradings</a></li>
+        <% } %>
         <li><a href="#/settings" class="item fa fa-gear"></a></li>
         <li><a href="/logout" class="item">Logout</a></li>
     </ul>

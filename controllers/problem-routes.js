@@ -3,6 +3,7 @@ var async = require('async'),
     path = require('path'),
     fs = require('fs'),
     P = require('../model/problem'),
+    User = require('../model/user'),
     utils = require('./routes-utils'),
     emailValidation = require('../config/email-validation'),
     getSubmissionFilePath = function (submissionFileName, extension) {
@@ -103,8 +104,40 @@ module.exports = function (app) {
 
     // GET /api/problem/:pid/ps
     // get all problem submissions of a problem
+    // return an array of { author: User, submission: ProblemSubmission } objects
     app.get('/api/problem/:pid/ps', utils.auth.admin, function (req, res) {
-        ProblemSubmission.findByProblem(req.params.pid, utils.defaultHandler(res, stripAllProblemSubmissions));
+        // ProblemSubmission.findByProblem(req.params.pid, utils.defaultHandler(res, stripAllProblemSubmissions));
+        async.parallel({
+            authors: function (callback) {
+                User.findStudents(callback);
+            },
+            submissions: function (callback) {
+                ProblemSubmission.findByProblem(req.params.pid, callback);
+            }
+        }, function (err, results) {
+            var data, i, j;
+            if (err) {
+                res.send(500);
+            } else if (results.authors && results.submissions) {
+                data = [];
+                for (i = 0; i < results.authors.length; i = i + 1) {
+                    data[i] = {
+                        author: results.authors[i].strip(),
+                        submission: null
+                    };
+                    for (j = 0; j < results.submissions.length; j = j + 1) {
+                        if (data[i].author._id.equals(results.submissions[j].author)) {
+                            data[i].submission = results.submissions[j].strip();
+                            results.submissions.splice(j, 1);
+                            break;
+                        }
+                    }
+                }
+                res.send(data);
+            } else {
+                res.send(400);
+            }
+        });
     });
 
     // GET /api/user/:uid/ps

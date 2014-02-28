@@ -42,4 +42,8 @@ userSchema.statics.findByEmail = function (email, callback) {
     this.findOne({ email: email } ,callback);
 };
 
+userSchema.statics.findStudents = function (callback) {
+    this.find({ admin: false }, callback);
+};
+
 module.exports = mongoose.model('User', userSchema);

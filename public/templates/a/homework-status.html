@@ -1,0 +1,29 @@
+<div class="loading" ng-show="loading">
+    <img src="/images/indicator.gif" alt="loading" width="33" height="33" />
+</div>
+<div ng-hide="loading">
+    <div class="detail-nav pure-menu pure-menu-open pure-menu-horizontal"><ul>
+        <li><a ui-sref="homework.detail({ hwid: hwid })">Overview</a></li>
+        <li class="pure-menu-selected"><a ui-sref="homework.stat({ hwid: hwid })">Status</a></li>
+        <li><a ui-sref="homework.crossgrading({ hwid: hwid })">Cross Grading</a></li>
+    </ul></div>
+    <h3>Submission Status</h3>
+    <h4>Submits/Students:&nbsp;{{ submitsCount }}/{{ submissions.length }}</h4>
+    <div class="pdp-table">
+        <table class="pure-table pure-table-striped">
+            <thead><tr>
+                <th>Students</th>
+                <th>Submission Status</th>
+            </tr></thead>
+            <tbody><tr ng-repeat="sub in submissions">
+                <th>
+                    <h4>{{ sub.author.nickname }}</h4>{{ sub.author.email }}
+                </th>
+                <th>
+                    <span ng-if="sub.submission">File: <a href="{{ sub.submission.filePath }}">Download</a></span>
+                    <span ng-if="!sub.submission">Not submitted yet</span>
+                </th>
+            </tr></tbody>
+        </table>
+    </div>
+</div>

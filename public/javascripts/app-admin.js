@@ -30,6 +30,14 @@
             url: '/new',
             templateUrl: '/templates/a/homework-detail.html',
             controller: 'NewHWCtrl'
+        }).state('homework.stat', {
+            url: '/stat/:hwid',
+            templateUrl: '/templates/a/homework-status.html',
+            controller: 'StatHWCtrl'
+        }).state('homework.crossgrading', {
+            url: '/cross-grading/:hwid',
+            templateUrl: '/templates/a/homework-crossgrading.html',
+            controller: 'CrossGradingHWCtrl'
         }).state('problem', {
             url: '/problem',
             templateUrl: '/templates/a/problem.html'
@@ -41,9 +49,10 @@
             url: '/new',
             templateUrl: '/templates/a/problem-detail.html',
             controller: 'NewProblemCtrl'
-        }).state('crossgradings', {
-            url: '/cross-gradings',
-            templateUrl: '/templates/a/cross-gradings.html'
+        }).state('problem.stat', {
+            url: '/stat/:pid',
+            templateUrl: '/templates/a/problem-status.html',
+            controller: 'StatProblemCtrl'
         }).state('settings', {
             url: '/settings',
             templateUrl: '/templates/settings.html'
@@ -59,6 +68,7 @@
         function (s, sp, HW, state, da) {
             s.editing = false;
             s.loading = true;
+            s.hwid = sp.hwid;
             HW.show(sp.hwid, function (hw) {
                 s.loading = false;
                 s.detailHW = hw;
@@ -86,6 +96,50 @@
                     });
                 }
             };
+        }
+    ]);
+
+    app.controller('StatHWCtrl', [
+        '$scope',
+        '$stateParams',
+        'Homework',
+        '$state',
+        function (s, sp, HW, state) {
+            s.loading = true;
+            s.hwid = sp.hwid;
+            s.submitsCount = 0;
+            HW.showStatus(sp.hwid, function (submissions) {
+                s.loading = false;
+                s.submissions = submissions;
+                s.submitsCount = (function (submissions) {
+                    var n = 0, i;
+                    if (submissions) {
+                        for (i = 0; i < submissions.length; i = i + 1) {
+                            if (submissions[i].submission) {
+                                n = n + 1;
+                            }
+                        }
+                    }
+                    return n;
+                }(s.submissions));
+                s.toggleHeader();
+            });
+        }
+    ]);
+
+    app.controller('CrossGradingHWCtrl', [
+        '$scope',
+        '$stateParams',
+        'Homework',
+        '$state',
+        function (s, sp, HW, state) {
+            s.loading = true;
+            s.hwid = sp.hwid;
+            HW.show(sp.hwid, function (hw) {
+                s.loading = false;
+                s.detailHW = hw;
+                s.toggleHeader();
+            });
         }
     ]);
 
@@ -121,6 +175,7 @@
         function (s, sp, Problem, state, da) {
             s.editing = false;
             s.loading = true;
+            s.pid = sp.pid;
             Problem.show(sp.pid, function (problem) {
                 s.loading = false;
                 s.detailProblem = problem;
@@ -171,6 +226,34 @@
                     });
                 });
             };
+        }
+    ]);
+
+    app.controller('StatProblemCtrl', [
+        '$scope',
+        '$stateParams',
+        'Problem',
+        '$state',
+        function (s, sp, Problem, state) {
+            s.loading = true;
+            s.pid = sp.pid;
+            s.submitsCount = 0;
+            Problem.showStatus(sp.pid, function (submissions) {
+                s.loading = false;
+                s.submissions = submissions;
+                s.submitsCount = (function (submissions) {
+                    var n = 0, i;
+                    if (submissions) {
+                        for (i = 0; i < submissions.length; i = i + 1) {
+                            if (submissions[i].submission) {
+                                n = n + 1;
+                            }
+                        }
+                    }
+                    return n;
+                }(s.submissions));
+                s.toggleHeader();
+            });
         }
     ]);
 

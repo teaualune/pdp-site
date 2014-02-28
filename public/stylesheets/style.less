@@ -2,7 +2,7 @@
 @color-dark-white: #fcfaf2;
 @color-black: #0b1013;
 @color-grey: #434343;
-@color-light-grey: #bdc0ba;
+@color-light-grey: #cbcbcb;
 @color-link: #48b2dc;
 @color-alert: #cb1b45;
 @color-alert-dark: #f596aa;
@@ -17,9 +17,10 @@
 
 @line-height-normal: 1em;
 @line-height-tall: 1.2em;
+@line-height-short: 0.5em;
 
-@pdp-form-full-width: 80%;
-@pdp-form-input-full-width: 60%;
+@pdp-form-full-width: 100%;
+@pdp-form-input-full-width: 55%;
 
 body {
     padding: 0;
@@ -33,7 +34,7 @@ a {
     text-decoration: none;
 }
 
-h3 {
+h3, h4 {
     margin: 0 0 @padding-base;
 }
 
@@ -181,11 +182,14 @@ ul {
 
     &.pure-menu-open {
         background: @color-dark-white;
+        border: 1px solid @color-light-grey;
     }
+}
+.detail-nav {
+    margin-bottom: @padding-base;
 }
 
 .settings {
-
     padding-left: @padding-base;
 
     label {
@@ -208,7 +212,6 @@ ul {
 
 .pdp-form {
     width: @pdp-form-full-width;
-    margin-top: @padding-base;
 
     input, textarea {
         width: @pdp-form-input-full-width;
@@ -222,7 +225,25 @@ ul {
 
 .grid-detail {
     box-sizing: border-box;
-    padding: @padding-base;
+    padding: 0 @padding-base;
+}
+
+.pdp-table {
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid @color-light-grey;
+
+    h4 {
+        margin: 0 0 @line-height-short;
+    }
+
+    table {
+        width: 100%;
+        max-width: 100%;
+        border: 0;
+    }
 }
 
 @media (max-width: 767px) {
@@ -256,8 +277,12 @@ ul {
         width: 100%;
 
         input, textarea {
-            width: @pdp-form-full-width * @pdp-form-input-full-width;
+            width: @pdp-form-full-width * @pdp-form-input-full-width / 100;
         }
+    }
+
+    .grid-detail {
+        padding: @padding-base 0;
     }
 
     .settings {
@@ -273,6 +298,14 @@ ul {
             margin: @padding-base auto;
         }
     }
+
+    .beacons-table {
+        width: inherit;
+        margin-left: -@padding-base;
+        margin-right: -@padding-base;
+        border-left: 0;
+        border-right: 0;
+    }
 }
 
 @media (max-width: 480px) {
@@ -283,6 +316,20 @@ ul {
     .pdp-form {
         input, textarea {
             width: 100%;
+        }
+    }
+
+    .grid-detail {
+        .pure-menu {
+            ul, li {
+                display: block;
+            }
+
+            a {
+                box-sizing: border-box;
+                width: 100%;
+                text-align: center;
+            }
         }
     }
 }
