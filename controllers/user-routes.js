@@ -7,15 +7,9 @@ module.exports = function (app) {
     // GET /api/user 
     // get all users
     app.get('/api/user', utils.auth.admin, function (req, res) {
-        User.find({}, function (err, users) {
-            if (err) {
-                res.send(500);
-            } else if (users) {
-                res.send(User.stripUsers(users));
-            } else {
-                res.send(404);
-            }
-        });
+        User.find({}, utils.defaultHandler(res, function (users) {
+            return User.stripUsers(users);
+        }));
     });
 
     // GET /api/user/me
@@ -27,15 +21,9 @@ module.exports = function (app) {
     // GET /api/user/:uid
     // get user by id
     app.get('/api/user/:uid', utils.auth.basic, function (req, res) {
-        User.findById(req.params.uid, function (err, user) {
-            if (err) {
-                res.send(500);
-            } else if (user) {
-                res.send(user.strip());
-            } else {
-                res.send(404);
-            }
-        });
+        User.findById(req.params.uid, utils.defaultHandler(res, function (user) {
+            return user.strip();
+        }));
     });
 
     // PUT /api/user/:uid

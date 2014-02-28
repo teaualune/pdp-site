@@ -1,4 +1,5 @@
-var ObjectId = require('mongoose').Schema.Types.ObjectId;
+var ObjectId = require('mongoose').Schema.Types.ObjectId,
+    path2url = require('../config/path2url');
 
 module.exports = {
     schema: function (targetType) {
@@ -33,6 +34,21 @@ module.exports = {
                 author: authorID,
                 target: targetID
             }, callback);
+        };
+    },
+    strip: function () {
+        return function () {
+            this.filePath = path2url.one(this.filePath);
+            return this;
+        };
+    },
+    stripSubmissions: function () {
+        return function (submissions) {
+            var stripped = [], i = 0;
+            for (i; i < submissions.length; i = i + 1) {
+                stripped[i] = submissions[i].strip();
+            }
+            return stripped;
         };
     }
 };

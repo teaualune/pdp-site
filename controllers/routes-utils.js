@@ -6,8 +6,7 @@ var multiparty = require('multiparty'),
     settings = require('../settings.json'),
     uploadDir = function () {
         return path.join(__dirname, '..', settings.uploadDir);
-    },
-    extension = /(\.[0-9a-z]+)$/i;
+    };
 
 module.exports = {
     auth: {
@@ -37,7 +36,7 @@ module.exports = {
                             if (files.hasOwnProperty(v)) {
                                 body.file = {
                                     path: files[v][0].path,
-                                    extension: extension.exec(files[v][0].path)[1]
+                                    extension: path.extname(files[v][0].path)
                                 };
                                 break;
                             }
@@ -51,15 +50,15 @@ module.exports = {
             });
         };
     },
-    filePathToFileURL: function (filePath) {
-        ;
-    },
-    defaultHandler: function (res) {
+    defaultHandler: function (res, plugin) {
         return function (err, resource) {
             if (err) {
                 console.log(err)
                 res.send(500);
             } else if (resource) {
+                if (plugin) {
+                    resource = plugin(resource);
+                }
                 res.send(resource);
             } else {
                 res.send(400);

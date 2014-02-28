@@ -9,14 +9,24 @@ var async = require('async'),
         return path.join(utils.uploadDir(), 'hws', submissionFileName + extension);
     }
     Homework = H.Homework,
-    HomeworkSubmission = H.HomeworkSubmission;
+    HomeworkSubmission = H.HomeworkSubmission,
+
+    stripOne = function (one) {
+        return one.strip();
+    },
+    stripAllHomeworks = function (homeworks) {
+        return Homework.stripHomeworks(homeworks);
+    },
+    stripAllHomeworkSubmissions = function (submissions) {
+        return HomeworkSubmission.stripSubmissions(submissions);
+    };
 
 module.exports = function (app) {
 
     // GET /api/hw
     // get all homeworks
     app.get('/api/hw', utils.auth.basic, function (req, res) {
-        Homework.find({}, utils.defaultHandler(res));
+        Homework.find({}, utils.defaultHandler(res, stripAllHomeworks));
     });
 
     // POST /api/hw
@@ -32,13 +42,13 @@ module.exports = function (app) {
             title: req.body.title,
             description: req.body.description,
             manualFilePath: filePath
-        }, utils.defaultHandler(res));
+        }, utils.defaultHandler(res, stripOne));
     });
 
     // GET /api/hw/:hwid
     // get homework by id
     app.get('/api/hw/:hwid', utils.auth.basic, function (req, res) {
-        Homework.findById(req.params.hwid, utils.defaultHandler(res));
+        Homework.findById(req.params.hwid, utils.defaultHandler(res, stripOne));
     });
 
     // PUT /api/hw/:hwid
@@ -72,7 +82,7 @@ module.exports = function (app) {
                 hw.description = req.body.description || hw.description;
                 hw.save(callback);
             }
-        ], utils.defaultHandler(res));
+        ], utils.defaultHandler(res, stripOne));
     });
 
     // DELETE /api/hw/:hwid
@@ -84,13 +94,13 @@ module.exports = function (app) {
     // GET /api/hws
     // get all homework submissions
     app.get('/api/hws', utils.auth.admin, function (req, res) {
-        HomeworkSubmission.find({}, utils.defaultHandler(res));
+        HomeworkSubmission.find({}, utils.defaultHandler(res, stripAllHomeworkSubmissions));
     });
 
     // GET /api/hw/:hwid/hws
     // get all homework submissions of a homework
     app.get('/api/hw/:hwid/hws', utils.auth.admin, function (req, res) {
-        HomeworkSubmission.findByHomework(req.params.hwid, utils.defaultHandler(res));
+        HomeworkSubmission.findByHomework(req.params.hwid, utils.defaultHandler(res, stripAllHomeworkSubmissions));
     });
 
     // GET /api/user/:uid/hw
@@ -102,6 +112,7 @@ module.exports = function (app) {
                 res.send(500);
             } else if (homeworks) {
                 async.map(homeworks, function (hw, callback) {
+                    var stripped = hw.strip();
                     HomeworkSubmission.findOne({
                         author: req.params.uid,
                         target: hw._id
@@ -109,10 +120,10 @@ module.exports = function (app) {
                         if (err) {
                             callback(err);
                         } else if (hws) {
-                            hw.submision = hws;
-                            callback(null, hw);
+                            stripped.submision = hws.strip();
+                            callback(null, stripped);
                         } else {
-                            callback(null, hw);
+                            callback(null, stripped);
                         }
                     });
                 }, utils.defaultHandler(res));
@@ -139,7 +150,7 @@ module.exports = function (app) {
                         fs.rename(req.body.file.path, filePath, function (err) {
                             // ignore err
                             hws.filePath = filePath;
-                            hws.save(utils.defaultHandler(res));
+                            hws.save(utils.defaultHandler(res, stripOne));
                         });
                     });
                 } else {
@@ -151,7 +162,7 @@ module.exports = function (app) {
                             author: req.params.uid,
                             target: hwid,
                             filePath: filePath
-                        }, utils.defaultHandler(res));
+                        }, utils.defaultHandler(res, stripOne));
                     });
                 }
             });
@@ -163,14 +174,13 @@ module.exports = function (app) {
     // GET /api/user/:uid/hws/:hwsid
     // get homework submission by id
     app.get('/api/user/:uid/hws/:hwsid', utils.auth.self, function (req, res) {
-        HomeworkSubmission.findById(req.params.hwsid, utils.defaultHandler(res));
+        HomeworkSubmission.findById(req.params.hwsid, utils.defaultHandler(res, stripOne));
     });
 
     // GET /api/user/:uid/hw/:hwid
     // get homework submission by user and homework id
-    // hws is put under hw
     app.get('/api/user/:uid/hw/:hwid', utils.auth.self, function (req, res) {
-        HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.params.hwid, utils.defaultHandler(res));
+        HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.params.hwid, utils.defaultHandler(res, stripOne));
     });
 
     // PUT /api/hws/:hwsid
@@ -182,7 +192,7 @@ module.exports = function (app) {
             } else if (hws) {
                 hws.grading = req.body.grading || hws.grading;
                 hws.comment = req.body.comment || hws.comment;
-                hws.save(utils.defaultHandler(res));
+                hws.save(utils.defaultHandler(res, stripOne));
             } else {
                 res.send(404);
             }
