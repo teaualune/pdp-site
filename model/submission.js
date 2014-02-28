@@ -5,7 +5,7 @@ module.exports = {
         return {
             _id: ObjectId,
             target: {
-                type: ObjectId,
+                type: Number,
                 ref: targetType
             },
             author: {
@@ -25,6 +25,14 @@ module.exports = {
     findByTarget: function () {
         return function (targetID, callback) {
             this.find({ target: targetID }, callback);
+        };
+    },
+    findByAuthorAndTarget: function () {
+        return function (authorID, targetID, callback) {
+            this.findOne({
+                author: authorID,
+                target: targetID
+            }, callback);
         };
     }
 };

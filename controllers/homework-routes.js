@@ -1,7 +1,13 @@
 var async = require('async'),
     mongoose = require('mongoose'),
+    path = require('path'),
+    fs = require('fs'),
     H = require('../model/homework'),
     utils = require('./routes-utils'),
+    emailValidation = require('../config/email-validation'),
+    submissionFilePath = function (submissionFileName, extension) {
+        return path.join(utils.uploadDir(), 'hws', submissionFileName + extension);
+    }
     Homework = H.Homework,
     HomeworkSubmission = H.HomeworkSubmission;
 
@@ -17,7 +23,6 @@ module.exports = function (app) {
     // create a new homework
     app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
         Homework.create({
-            _id: new mongoose.Types.ObjectId,
             title: req.body.title,
             description: req.body.description,
             manualFilePath: req.body.filePath
@@ -68,6 +73,7 @@ module.exports = function (app) {
 
     // GET /api/user/:uid/hw
     // get all {homework, homework submission} of a user
+    // hws is put under hw
     app.get('/api/user/:uid/hw', utils.auth.self, function (req, res) {
         Homework.find({}, function (err, homeworks) {
             if (err) {
@@ -78,16 +84,13 @@ module.exports = function (app) {
                         author: req.params.uid,
                         target: hw._id
                     }, function (err, hws) {
-                        var result = {
-                                hw: hw
-                            };
                         if (err) {
                             callback(err);
                         } else if (hws) {
-                            result.hws = hws;
-                            callback(null, result);
+                            hw.submision = hws;
+                            callback(null, hw);
                         } else {
-                            callback(null, result);
+                            callback(null, hw);
                         }
                     });
                 }, utils.defaultHandler(res));
@@ -100,20 +103,33 @@ module.exports = function (app) {
     // POST /api/user/:uid/hw
     // create or update a homework submission
     app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile('hws')), function (req, res) {
-        HomeworkSubmission.findByHomework(req.body.hwid, function (err, hws) {
+        var studentID = emailValidation.getStudentID(req.user.email),
+            submissionFileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid);
+        HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, function (err, hws) {
+            var filePath;
             if (err) {
+                console.log(err);
                 res.send(500);
             } else if (hws) {
+                console.log(hws);
+                console.log('only update');
                 // update
                 // no attributes are changed, only file uploaded
-                res.send(hws);
+                utils.replaceFile(hws.filePath, req.body.filePath, function (err) {
+                    hws.save(utils.defaultHandler(res));
+                });
             } else {
                 // create
-                HomeworkSubmission.create({
-                    author: req.params.uid,
-                    target: req.body.hwid,
-                    filePath: req.body.filePath
-                }, utils.defaultHandler(res));
+                filePath = submissionFilePath(submissionFileName, req.body.fileExtension);
+                fs.rename(req.body.filePath, filePath, function (err) {
+                    var hwid = parseInt(req.body.hwid, 10);
+                    HomeworkSubmission.create({
+                        _id: new mongoose.Types.ObjectId,
+                        author: req.params.uid,
+                        target: hwid,
+                        filePath: filePath
+                    }, utils.defaultHandler(res));
+                });
             }
         });
     });
@@ -124,13 +140,11 @@ module.exports = function (app) {
         HomeworkSubmission.findById(req.params.hwsid, utils.defaultHandler(res));
     });
 
-    // GET /api/hw/:uid/:hwid
+    // GET /api/user/:uid/hw/:hwid
     // get homework submission by user and homework id
-    app.get('/api/hw/:uid/:hwid', utils.auth.self, function (req, res) {
-        HomeworkSubmission.findOne({
-            author: req.params.uid,
-            target: req.params.hwid
-        }, utils.defaultHandler(res));
+    // hws is put under hw
+    app.get('/api/user/:uid/hw/:hwid', utils.auth.self, function (req, res) {
+        HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.params.hwid, utils.defaultHandler(res));
     });
 
     // PUT /api/hws/:hwsid

@@ -23,12 +23,46 @@
 
     app.service('LocationIDExtracter', ['$location', function (location) {
         this.findHwid = function () {
-            var hwid = /\/homework\/detail\/([A-Za-z0-9]+)/.exec(location.path());
+            var hwid = /\/homework\/detail\/([0-9]+)/.exec(location.path());
             if (hwid) {
                 hwid = hwid[1];
             }
             return hwid;
         };
     }]);
+
+    app.controller('HomeworkCtrl', [
+        '$scope',
+        'Homework',
+        'Global',
+        '$state',
+        'LocationIDExtracter',
+        function (s, HW, Global, state, lie) {
+            HW.index(function (homeworks) {
+                s.hws = homeworks;
+                if (s.hws.length > 0) {
+                    state.go('homework.detail', {
+                        hwid: s.hws[0]._id
+                    });
+                }
+            });
+            s.toggleHeader = function () {
+                var hwid = lie.findHwid(),
+                    i = 0,
+                    hw;
+                if (s.hws) {
+                    for (i; i < s.hws.length; i = i + 1) {
+                        s.hws[i].active = false;
+                        if (s.hws[i]._id + '' === hwid) {
+                            hw = s.hws[i];
+                        }
+                    }
+                    if (hw) {
+                        hw.active = true;
+                    }
+                }
+            };
+        }
+    ]);
 
 }(angular, document));

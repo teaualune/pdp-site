@@ -21,7 +21,7 @@
     }]);
 
     p.factory('Homework', ['Restangular', function (R) {
-        var _upload = function (method, hwid, data, callback) {
+        var _uploadHW = function (method, hwid, data, callback) {
                 var request = new XMLHttpRequest(),
                     path = '/api/hw' + (hwid ? '/' + hwid : '');
                 request.open(method, path);
@@ -36,16 +36,28 @@
                 return R.all('hw').getList().then(callback);
             },
             create: function (data, callback) {
-                _upload('POST', null, data, callback);
+                _uploadHW('POST', null, data, callback);
             },
             update: function (hwid, data, callback) {
-                _upload('PUT', hwid, data, callback);
+                _uploadHW('PUT', hwid, data, callback);
             },
             show: function (hwid, callback) {
                 return R.one('hw', hwid).get().then(callback);
             },
             studentIndex: function (uid, callback) {
                 return R.one('user', uid).customGET('hw').then(callback);
+            },
+            showSubmission: function (uid, hwid, callback) {
+                return R.one('user', uid).one('hw', hwid).get().then(callback);
+            },
+            uploadSubmission: function (uid, data, callback) {
+                var request = new XMLHttpRequest(),
+                    path = '/api/user/' + uid + '/hw';
+                request.open('POST', path);
+                request.onload = function (e) {
+                    callback();
+                };
+                request.send(data);
             }
         }
     }]);

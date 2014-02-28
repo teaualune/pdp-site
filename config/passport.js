@@ -26,7 +26,7 @@ module.exports = function (passport) {
                 return done(err);
             } else if (user) {
                 return done(null, false, req.flash('errorMessage', errorMessages.emailExists));
-            } else if (!emailValidation(email)) {
+            } else if (!emailValidation.validate(email)) {
                 return done(null, false, req.flash('errorMessage', errorMessages.notNTUEmail));
             } else {
                 newUser = new User();

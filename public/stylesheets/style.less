@@ -15,7 +15,11 @@
 @padding-base: 20px;
 @padding-small: 10px;
 
+@line-height-normal: 1em;
 @line-height-tall: 1.2em;
+
+@pdp-form-full-width: 80%;
+@pdp-form-input-full-width: 60%;
 
 body {
     padding: 0;
@@ -41,7 +45,7 @@ ul {
 
 .loading {
     text-align: center;
-    margin: 40px auto;
+    margin: @padding-base * 2 auto;
 }
 
 .header {
@@ -76,7 +80,7 @@ ul {
     right: 0;
     top: 0;
     padding: @padding-base;
-    font-size: 1.2em;
+    font-size: @line-height-tall;
 }
 
 .menu {
@@ -92,7 +96,7 @@ ul {
     .item {
         display: inline-block;
         width: 100%;
-        line-height: 1.2em;
+        line-height: @line-height-tall;
         padding: @padding-base;
         box-sizing: border-box;
     }
@@ -118,15 +122,15 @@ ul {
     }
 
     .pure-control-group {
-        margin-bottom: 1em;
+        margin-bottom: @line-height-normal;
 
         input, label {
             line-height: @line-height-tall;
-            font-size: 1em;
+            font-size: @line-height-normal;
         }
 
         textarea {
-            font-size: 1em;
+            font-size: @line-height-normal;
             resize: none;
         }
 
@@ -181,22 +185,44 @@ ul {
 }
 
 .settings {
-    span {
-        float: left;
+
+    padding-left: @padding-base;
+
+    label {
+        display: inline-block;
+        width: 6em;
+    }
+
+    strong {
+        margin-right: 3em;
     }
 
     div {
-        margin-left: 6em;
+        display: inline-block;
+    }
+
+    li {
+        margin: @padding-base auto;
     }
 }
 
 .pdp-form {
-    width: 80%;
-    margin-top: 20px;
+    width: @pdp-form-full-width;
+    margin-top: @padding-base;
 
     input, textarea {
-        width: 60%;
+        width: @pdp-form-input-full-width;
+        margin: @padding-base 0;
     }
+
+    .submitted-file {
+        margin: @padding-base 0;
+    }
+}
+
+.grid-detail {
+    box-sizing: border-box;
+    padding: @padding-base;
 }
 
 @media (max-width: 767px) {
@@ -230,7 +256,21 @@ ul {
         width: 100%;
 
         input, textarea {
-            width: 48%;
+            width: @pdp-form-full-width * @pdp-form-input-full-width;
+        }
+    }
+
+    .settings {
+        label {
+            margin: @padding-base 0;
+        }
+
+        div {
+            display: block;
+        }
+
+        li {
+            margin: @padding-base auto;
         }
     }
 }

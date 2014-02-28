@@ -3,7 +3,11 @@ var multiparty = require('multiparty'),
     path = require('path'),
     ObjectId = require('mongoose').Types.ObjectId,
     auth = require('./auth'),
-    settings = require('../settings.json');
+    settings = require('../settings.json'),
+    uploadDir = function () {
+        return path.join(__dirname, '..', settings.uploadDir);
+    },
+    extension = /(\.[0-9a-z]+)$/i;
 
 module.exports = {
     auth: {
@@ -11,11 +15,12 @@ module.exports = {
         admin: [ auth.api, auth.app, auth.admin ],
         self: [auth.api, auth.app, auth.self ]
     },
+    uploadDir: uploadDir,
     uploadFile: function (folder) {
         return function (req, res, next) {
             (new multiparty.Form({
                 autoFiles: true,
-                uploadDir: path.join(__dirname, '..', settings.uploadDir, folder)
+                uploadDir: path.join(uploadDir(), folder)
             })).parse(req, function (err, fields, files) {
                 var body, v;
                 if (err) {
@@ -31,6 +36,7 @@ module.exports = {
                         for (v in files) {
                             if (files.hasOwnProperty(v)) {
                                 body.filePath = files[v][0].path;
+                                body.fileExtension = extension.exec(body.filePath)[1];
                                 break;
                             }
                         }
@@ -46,6 +52,7 @@ module.exports = {
     replaceFile: function (oldFile, newFile, callback) {
         fs.unlink(oldFile, function (err) {
             if (err) {
+                console.log(err);
                 callback(err);
             } else {
                 fs.rename(oldFile, newFile, callback);
@@ -58,6 +65,7 @@ module.exports = {
     defaultHandler: function (res) {
         return function (err, resource) {
             if (err) {
+                console.log(err)
                 res.send(500);
             } else if (resource) {
                 res.send(resource);

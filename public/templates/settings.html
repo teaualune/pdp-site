@@ -2,20 +2,21 @@
     <h3>Settings</h3>
     <ul class="settings">
         <li>
-            <span>Email</span>
+            <label>Email</label>
             <div>
                 <strong>{{ user.email }}</strong>
             </div>
         </li>
         <li>
-            <span>Nickname</span>
+            <label>Nickname</label>
             <div>
                 <strong ng-hide="editing">{{ user.nickname }}</strong>
                 <form ng-show="editing">
                     <input type="text" ng-model="nickname" />
-                    <button ng-click="submit()" class="pure-button">Change</button>
+                    <button ng-click="submit()" class="pure-button button-save">Save</button>
+                    <button ng-click="edit()" class="pure-button button-cancel">Cancel</button>
                 </form>
-                <button ng-click="edit()">Edit</button>
+                <button ng-click="edit()" class="pure-button button-edit" ng-hide="editing">Edit</button>
             </div>
         </li>
     </ul>
