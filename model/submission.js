@@ -14,8 +14,10 @@ module.exports = {
                 ref: 'User'
             },
             filePath: String,
-            grading: Number, // teacher's grading
-            comment: String // teacher's comment
+            grading: { // teacher's grading
+                type: ObjectId,
+                ref: 'Grading'
+            }
         };
     },
     findByAuthor: function () {

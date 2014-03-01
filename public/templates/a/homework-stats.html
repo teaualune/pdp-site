@@ -3,10 +3,11 @@
 </div>
 <div ng-hide="loading">
     <div class="detail-nav pure-menu pure-menu-open pure-menu-horizontal"><ul>
-        <li><a ui-sref="problem.detail({ pid: pid })">Overview</a></li>
-        <li class="pure-menu-selected"><a ui-sref="problem.stat({ pid: pid })">Status</a></li>
+        <li><a ui-sref="homework.detail({ hwid: hwid })">Overview</a></li><!--
+     --><li class="pure-menu-selected"><a ui-sref="homework.stat({ hwid: hwid })">Status</a></li><!--
+     --><li><a ui-sref="homework.crossgrading({ hwid: hwid })">Cross Grading</a></li>
     </ul></div>
-    <h3>Submission Status</h3>
+    <h3>Submission Stats</h3>
     <h4>Submits/Students:&nbsp;{{ submitsCount }}/{{ submissions.length }}</h4>
     <div class="pdp-table">
         <table class="pure-table pure-table-striped">

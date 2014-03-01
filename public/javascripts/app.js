@@ -53,15 +53,16 @@
                     });
                 }
             });
-            s.toggleHeader = function () {
+            s.toggleHeader = function (skip) {
                 var hwid = lie.findHwid(),
                     i = 0,
                     hw;
                 if (s.hws) {
                     for (i; i < s.hws.length; i = i + 1) {
                         s.hws[i].active = false;
-                        if (s.hws[i]._id + '' === hwid) {
+                        if (!skip && s.hws[i]._id + '' === hwid) {
                             hw = s.hws[i];
+                            break;
                         }
                     }
                     if (hw) {
@@ -87,15 +88,16 @@
                     });
                 }
             });
-            s.toggleHeader = function () {
+            s.toggleHeader = function (skip) {
                 var pid = lie.findPid(),
                     i = 0,
                     problem;
                 if (s.problems) {
                     for (i; i < s.problems.length; i = i + 1) {
                         s.problems[i].active = false;
-                        if (s.problems[i]._id + '' === pid) {
+                        if (!skip && s.problems[i]._id + '' === pid) {
                             problem = s.problems[i];
+                            break;
                         }
                     }
                     if (problem) {

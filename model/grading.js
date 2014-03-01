@@ -3,15 +3,11 @@ var mongoose = require('mongoose'),
 
     gradingSchema = new Schema({
         _id: Schema.Types.ObjectId,
-        homeworkSubmission: {
-            type: Schema.Types.ObjectId,
-            ref: 'HomeworkSubmission'
-        },
         author: {
             type: Schema.Types.ObjectId,
             ref: 'User'
         },
-        rating: Number,
+        score: Number,
         comment: String
     }),
     Grading;

@@ -32,7 +32,7 @@
             controller: 'NewHWCtrl'
         }).state('homework.stat', {
             url: '/stat/:hwid',
-            templateUrl: '/templates/a/homework-status.html',
+            templateUrl: '/templates/a/homework-stats.html',
             controller: 'StatHWCtrl'
         }).state('homework.crossgrading', {
             url: '/cross-grading/:hwid',
@@ -51,7 +51,7 @@
             controller: 'NewProblemCtrl'
         }).state('problem.stat', {
             url: '/stat/:pid',
-            templateUrl: '/templates/a/problem-status.html',
+            templateUrl: '/templates/a/problem-stats.html',
             controller: 'StatProblemCtrl'
         }).state('settings', {
             url: '/settings',
@@ -108,7 +108,7 @@
             s.loading = true;
             s.hwid = sp.hwid;
             s.submitsCount = 0;
-            HW.showStatus(sp.hwid, function (submissions) {
+            HW.showStats(sp.hwid, function (submissions) {
                 s.loading = false;
                 s.submissions = submissions;
                 s.submitsCount = (function (submissions) {
@@ -148,7 +148,7 @@
         'Homework',
         '$state',
         function (s, HW, state) {
-            s.toggleHeader();
+            s.toggleHeader(true);
             s.editing = s.editingNew = true;
             s.detailHW = {
                 title: '',
@@ -211,7 +211,7 @@
         'Problem',
         '$state',
         function (s, Problem, state) {
-            s.toggleHeader();
+            s.toggleHeader(true);
             s.editing = s.editingNew = true;
             s.detailProblem = {
                 title: '',
@@ -238,7 +238,7 @@
             s.loading = true;
             s.pid = sp.pid;
             s.submitsCount = 0;
-            Problem.showStatus(sp.pid, function (submissions) {
+            Problem.showStats(sp.pid, function (submissions) {
                 s.loading = false;
                 s.submissions = submissions;
                 s.submitsCount = (function (submissions) {
