@@ -28,6 +28,9 @@
         }).state('homework.detail.submission', {
             url: '/submission',
             templateUrl: '/templates/s/homework-submission.html'
+        }).state('homework.detail.grades', {
+            url: '/grades',
+            templateUrl: '/templates/s/homework-grades.html'
         });
 
         sp.state('problem', {
@@ -44,6 +47,9 @@
         }).state('problem.detail.submission', {
             url: '/submission',
             templateUrl: '/templates/s/problem-submission.html'
+        }).state('problem.detail.grades', {
+            url: '/grades',
+            templateUrl: '/templates/s/problem-grades.html'
         });
 
         sp.state('crossgradings', {

@@ -1,0 +1,8 @@
+<h3>Grades</h3>
+<section ng-show="submission.grading">
+    <h4>Score: <strong>{{ submission.grading.score }}</strong></h4>
+    <h4>Comment</h4>
+    <p>{{ submission.grading.comment }}</p>
+</section>
+<p ng-hide="submission">You haven't submit your answer yet.</p>
+<p ng-show="submission && !submission.grading">The submission is not graded yet.</p>

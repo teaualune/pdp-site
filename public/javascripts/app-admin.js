@@ -161,7 +161,7 @@
         'Homework',
         '$state',
         function (s, HW, state) {
-            s.toggleListHeader(true);
+            s.toggleListHeader();
             s.editing = s.editingNew = true;
             s.detailHW = {
                 title: '',
@@ -224,7 +224,7 @@
         'Problem',
         '$state',
         function (s, Problem, state) {
-            s.toggleListHeader(true);
+            s.toggleListHeader();
             s.editing = s.editingNew = true;
             s.detailProblem = {
                 title: '',

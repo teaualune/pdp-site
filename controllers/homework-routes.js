@@ -4,6 +4,7 @@ var async = require('async'),
     fs = require('fs'),
     H = require('../model/homework'),
     User = require('../model/user'),
+    Grading = require('../model/grading'),
     utils = require('./routes-utils'),
     emailValidation = require('../config/email-validation'),
     getSubmissionFilePath = function (submissionFileName, extension) {
@@ -221,11 +222,18 @@ module.exports = function (app) {
                 callback(null, hw.strip());
             },
             function (hw, callback) {
-                HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.params.hwid, function (err, hws) {
+                HomeworkSubmission.findOne({
+                    author: req.params.uid,
+                    target: req.params.hwid
+                }).populate('grades crossGradings').exec(function (err, hws) {
                     if (err) {
                         callback(err);
                     } else if (hws) {
                         hw.submission = hws.strip();
+                        if (hw.submission.grading) {
+                            hw.submission.grading = hws.grading.strip();
+                        }
+                        hw.submission.crossGradings = Grading.stripGradings(hw.submission.crossGradings);
                         callback(null, hw);
                     } else {
                         callback(null, hw);
