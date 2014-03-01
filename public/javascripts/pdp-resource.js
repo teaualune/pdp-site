@@ -54,6 +54,12 @@
             showStats: function (hwid, done, fail) {
                 return R.one('hw', hwid).customGET('hws').then(done, fail);
             },
+            adminShowSubmission: function (hwsid, done, fail) {
+                return R.one('hws', hwsid).get().then(done, fail);
+            },
+            saveGrading: function (hws, done, fail) {
+                return hws.put().then(done, fail);
+            },
             uploadSubmission: function (uid, data, done, fail) {
                 var request = new XMLHttpRequest(),
                     path = '/api/user/' + uid + '/hw';

@@ -5,15 +5,21 @@
         <thead><tr>
             <th>Students</th>
             <th>Submission Status</th>
+            <th>Grading</th>
         </tr></thead>
         <tbody><tr ng-repeat="sub in submissions">
-            <th>
+            <td>
                 <h4>{{ sub.author.nickname }}</h4>{{ sub.author.email }}
-            </th>
-            <th>
+            </td>
+            <td>
                 <span ng-if="sub.submission">File: <a href="{{ sub.submission.filePath }}">Download</a></span>
                 <span ng-if="!sub.submission">Not submitted yet</span>
-            </th>
+            </td>
+            <td>
+                <p ng-show="sub.submission.grading">{{ sub.submission.grading.score }}</p>
+                <a ui-sref=".grading({ hwsid: sub.submission._id })">Grades</a>
+            </td>
         </tr></tbody>
     </table>
 </div>
+<ui-view />

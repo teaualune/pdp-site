@@ -39,6 +39,10 @@
             url: '/stats',
             templateUrl: '/templates/a/homework-stats.html',
             controller: 'StatsHWCtrl'
+        }).state('homework.detail.stats.grading', {
+            url: '/grading/:hwsid',
+            templateUrl: '/templates/a/homework-grading.html',
+            controller: 'GradingHWCtrl'
         }).state('homework.detail.crossgrading', {
             url: '/cross-grading',
             templateUrl: '/templates/a/homework-crossgrading.html',
@@ -116,8 +120,7 @@
         '$scope',
         '$stateParams',
         'Homework',
-        '$state',
-        function (s, sp, HW, state) {
+        function (s, sp, HW) {
             s.loading = true;
             s.hwid = sp.hwid;
             s.submitsCount = 0;
@@ -140,12 +143,29 @@
         }
     ]);
 
+    app.controller('GradingHWCtrl', [
+        '$scope',
+        '$stateParams',
+        'Homework',
+        'Global',
+        function (s, sp, HW, Global) {
+            s.loading = true;
+            HW.adminShowSubmission(sp.hwsid, function (hws) {
+                s.loading = false;
+                s.hws = hws;
+            });
+            s.save = function () {
+                s.hws.grading.author = Global.me._id;
+                HW.saveGrading(s.hws);
+            };
+        }
+    ]);
+
     app.controller('CrossGradingHWCtrl', [
         '$scope',
         '$stateParams',
         'Homework',
-        '$state',
-        function (s, sp, HW, state) {
+        function (s, sp, HW) {
             s.loading = true;
             s.hwid = sp.hwid;
             HW.show(sp.hwid, function (hw) {
@@ -246,8 +266,7 @@
         '$scope',
         '$stateParams',
         'Problem',
-        '$state',
-        function (s, sp, Problem, state) {
+        function (s, sp, Problem) {
             s.loading = true;
             s.pid = sp.pid;
             s.submitsCount = 0;

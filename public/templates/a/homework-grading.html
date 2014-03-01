@@ -1,0 +1,17 @@
+<h3>Grades this Submission</h3>
+<form class="pdp-form pure-form pure-form-aligned" name="gradingForm">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="score">* Score</label>
+            <input type="number" name="score" ng-model="hws.grading.score" min="0" max="100" required />
+        </div>
+        <div class="pure-control-group">
+            <label for="comment">* Comment</label>
+            <textarea rows="10" name="description" ng-model="hws.grading.comment" required ></textarea>
+        </div>
+        <div class="pure-controls">
+            <button ng-click="save()" ng-disabled="gradingForm.$invalid" class="pure-button button-save">Save</button>
+            <button ng-click="cancel()" class="pure-button button-cancel">Cancel</button>
+        </div>
+    </fieldset>
+</form>

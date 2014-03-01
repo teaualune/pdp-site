@@ -21,6 +21,26 @@ var async = require('async'),
     },
     stripAllHomeworkSubmissions = function (submissions) {
         return HomeworkSubmission.stripSubmissions(submissions);
+    },
+
+    showHomeworkSubmission = function (req, res) {
+        HomeworkSubmission.findById(req.params.hwsid).populate('grading').exec(function (err, hws) {
+            var data, grading;
+            if (err) {
+                data = 500;
+            } else if (hws) {
+                if (hws.grading) {
+                    grading = hws.grading.strip();
+                    data = hws.strip();
+                    data.grading = grading;
+                } else {
+                    data = hws.strip();
+                }
+            } else {
+                data = 400;
+            }
+            res.send(data);
+        });
     };
 
 module.exports = function (app) {
@@ -205,10 +225,10 @@ module.exports = function (app) {
     });
 
     // GET /api/user/:uid/hws/:hwsid
+    // GET /api/hws/:hwsid (admin only)
     // get homework submission by id
-    app.get('/api/user/:uid/hws/:hwsid', utils.auth.self, function (req, res) {
-        HomeworkSubmission.findById(req.params.hwsid, utils.defaultHandler(res, stripOne));
-    });
+    app.get('/api/user/:uid/hws/:hwsid', utils.auth.self, showHomeworkSubmission);
+    app.get('/api/hws/:hwsid', utils.auth.admin, showHomeworkSubmission);
 
     // GET /api/user/:uid/hw/:hwid
     // get homework submission by user and homework id
@@ -250,11 +270,30 @@ module.exports = function (app) {
             if (err) {
                 res.send(500);
             } else if (hws) {
-                hws.grading = req.body.grading || hws.grading;
-                hws.comment = req.body.comment || hws.comment;
-                hws.save(utils.defaultHandler(res, stripOne));
+                async.waterfall([
+                    function (callback) {
+                        Grading.findById(hws.grading, callback);
+                    },
+                    function (grading, callback) {
+                        if (!grading) {
+                            grading = new Grading();
+                            grading._id = new mongoose.Types.ObjectId;
+                        }
+                        grading.author = req.body.grading.author;
+                        grading.score = req.body.grading.score;
+                        grading.comment = req.body.grading.comment;
+                        grading.save(callback);
+                    },
+                    function (grading, callback) {
+                        hws.grading = grading._id;
+                        // FIXING: silenced callback
+                        hws.save(callback);
+                    }
+                ], function (err, results) {
+                    res.send(200);
+                });
             } else {
-                res.send(404);
+                res.send(400);
             }
         });
     });
