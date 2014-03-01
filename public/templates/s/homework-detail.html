@@ -1,21 +1,4 @@
-<div class="loading" ng-show="loading">
-    <img src="/images/indicator.gif" alt="loading" width="33" height="33" />
-</div>
-<div ng-hide="loading">
-    <h3>{{ detailHW.title }}</h3>
-    <p>{{ detailHW.description }}</p>
-    <h4>File</h4>
-    <a href="{{ detailHW.manualFilePath }}">File</a>
-    <form class="pdp-form pure-form pure-form-stacked" name="hwsForm">
-        <fieldset>
-            <legend>Submit Your Answer</legend>
-            <div class="submitted-file" ng-show="submission">
-                <label>File (Uploaded)</label>
-                <a href="{{ submission.filePath }}">File</a>
-            </div>
-            <label for="file">Upload File</label>
-            <input type="file" name="file" id="file" />
-            <button ng-click="upload()" class="pure-button button-save">Upload</button>
-        </fieldset>
-    </form>
-</div>
+<h3>{{ detailHW.title }}</h3>
+<p>{{ detailHW.description }}</p>
+<h4>File</h4>
+<a href="{{ detailHW.manualFilePath }}">File</a>

@@ -8,7 +8,7 @@
             <div class="pure-menu pure-menu-open">
                 <ul>
                     <li ng-repeat="hw in hws" ng-class="{ 'pure-menu-selected' : hw.active }">
-                        <a ui-sref=".detail({ hwid: hw._id })">{{ hw.title }}</a>
+                        <a ui-sref=".detail.overview({ hwid: hw._id })">{{ hw.title }}</a>
                     </li>
                 </ul>
             </div>

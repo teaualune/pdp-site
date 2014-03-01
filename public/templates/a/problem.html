@@ -8,12 +8,12 @@
             <div class="pure-menu pure-menu-open">
                 <ul>
                     <li ng-repeat="problem in problems" ng-class="{ 'pure-menu-selected' : problem.active }">
-                        <a ui-sref=".detail({ pid: problem._id })">{{ problem.title }}</a>
+                        <a ui-sref=".detail.overview({ pid: problem._id })">{{ problem.title }}</a>
                     </li>
                     <li>
                         <a ui-sref=".new">
                             <i class="fa fa-plus"></i>
-                            New Problem
+                            New
                         </a>
                     </li>
                 </ul>

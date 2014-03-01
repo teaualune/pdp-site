@@ -1,0 +1,8 @@
+<div class="detail-nav pure-menu pure-menu-open pure-menu-horizontal"><ul>
+    <li><a ui-sref="homework.detail.overview({ hwid: hwid })">Overview</a></li><!--
+ --><li><a ui-sref="homework.detail.submission({ hwid: hwid })">Submission</a></li>
+</ul></div>
+<div class="loading" ng-show="loading">
+    <img src="/images/indicator.gif" alt="loading" width="33" height="33" />
+</div>
+<ui-view ng-hide="loading" />

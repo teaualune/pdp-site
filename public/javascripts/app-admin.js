@@ -19,41 +19,54 @@
 
     app.config(['$stateProvider', '$urlRouterProvider', function (sp, urp) {
         urp.otherwise('/homework');
+
         sp.state('homework', {
             url: '/homework',
             templateUrl: '/templates/a/homework.html'
-        }).state('homework.detail', {
-            url: '/detail/:hwid',
-            templateUrl: '/templates/a/homework-detail.html',
-            controller: 'DetailHWCtrl'
         }).state('homework.new', {
             url: '/new',
             templateUrl: '/templates/a/homework-detail.html',
             controller: 'NewHWCtrl'
-        }).state('homework.stat', {
-            url: '/stat/:hwid',
+        }).state('homework.detail', {
+            abstract: true,
+            url: '/:hwid',
+            templateUrl: '/templates/a/homework-menu.html',
+            controller: 'DetailHWCtrl'
+        }).state('homework.detail.overview', {
+            url: '/overview',
+            templateUrl: '/templates/a/homework-detail.html'
+        }).state('homework.detail.stats', {
+            url: '/stats',
             templateUrl: '/templates/a/homework-stats.html',
-            controller: 'StatHWCtrl'
-        }).state('homework.crossgrading', {
-            url: '/cross-grading/:hwid',
+            controller: 'StatsHWCtrl'
+        }).state('homework.detail.crossgrading', {
+            url: '/cross-grading',
             templateUrl: '/templates/a/homework-crossgrading.html',
             controller: 'CrossGradingHWCtrl'
-        }).state('problem', {
+        });
+
+        sp.state('problem', {
             url: '/problem',
             templateUrl: '/templates/a/problem.html'
-        }).state('problem.detail', {
-            url: '/detail/:pid',
-            templateUrl: '/templates/a/problem-detail.html',
-            controller: 'DetailProblemCtrl'
         }).state('problem.new', {
             url: '/new',
             templateUrl: '/templates/a/problem-detail.html',
             controller: 'NewProblemCtrl'
-        }).state('problem.stat', {
-            url: '/stat/:pid',
+        }).state('problem.detail', {
+            abstract: true,
+            url: '/:pid',
+            templateUrl: '/templates/a/problem-menu.html',
+            controller: 'DetailProblemCtrl'
+        }).state('problem.detail.overview', {
+            url: '/overview',
+            templateUrl: '/templates/a/problem-detail.html'
+        }).state('problem.detail.stats', {
+            url: '/stats',
             templateUrl: '/templates/a/problem-stats.html',
-            controller: 'StatProblemCtrl'
-        }).state('settings', {
+            controller: 'StatsProblemCtrl'
+        });
+
+        sp.state('settings', {
             url: '/settings',
             templateUrl: '/templates/settings.html'
         });
@@ -72,13 +85,13 @@
             HW.show(sp.hwid, function (hw) {
                 s.loading = false;
                 s.detailHW = hw;
-                s.toggleHeader();
+                s.toggleListHeader();
             });
             s.save = function () {
                 s.loading = true;
                 HW.update(s.detailHW._id, prepareFormData(s.detailHW), function () {
                     s.loading = false;
-                    state.go('homework.detail', {
+                    state.go('homework.detail.overview', {
                         hwid: s.detailHW._id
                     }, {
                         reload: true
@@ -99,7 +112,7 @@
         }
     ]);
 
-    app.controller('StatHWCtrl', [
+    app.controller('StatsHWCtrl', [
         '$scope',
         '$stateParams',
         'Homework',
@@ -122,7 +135,7 @@
                     }
                     return n;
                 }(s.submissions));
-                s.toggleHeader();
+                s.toggleListHeader();
             });
         }
     ]);
@@ -138,7 +151,7 @@
             HW.show(sp.hwid, function (hw) {
                 s.loading = false;
                 s.detailHW = hw;
-                s.toggleHeader();
+                s.toggleListHeader();
             });
         }
     ]);
@@ -148,7 +161,7 @@
         'Homework',
         '$state',
         function (s, HW, state) {
-            s.toggleHeader(true);
+            s.toggleListHeader(true);
             s.editing = s.editingNew = true;
             s.detailHW = {
                 title: '',
@@ -179,13 +192,13 @@
             Problem.show(sp.pid, function (problem) {
                 s.loading = false;
                 s.detailProblem = problem;
-                s.toggleHeader();
+                s.toggleListHeader();
             });
             s.save = function () {
                 s.loading = true;
                 Problem.update(s.detailProblem._id, prepareFormData(s.detailProblem), function () {
                     s.loading = false;
-                    state.go('problem.detail', {
+                    state.go('problem.detail.overview', {
                         pid: s.detailProblem._id
                     }, {
                         reload: true
@@ -211,7 +224,7 @@
         'Problem',
         '$state',
         function (s, Problem, state) {
-            s.toggleHeader(true);
+            s.toggleListHeader(true);
             s.editing = s.editingNew = true;
             s.detailProblem = {
                 title: '',
@@ -229,7 +242,7 @@
         }
     ]);
 
-    app.controller('StatProblemCtrl', [
+    app.controller('StatsProblemCtrl', [
         '$scope',
         '$stateParams',
         'Problem',
@@ -252,7 +265,7 @@
                     }
                     return n;
                 }(s.submissions));
-                s.toggleHeader();
+                s.toggleListHeader();
             });
         }
     ]);

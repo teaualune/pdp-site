@@ -22,15 +22,17 @@
     }]);
 
     app.service('LocationIDExtracter', ['$location', function (location) {
+        var hwExp = /\/homework\/([0-9]+)(\/([a-z]+))?/,
+            problemExp = /\/problem\/([0-9]+)(\/([a-z]+))?/;
         this.findHwid = function () {
-            var hwid = /\/homework\/([a-z\-]+)\/([0-9]+)/.exec(location.path());
+            var hwid = hwExp.exec(location.path());
             if (hwid) {
-                hwid = hwid[2];
+                hwid = hwid[1];
             }
             return hwid;
         };
         this.findPid = function () {
-            var pid = /\/problem\/([a-z\-]+)\/([0-9]+)/.exec(location.path());
+            var pid = problemExp.exec(location.path());
             if (pid) {
                 pid = pid[1];
             }
@@ -48,12 +50,12 @@
             HW.index(function (homeworks) {
                 s.hws = homeworks;
                 if (s.hws.length > 0) {
-                    state.go('homework.detail', {
+                    state.go('homework.detail.overview', {
                         hwid: s.hws[0]._id
                     });
                 }
             });
-            s.toggleHeader = function (skip) {
+            s.toggleListHeader = function (skip) {
                 var hwid = lie.findHwid(),
                     i = 0,
                     hw;
@@ -83,12 +85,12 @@
             Problem.index(function (problems) {
                 s.problems = problems;
                 if (s.problems.length > 0) {
-                    state.go('problem.detail', {
+                    state.go('problem.detail.overview', {
                         pid: s.problems[0]._id
                     });
                 }
             });
-            s.toggleHeader = function (skip) {
+            s.toggleListHeader = function (skip) {
                 var pid = lie.findPid(),
                     i = 0,
                     problem;

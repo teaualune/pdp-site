@@ -17,7 +17,7 @@
             me: function (callback) {
                 return R.all('user').customGET('me').then(callback);
             }
-        }
+        };
     }]);
 
     p.factory('Homework', ['Restangular', function (R) {
@@ -62,7 +62,7 @@
                 request.onerror = fail;
                 request.send(data);
             }
-        }
+        };
     }]);
 
     p.factory('Problem', ['Restangular', function (R) {
@@ -109,7 +109,7 @@
                 request.onerror = fail;
                 request.send(data);
             }
-        }
+        };
     }]);
 
     p.factory('Global', [function () {

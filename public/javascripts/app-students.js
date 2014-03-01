@@ -13,21 +13,40 @@
 
     app.config(['$stateProvider', '$urlRouterProvider', function (sp, urp) {
         urp.otherwise('/homework');
+
         sp.state('homework', {
             url: '/homework',
             templateUrl: '/templates/s/homework.html'
         }).state('homework.detail', {
-            url: '/detail/:hwid',
-            templateUrl: '/templates/s/homework-detail.html',
+            abstract: true,
+            url: '/:hwid',
+            templateUrl: '/templates/s/homework-menu.html',
             controller: 'DetailHWCtrl'
-        }).state('problem', {
+        }).state('homework.detail.overview', {
+            url: '/overview',
+            templateUrl: '/templates/s/homework-detail.html'
+        }).state('homework.detail.submission', {
+            url: '/submission',
+            templateUrl: '/templates/s/homework-submission.html'
+        });
+
+        sp.state('problem', {
             url: '/problem',
             templateUrl: '/templates/s/problem.html'
         }).state('problem.detail', {
-            url: '/detail/:pid',
-            templateUrl: '/templates/s/problem-detail.html',
+            abstract: true,
+            url: '/:pid',
+            templateUrl: '/templates/s/problem-menu.html',
             controller: 'DetailProblemCtrl'
-        }).state('crossgradings', {
+        }).state('problem.detail.overview', {
+            url: '/overview',
+            templateUrl: '/templates/s/problem-detail.html'
+        }).state('problem.detail.submission', {
+            url: '/submission',
+            templateUrl: '/templates/s/problem-submission.html'
+        });
+
+        sp.state('crossgradings', {
             url: '/cross-gradings',
             templateUrl: '/templates/s/cross-gradings.html'
         }).state('settings', {
@@ -44,14 +63,15 @@
         'Global',
         function (s, sp, HW, state, Global) {
             s.loading = true;
+            s.hwid = sp.hwid;
             HW.showSubmission(Global.me._id, sp.hwid, function (hw) {
                 s.detailHW = hw;
                 s.submission = hw.submission;
                 s.loading = false;
-                s.toggleHeader();
+                s.toggleListHeader();
             }, function () {
                 s.loading = false;
-                s.toggleHeader();
+                s.toggleListHeader();
             });
             s.upload = function () {
                 var data = uploadData('hwid', s.detailHW._id);
@@ -59,7 +79,7 @@
                     s.loading = true;
                     HW.uploadSubmission(Global.me._id, data, function () {
                         s.loading = false;
-                        state.go('homework.detail', {
+                        state.go('homework.detail.submission', {
                             hwid: s.detailHW._id
                         }, {
                             reload: true
@@ -80,14 +100,15 @@
         'Global',
         function (s, sp, Problem, state, Global) {
             s.loading = true;
+            s.pid = sp.pid;
             Problem.showSubmission(Global.me._id, sp.pid, function (problem) {
                 s.detailProblem = problem;
                 s.submission = problem.submission;
                 s.loading = false;
-                s.toggleHeader();
+                s.toggleListHeader();
             }, function () {
                 s.loading = false;
-                s.toggleHeader();
+                s.toggleListHeader();
             });
             s.upload = function () {
                 var data = uploadData('pid', s.detailProblem._id);
@@ -95,7 +116,7 @@
                     s.loading = true;
                     Problem.uploadSubmission(Global.me._id, data, function () {
                         s.loading = false;
-                        state.go('problem.detail', {
+                        state.go('problem.detail.submission', {
                             pid: s.detailProblem._id
                         }, {
                             reload: true
