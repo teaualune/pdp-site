@@ -5,6 +5,7 @@
         <thead><tr>
             <th>Students</th>
             <th>Submission Status</th>
+            <th>Grading</th>
         </tr></thead>
         <tbody><tr ng-repeat="sub in submissions">
             <td>
@@ -14,6 +15,11 @@
                 <span ng-if="sub.submission">File: <a href="{{ sub.submission.filePath }}">Download</a></span>
                 <span ng-if="!sub.submission">Not submitted yet</span>
             </td>
+            <td>
+                <p ng-show="sub.submission.grading">{{ sub.submission.grading.score }}</p>
+                <a ui-sref=".grading({ id: sub.submission._id })">Grades</a>
+            </td>
         </tr></tbody>
     </table>
 </div>
+<ui-view />

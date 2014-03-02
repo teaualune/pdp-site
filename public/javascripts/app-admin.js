@@ -37,11 +37,11 @@
             templateUrl: '/templates/a/homework-detail.html'
         }).state('homework.detail.stats', {
             url: '/stats',
-            templateUrl: '/templates/a/homework-stats.html',
+            templateUrl: '/templates/a/stats.html',
             controller: 'StatsHWCtrl'
         }).state('homework.detail.stats.grading', {
-            url: '/grading/:hwsid',
-            templateUrl: '/templates/a/homework-grading.html',
+            url: '/grading/:id',
+            templateUrl: '/templates/a/grading.html',
             controller: 'GradingHWCtrl'
         }).state('homework.detail.crossgrading', {
             url: '/cross-grading',
@@ -66,8 +66,12 @@
             templateUrl: '/templates/a/problem-detail.html'
         }).state('problem.detail.stats', {
             url: '/stats',
-            templateUrl: '/templates/a/problem-stats.html',
+            templateUrl: '/templates/a/stats.html',
             controller: 'StatsProblemCtrl'
+        }).state('problem.detail.stats.grading', {
+            url: '/grading/:id',
+            templateUrl: '/templates/a/grading.html',
+            controller: 'GradingProblemCtrl'
         });
 
         sp.state('settings', {
@@ -148,16 +152,22 @@
         '$stateParams',
         'Homework',
         'Global',
-        function (s, sp, HW, Global) {
+        '$state',
+        function (s, sp, HW, Global,state) {
             s.loading = true;
-            HW.adminShowSubmission(sp.hwsid, function (hws) {
+            HW.adminShowSubmission(sp.id, function (submission) {
                 s.loading = false;
-                s.hws = hws;
+                s.submission = submission;
             });
             s.save = function () {
-                s.hws.grading.author = Global.me._id;
-                HW.saveGrading(s.hws);
+                s.submission.grading.author = Global.me._id;
+                HW.saveGrading(s.submission, function () {
+                    s.cancel();
+                });
             };
+            s.cancel = function () {
+                state.go('homework.detail.stats');
+            }
         }
     ]);
 
@@ -286,6 +296,30 @@
                 }(s.submissions));
                 s.toggleListHeader();
             });
+        }
+    ]);
+
+    app.controller('GradingProblemCtrl', [
+        '$scope',
+        '$stateParams',
+        'Problem',
+        'Global',
+        '$state',
+        function (s, sp, Problem, Global, state) {
+            s.loading = true;
+            Problem.adminShowSubmission(sp.id, function (submission) {
+                s.loading = false;
+                s.submission = submission;
+            });
+            s.save = function () {
+                s.submission.grading.author = Global.me._id;
+                Problem.saveGrading(s.submission, function () {
+                    s.cancel();
+                });
+            };
+            s.cancel = function () {
+                state.go('problem.detail.stats');
+            }
         }
     ]);
 

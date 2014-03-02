@@ -105,6 +105,12 @@
             showStats: function (pid, done, fail) {
                 return R.one('problem', pid).customGET('ps').then(done, fail);
             },
+            adminShowSubmission: function (psid, done, fail) {
+                return R.one('ps', psid).get().then(done, fail);
+            },
+            saveGrading: function (ps, done, fail) {
+                return ps.put().then(done, fail);
+            },
             uploadSubmission: function (uid, data, done, fail) {
                 var request = new XMLHttpRequest(),
                     path = '/api/user/' + uid + '/problem';

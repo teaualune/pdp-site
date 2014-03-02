@@ -3,11 +3,11 @@
     <fieldset>
         <div class="pure-control-group">
             <label for="score">* Score</label>
-            <input type="number" name="score" ng-model="hws.grading.score" min="0" max="100" required />
+            <input type="number" name="score" ng-model="submission.grading.score" min="0" max="100" required />
         </div>
         <div class="pure-control-group">
             <label for="comment">* Comment</label>
-            <textarea rows="10" name="description" ng-model="hws.grading.comment" required ></textarea>
+            <textarea rows="10" name="description" ng-model="submission.grading.comment" required ></textarea>
         </div>
         <div class="pure-controls">
             <button ng-click="save()" ng-disabled="gradingForm.$invalid" class="pure-button button-save">Save</button>

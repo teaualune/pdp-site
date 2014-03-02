@@ -284,9 +284,8 @@ module.exports = function (app) {
                         grading.comment = req.body.grading.comment;
                         grading.save(callback);
                     },
-                    function (grading, callback) {
+                    function (grading, affects, callback) {
                         hws.grading = grading._id;
-                        // FIXING: silenced callback
                         hws.save(callback);
                     }
                 ], function (err, results) {

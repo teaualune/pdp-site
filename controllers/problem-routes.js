@@ -4,6 +4,7 @@ var async = require('async'),
     fs = require('fs'),
     P = require('../model/problem'),
     User = require('../model/user'),
+    Grading = require('../model/grading'),
     utils = require('./routes-utils'),
     emailValidation = require('../config/email-validation'),
     getSubmissionFilePath = function (submissionFileName, extension) {
@@ -20,6 +21,26 @@ var async = require('async'),
     },
     stripAllProblemSubmissions = function (submissions) {
         return ProblemSubmission.stripProblems(submissions);
+    },
+
+    showProblemSubmission = function (req, res) {
+        ProblemSubmission.findById(req.params.psid).populate('grading').exec(function (err, ps) {
+            var data, grading;
+            if (err) {
+                data = 500;
+            } else if (ps) {
+                if (ps.grading) {
+                    grading = ps.grading.strip();
+                    data = ps.strip();
+                    data.grading = grading;
+                } else {
+                    data = ps.strip();
+                }
+            } else {
+                data = 400;
+            }
+            res.send(data);
+        });
     };
 
 module.exports = function (app) {
@@ -209,10 +230,10 @@ module.exports = function (app) {
     });
 
     // GET /api/user/:uid/ps/:psid
+    // GET /api/ps/:psid (admin only)
     // get problem submission by id
-    app.get('/api/user/:uid/ps/:psid', utils.auth.self, function (req, res) {
-        ProblemSubmission.findById(req.params.psid, utils.defaultHandler(res, stripOne));
-    });
+    app.get('/api/user/:uid/ps/:psid', utils.auth.self, showProblemSubmission);
+    app.get('/api/ps/:psid', utils.auth.admin, showProblemSubmission);
 
     // GET /api/user/:uid/problem/:pid
     // get problem submission by user and problem id
@@ -247,11 +268,29 @@ module.exports = function (app) {
             if (err) {
                 res.send(500);
             } else if (ps) {
-                ps.grading = req.body.grading || ps.grading;
-                ps.comment = req.body.comment || ps.comment;
-                ps.save(utils.defaultHandler(res, stripOne));
+                async.waterfall([
+                    function (callback) {
+                        Grading.findById(ps.grading, callback);
+                    },
+                    function (grading, callback) {
+                        if (!grading) {
+                            grading = new Grading();
+                            grading._id = new mongoose.Types.ObjectId;
+                        }
+                        grading.author = req.body.grading.author;
+                        grading.score = req.body.grading.score;
+                        grading.comment = req.body.grading.comment;
+                        grading.save(callback);
+                    },
+                    function (grading, affects, callback) {
+                        ps.grading = grading._id;
+                        ps.save(callback);
+                    }
+                ], function (err, results) {
+                    res.send(200);
+                });
             } else {
-                res.send(404);
+                res.send(400);
             }
         });
     });
