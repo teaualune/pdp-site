@@ -31,7 +31,7 @@ app.use(require('less-middleware')({
     src: publicPath
 }));
 app.use(express.static(publicPath));
-app.use('/' + settings.uploadDir, express.static(path.join(__dirname, settings.uploadDir)));
+app.use('/' + settings.uploadDir.root, express.static(path.join(__dirname, settings.uploadDir.root)));
 
 if ('development' === app.get('env')) {
     app.use(express.errorHandler());

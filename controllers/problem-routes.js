@@ -6,6 +6,9 @@ var async = require('async'),
     User = require('../model/user'),
     Grading = require('../model/grading'),
     utils = require('./routes-utils'),
+    _UD = require('../settings.json').uploadDir,
+    problemFolder = _UD.problem,
+    psFolder = _UD.problemSubmission,
     emailValidation = require('../config/email-validation'),
     getSubmissionFilePath = function (submissionFileName, extension) {
         return path.join(utils.uploadDir(), 'ps', submissionFileName + extension);
@@ -247,11 +250,17 @@ module.exports = function (app) {
                 callback(null, problem.strip());
             },
             function (problem, callback) {
-                ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.params.pid, function (err, ps) {
+                ProblemSubmission.findOne({
+                    author: req.params.uid,
+                    target: req.params.pid
+                }).populate('grading').exec(function (err, ps) {
                     if (err) {
                         callback(err);
                     } else if (ps) {
                         problem.submission = ps.strip();
+                        if (problem.submission.grading) {
+                            problem.submission.grading = ps.grading.strip();
+                        }
                         callback(null, problem);
                     } else {
                         callback(null, problem);

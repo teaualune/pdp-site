@@ -5,7 +5,7 @@ var multiparty = require('multiparty'),
     auth = require('./auth'),
     settings = require('../settings.json'),
     uploadDir = function () {
-        return path.join(__dirname, '..', settings.uploadDir);
+        return path.join(__dirname, '..', settings.uploadDir.root);
     };
 
 module.exports = {

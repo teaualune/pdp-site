@@ -2,16 +2,19 @@ var async = require('async'),
     mongoose = require('mongoose'),
     path = require('path'),
     fs = require('fs'),
-    H = require('../model/homework'),
+    _H = require('../model/homework'),
     User = require('../model/user'),
     Grading = require('../model/grading'),
     utils = require('./routes-utils'),
     emailValidation = require('../config/email-validation'),
+    _UD = require('../settings.json').uploadDir,
+    hwFolder = _UD.homework,
+    hwsFolder = _UD.homeworkSubmission,
     getSubmissionFilePath = function (submissionFileName, extension) {
         return path.join(utils.uploadDir(), 'hws', submissionFileName + extension);
     },
-    Homework = H.Homework,
-    HomeworkSubmission = H.HomeworkSubmission,
+    Homework = _H.Homework,
+    HomeworkSubmission = _H.HomeworkSubmission,
 
     stripOne = function (one) {
         return one.strip();
@@ -53,7 +56,7 @@ module.exports = function (app) {
 
     // POST /api/hw
     // create a new homework
-    app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
+    app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile(hwFolder)), function (req, res) {
         var filePath;
         if (req.body.file) {
             filePath = req.body.file.path;
@@ -75,7 +78,7 @@ module.exports = function (app) {
 
     // PUT /api/hw/:hwid
     // update homework
-    app.put('/api/hw/:hwid', utils.auth.admin.concat(utils.uploadFile('hw')), function (req, res) {
+    app.put('/api/hw/:hwid', utils.auth.admin.concat(utils.uploadFile(hwFolder)), function (req, res) {
         async.waterfall([
             function (callback) {
                 Homework.findById(req.params.hwid, callback);
@@ -188,7 +191,7 @@ module.exports = function (app) {
 
     // POST /api/user/:uid/hw
     // create or update a homework submission
-    app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile('hws')), function (req, res) {
+    app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile(hwsFolder)), function (req, res) {
         if (req.body.file) {
             HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, function (err, hws) {
                 var studentID = emailValidation.getStudentID(req.user.email),
@@ -245,7 +248,7 @@ module.exports = function (app) {
                 HomeworkSubmission.findOne({
                     author: req.params.uid,
                     target: req.params.hwid
-                }).populate('grades crossGradings').exec(function (err, hws) {
+                }).populate('grading crossGradings').exec(function (err, hws) {
                     if (err) {
                         callback(err);
                     } else if (hws) {
