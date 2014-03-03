@@ -1,4 +1,5 @@
 var path = require('path'),
+    _ = require('underscore'),
     path2url = function (filePath) {
         var root = path.normalize(path.join(__dirname, '..')),
             fileURL = filePath;
@@ -9,12 +10,9 @@ var path = require('path'),
         return fileURL;
     },
     paths2urls = function (objects, key) {
-        var i = 0;
-        for (i; i < objects.length; i = i + 1) {
-            if (objects[i].hasOwnProperty(key)) {
-                objects[i][key] = path2url(objects[i][key]);
-            }
-        }
+        _.each(objects, function (v, k) {
+            v[key] = path2url(v[key]);
+        });
     };
 
 module.exports = {

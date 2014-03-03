@@ -7,7 +7,17 @@ var mongoose = require('mongoose'),
     homeworkSchema = new Schema({
         title: String,
         description: String,
-        manualFilePath: String
+        manualFilePath: String,
+
+        // mixed type
+        // {
+        //    questionID: {
+        //      question: "question description",
+        //      type: "comment"
+        //    },
+        //    ...
+        // }
+        crossGradingQuestions: Schema.Types.Mixed
     }),
     _hwSubmissionSchema = submission.schema('Homework'),
     homeworkSubmissionSchema;
@@ -34,10 +44,10 @@ homeworkSchema.statics.stripHomeworks = function (homeworks) {
     return stripped;
 };
 
-_hwSubmissionSchema.crossGradings = [{
-    type: Schema.Types.ObjectId,
-    ref: 'Grading'
-}];
+// _hwSubmissionSchema.crossGradings = [{
+//     type: Schema.Types.ObjectId,
+//     ref: 'CrossGrading'
+// }];
 
 homeworkSubmissionSchema = new Schema(_hwSubmissionSchema);
 

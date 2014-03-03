@@ -1,6 +1,7 @@
 var multiparty = require('multiparty'),
     fs = require('fs'),
     path = require('path'),
+    _ = require('underscore'),
     ObjectId = require('mongoose').Types.ObjectId,
     auth = require('./auth'),
     settings = require('../settings.json'),
@@ -26,21 +27,15 @@ module.exports = {
                     res.send(500);
                 } else {
                     body = {};
-                    for (v in fields) {
-                        if (fields.hasOwnProperty(v)) {
-                            body[v] = fields[v][0];
-                        }
-                    }
+                    _.each(fields, function (value, key) {
+                        body[key] = value[0];
+                    });
                     try {
-                        for (v in files) {
-                            if (files.hasOwnProperty(v)) {
-                                body.file = {
-                                    path: files[v][0].path,
-                                    extension: path.extname(files[v][0].path)
-                                };
-                                break;
-                            }
-                        }
+                        v = _.sample(files);
+                        body.file = {
+                            path: v[0].path,
+                            extension: path.extname(v[0].path)
+                        };
                     } catch (e) {
                         body.file = null;
                     }
@@ -54,7 +49,7 @@ module.exports = {
         return function (err, resource) {
             if (err) {
                 console.log(err)
-                res.send(500);
+                res.send(500, err);
             } else if (resource) {
                 if (plugin) {
                     resource = plugin(resource);
@@ -65,10 +60,10 @@ module.exports = {
             }
         };
     },
-    destroyHandler: function (res) {
+    emptyHandler: function (res) {
         return function (err) {
             if (err) {
-                res.send(500);
+                res.send(500, err);
             } else {
                 res.send(200);
             }

@@ -117,7 +117,7 @@ module.exports = function (app) {
     // DELETE /api/problem/:pid
     // delete problem
     app.delete('/api/problem/:pid', utils.auth.admin, function (req, res) {
-        Problem.findByIdAndRemove(req.params.pid, utils.destroyHandler(res));
+        Problem.findByIdAndRemove(req.params.pid, utils.emptyHandler(res));
     });
 
     // GET /api/ps

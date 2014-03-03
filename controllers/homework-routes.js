@@ -5,6 +5,7 @@ var async = require('async'),
     _H = require('../model/homework'),
     User = require('../model/user'),
     Grading = require('../model/grading'),
+    CrossGrading = require('../model/cross-grading'),
     utils = require('./routes-utils'),
     emailValidation = require('../config/email-validation'),
     _UD = require('../settings.json').uploadDir,
@@ -113,7 +114,7 @@ module.exports = function (app) {
     // DELETE /api/hw/:hwid
     // delete homework
     app.delete('/api/hw/:hwid', utils.auth.admin, function (req, res) {
-        Homework.findByIdAndRemove(req.params.hwid, utils.destroyHandler(res));
+        Homework.findByIdAndRemove(req.params.hwid, utils.emptyHandler(res));
     });
 
     // GET /api/hws
@@ -248,7 +249,7 @@ module.exports = function (app) {
                 HomeworkSubmission.findOne({
                     author: req.params.uid,
                     target: req.params.hwid
-                }).populate('grading crossGradings').exec(function (err, hws) {
+                }).populate('grading').exec(function (err, hws) {
                     if (err) {
                         callback(err);
                     } else if (hws) {
@@ -256,7 +257,18 @@ module.exports = function (app) {
                         if (hw.submission.grading) {
                             hw.submission.grading = hws.grading.strip();
                         }
-                        hw.submission.crossGradings = Grading.stripGradings(hw.submission.crossGradings);
+                        callback(null, hw);
+                    } else {
+                        callback(null, hw);
+                    }
+                });
+            },
+            function (hw, callback) {
+                CrossGrading.findBySubmission(hw.submission._id, function (err, cgs) {
+                    if (err) {
+                        callback(err);
+                    } else if (cgs) {
+                        hw.submission.crossGradings = CrossGrading.stripCrossGradings(cgs);
                         callback(null, hw);
                     } else {
                         callback(null, hw);
@@ -298,6 +310,32 @@ module.exports = function (app) {
                 res.send(400);
             }
         });
+    });
+
+    // PUT /api/hw/:hwid/questions
+    // edit crossGradingQuestions
+    app.put('/api/hw/:hwid/questions', utils.auth.admin, function (req, res) {
+        async.waterfall([
+            function (callback) {
+                Homework.findById(req.params.hwid, callback);
+            },
+            function (hw, callback) {
+                // 1. save hw (use markModified)
+                hw.crossGradingQuestions = req.body.questions;
+                hw.markModified('crossGradingQuestions');
+                hw.save(callback);
+            },
+            function (hw, affects, callback) {
+                // 2. find all cgs by hwid
+                CrossGrading.findByHomework(req.params.hwid, callback);
+            },
+            function (cgs, callback) {
+                // 3. update content keys (cg.updateContentQuestions)
+                async.map(cgs, function (cg, cb) {
+                    cg.updateContentQuestions(req.body.questions, cb);
+                }, callback);
+            }
+        ], utils.emptyHandler(res));
     });
 
 };

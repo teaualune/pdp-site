@@ -50,7 +50,7 @@ module.exports = function (app) {
     // DELETE /api/user/:uid
     // delete user
     app.delete('/api/user/:uid', utils.auth.admin, function (req, res) {
-        User.findByIdAndRemove(req.params.uid, utils.destroyHandler(res));
+        User.findByIdAndRemove(req.params.uid, utils.emptyHandler(res));
     });
 
 };
