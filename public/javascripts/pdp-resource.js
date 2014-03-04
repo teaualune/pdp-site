@@ -136,6 +136,9 @@
 
     p.factory('CrossGrading', ['Restangular', function (R) {
         return {
+            index: function (uid, done) {
+                return R.one('cgs/author', uid).get().then(done);
+            },
             showByHw: function (hwid, done, fail) {
                 return R.one('cgs/hw', hwid).get().then(done, fail);
             },
@@ -145,11 +148,19 @@
             reset: function (hwid, done) {
                 R.all('cgs').customDELETE('', { hwid: hwid }).then(done, done);
             },
+            show: function (id, done, fail) {
+                R.one('cgs', id).get().then(done, fail);
+            },
+            save: function (cg, uid, done) {
+                R.one('cgs', cg._id).one('author', uid).customPUT(cg, '').then(done, done);
+            },
             toQuestionObject: function (questionArray) {
                 var qo = {}, i = 0;
+                console.log(questionArray);
                 for (i; i < questionArray.length; i = i + 1) {
                     qo['q' + i] = questionArray[i];
                 }
+                console.log(qo);
                 return qo;
             }
         };

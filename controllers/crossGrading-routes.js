@@ -1,4 +1,5 @@
 var async = require('async'),
+    _ = require('underscore'),
     mongoose = require('mongoose'),
     utils = require('./routes-utils'),
     CrossGrading = require('../model/cross-grading'),
@@ -58,7 +59,38 @@ module.exports = function (app) {
     // GET /api/cgs/author/:uid
     // get all cgs by author
     app.get('/api/cgs/author/:uid', utils.auth.self, function (req, res) {
-        CrossGrading.findByAuthor(req.params.uid, stripCrossGradingsHandler(res));
+        CrossGrading.find({ author: req.params.uid }).populate('homework submission').exec(function (err, cgs) {
+            var i;
+            if (err) {
+                res.send(500, err);
+            } else if (cgs && cgs.length !== 0) {
+                for (i = 0; i < cgs.length; i = i + 1) {
+                    cgs[i].content = cgs[i].pair(cgs[i].homework);
+                    cgs[i].homework = cgs[i].homework.strip();
+                    cgs[i].submission = cgs[i].submission.strip();
+                }
+                res.send(cgs);
+            } else {
+                res.send(400);
+            }
+        });
+    });
+
+    // GET /api/cgs/:cgid
+    // get cg by id
+    app.get('/api/cgs/:cgid', utils.auth.basic, function (req, res) {
+        CrossGrading.findById(req.params.cgid).populate('homework submission').exec(function (err, cg) {
+            if (err) {
+                res.send(500, err);
+            } else if (cg) {
+                cg.content = cg.pair(cg.homework);
+                cg.homework = cg.homework.strip();
+                cg.submission = cg.submission.strip();
+                res.send(cg);
+            } else {
+                res.send(400);
+            }
+        });
     });
 
     // PUT /api/cgs/:cgid/author/:uid
@@ -68,7 +100,8 @@ module.exports = function (app) {
             if (err) {
                 res.send(500);
             } else if (cg) {
-                cg.comment = req.body.comment;
+                cg.content = _.object(_.keys(req.body.content), _.pluck(_.values(req.body.content), 'answer'));
+                cg.markModified('content');
                 cg.save(utils.defaultHandler(res));
             } else {
                 res.send(400);
@@ -136,7 +169,6 @@ module.exports = function (app) {
             },
             function (cgs, callback) {
                 // 2. delete all cgs
-                console.log(cgs);
                 async.map(cgs, function (cg, cb) {
                     console.log(cg);
                     CrossGrading.findByIdAndRemove(cg._id, cb);

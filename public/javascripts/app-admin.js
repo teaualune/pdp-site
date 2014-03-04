@@ -191,7 +191,6 @@
             CG.showByHw(s.hwid, function (cgs) {
                 if (cgs && cgs.length !== 0) {
                     s.cgs = cgs;
-                    console.log(cgs);
                 }
                 s.loading = false;
             }, function () {

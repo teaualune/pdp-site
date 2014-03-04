@@ -37,15 +37,18 @@ crossGradingSchema.methods.strip = function () {
 
 crossGradingSchema.methods.pair = function (homework) {
     var that = this,
-        data = [];
+        data = {};
     _.each(homework.crossGradingQuestions, function (v, k) {
-        var d = { question: v.question };
+        var d = {
+                question: v.question,
+                type: v.type
+            };
         if (that.content.hasOwnProperty(k)) {
             d.answer = that.content[k];
         } else {
             d.answer = '';
         }
-        data.push(d);
+        data[k] = d;
     });
     return data;
 };

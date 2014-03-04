@@ -7,9 +7,9 @@
         </div>
         <div class="pure-control-group" ng-repeat="question in questions">
             <label for="q{{ $index }}">Question {{ $index + 1 }}</label>
-            <input name="q{{ $index }}" type="text" value="{{ question.question }}" />
+            <input name="q{{ $index }}" type="text" ng-model="questions[$index].question" />
             <div class="form-control-handle">
-                <select name="t{{ $index }}" value="{{ question.type }}">
+                <select name="t{{ $index }}" ng-model="questions[$index].type">
                     <option>comment</option>
                     <option>score</option>
                 </select>
@@ -37,9 +37,9 @@
                 <h4>{{ cg.author.nickname }}</h4>{{ cg.author.email }}
             </td>
             <td>
-                <div ng-repeat="c in cg.content">
-                    <h4>Q{{ $index + 1 }}. {{ c.question }}</h4>
-                    <p>{{ c.answer }}</p>
+                <div ng-repeat="(k, v) in cg.content">
+                    <h4>Q{{ $index + 1 }}. {{ v.question }}</h4>
+                    <p>{{ v.answer }}</p>
                 </div>
             </td>
         </tr></tbody>

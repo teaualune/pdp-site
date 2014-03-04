@@ -23,7 +23,8 @@
 
     app.service('LocationIDExtracter', ['$location', function (location) {
         var hwExp = /\/homework\/([0-9]+)(\/([a-z]+))?/,
-            problemExp = /\/problem\/([0-9]+)(\/([a-z]+))?/;
+            problemExp = /\/problem\/([0-9]+)(\/([a-z]+))?/,
+            cgExp = /\/cross-gradings\/([0-9]+)/;
         this.findHwid = function () {
             var hwid = hwExp.exec(location.path());
             if (hwid) {
@@ -38,6 +39,13 @@
             }
             return pid;
         };
+        this.findCgid = function () {
+            var cgid = cgExp.exec(location.path());
+            if (cgid) {
+                cgid = cgid[1];
+            }
+            return cgid;
+        }
     }]);
 
     app.controller('HomeworkCtrl', [

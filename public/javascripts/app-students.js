@@ -55,7 +55,13 @@
         sp.state('crossgradings', {
             url: '/cross-gradings',
             templateUrl: '/templates/s/cross-gradings.html'
-        }).state('settings', {
+        }).state('crossgradings.detail', {
+            url: '/cross-gradings/:id',
+            templateUrl: '/templates/s/cg-detail.html',
+            controller: 'CGDetailCtrl'
+        });
+
+        sp.state('settings', {
             url: '/settings',
             templateUrl: '/templates/settings.html'
         });
@@ -132,6 +138,60 @@
                     alert('Please choose file to upload.');
                 }
             };
+        }
+    ]);
+
+    app.controller('CGCtrl', [
+        '$scope',
+        '$stateParams',
+        'CrossGrading',
+        '$state',
+        'Global',
+        'LocationIDExtracter',
+        function (s, sp, CG, state, Global, lie) {
+            CG.index(Global.me._id, function (cgs) {
+                console.log(cgs);
+                s.cgs = cgs;
+                Global.cgs = cgs;
+            });
+            s.toggleListHeader = function () {
+                var id = lie.findCgid(),
+                    i = 0,
+                    cg;
+                if (s.cgs) {
+                    for (i; i < s.cgs.length; i = i + 1) {
+                        s.cgs[i].active = false;
+                        if (s.cgs[i]._id + '' === id) {
+                            cg = s.cgs[i];
+                        }
+                    }
+                    if (cg) {
+                        cg.active = true;
+                    }
+                }
+            };
+        }
+    ]);
+
+    app.controller('CGDetailCtrl', [
+        '$scope',
+        '$stateParams',
+        'CrossGrading',
+        '$state',
+        'Global',
+        function (s, sp, CG, state, Global) {
+            s.loading = true;
+            CG.show(sp.id, function (cg) {
+                s.loading = false;
+                s.cg = cg;
+            }, function () {
+                s.loading = false;
+            });
+            s.save = function () {
+                CG.save(s.cg, Global.me._id, function () {
+                    state.go('crossgradings');
+                });
+            }
         }
     ]);
 

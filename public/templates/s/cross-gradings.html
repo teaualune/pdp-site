@@ -1,0 +1,19 @@
+<div ng-controller="CGCtrl">
+    <h3>Assigned Cross Gradings</h3>
+    <div class="loading" ng-show="loading">
+        <img src="/images/indicator.gif" alt="loading" width="33" height="33" />
+    </div>
+    <div class="pure-g-r" ng-hide="loading">
+        <div class="pure-u-1-5 grid-master">
+            <div class="pure-menu pure-menu-open">
+                <ul>
+                    <li ng-repeat="cg in cgs" ng-class="{ 'pure-menu-selected' : cg.active }">
+                        <a ui-sref=".detail({ id: cg._id })">Submission {{ $index + 1 }}<br />({{ cg.homework.title }})</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="pure-u-4-5 grid-detail" ui-view>
+        </div>
+    </div>
+</div>

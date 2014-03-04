@@ -1,0 +1,16 @@
+<h3 class="grading">Grades this Submission</h3>
+<div class="grading">
+    <h4>Homework: <a ui-sref="homework.detail({ hwid: cg.homework._id })">{{ cg.homework.title }}</a></h4>
+    <a href="{{ cg.submission.filePath }}">File</a>
+</div>
+<form class="pdp-form pure-form pure-form-aligned" name="gradingForm">
+    <fieldset>
+        <div class="pure-control-group" ng-repeat="(k, v) in cg.content">
+            <label for="{{ k }}">{{ v.question }}</label>
+            <input type="{{ v.type === 'comment' ? 'text' : 'number' }}" name="{{ k }}" ng-model="v.answer" min="0" max="100" required />
+        </div>
+        <div class="pure-controls">
+            <button ng-click="save()" ng-disabled="gradingForm.$invalid" class="pure-button button-save">Save</button>
+        </div>
+    </fieldset>
+</form>
