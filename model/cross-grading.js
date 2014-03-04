@@ -25,15 +25,29 @@ var _ = require('underscore'),
         content: Schema.Types.Mixed
     });
 
-crossGradingSchema.methods.strip = function (includeAuthor) {
-    var stripped = {
-            _id: this._id,
-            content: this.content
-        };
-    if (includeAuthor) {
-        stripped.author = this.author;
-    }
-    return stripped;
+crossGradingSchema.methods.strip = function () {
+    return {
+        _id: this._id,
+        content: this.content,
+        author: this.author,
+        homework: this.homework,
+        submission: this.submission
+    };
+};
+
+crossGradingSchema.methods.pair = function (homework) {
+    var that = this,
+        data = [];
+    _.each(homework.crossGradingQuestions, function (v, k) {
+        var d = { question: v.question };
+        if (that.content.hasOwnProperty(k)) {
+            d.answer = that.content[k];
+        } else {
+            d.answer = '';
+        }
+        data.push(d);
+    });
+    return data;
 };
 
 crossGradingSchema.statics.stripCrossGradings = function (gradings, includeAuthor) {
@@ -45,21 +59,18 @@ crossGradingSchema.statics.stripCrossGradings = function (gradings, includeAutho
 };
 
 crossGradingSchema.methods.updateContentQuestions = function (questions, callback) {
-    var newContent = {},
-        q;
-    for (q in questions) {
-        if (questions.hasOwnProperty(q)) {
-            if (this.content.hasOwnProperty(q)) {
-                newContent[q] = this.content[q];
-            } else {
-                if (questions[q].type === 'score') {
-                    newContent[q] = 0;
-                } else if (questions[q].type === 'comment') {
-                    newContent[q] = '';
-                }
+    var newContent = {};
+    _.each(questions, function (v, k) {
+        if (this.content && this.content.hasOwnProperty(k)) {
+            newContent[k] = this.content[k];
+        } else {
+            if (v.type === 'score') {
+                newContent[k] = 0;
+            } else if (v.type === 'comment') {
+                newContent[k] = '';
             }
         }
-    }
+    });
     this.content = newContent;
     this.markModified('content');
     this.save(callback);
@@ -69,7 +80,7 @@ crossGradingSchema.statics.findBySubmission = function (hwsid, callback) {
     this.find({ submission: hwsid }, callback);
 };
 
-crossGradingSchema.static.findByHomework = function (hwid, callback) {
+crossGradingSchema.statics.findByHomework = function (hwid, callback) {
     this.find({ homework: hwid }, callback);
 };
 
@@ -107,9 +118,9 @@ crossGradingSchema.statics.bucketing = function (submissions, students, replicaC
         var i, cg;
         for (i = 0; i < b.submissions.length; i = i + 1) {
             cg = new CrossGrading();
-            cg._id = new Schema.Types.ObjectId;
+            cg._id = new mongoose.Types.ObjectId;
             cg.author = b.student;
-            cg.submission = b.submissions[i]._id;
+            cg.submission = b.submissions[i];
         }
         cgs.push(cg);
     });

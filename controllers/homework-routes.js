@@ -28,17 +28,19 @@ var async = require('async'),
     },
 
     showHomeworkSubmission = function (req, res) {
-        HomeworkSubmission.findById(req.params.hwsid).populate('grading').exec(function (err, hws) {
-            var data, grading;
+        HomeworkSubmission.findById(req.params.hwsid).populate('grading author').exec(function (err, hws) {
+            var data, grading, author;
             if (err) {
                 data = 500;
             } else if (hws) {
+                author = hws.author.strip();
                 if (hws.grading) {
                     grading = hws.grading.strip();
-                    data = hws.strip();
-                    data.grading = grading;
-                } else {
-                    data = hws.strip();
+                }
+                data = hws.strip();
+                data.author = author;
+                if (grading) {
+                    data.grading.grading;
                 }
             } else {
                 data = 400;
@@ -264,16 +266,20 @@ module.exports = function (app) {
                 });
             },
             function (hw, callback) {
-                CrossGrading.findBySubmission(hw.submission._id, function (err, cgs) {
-                    if (err) {
-                        callback(err);
-                    } else if (cgs) {
-                        hw.submission.crossGradings = CrossGrading.stripCrossGradings(cgs);
-                        callback(null, hw);
-                    } else {
-                        callback(null, hw);
-                    }
-                });
+                if (hw.submission) {
+                    CrossGrading.findBySubmission(hw.submission._id, function (err, cgs) {
+                        if (err) {
+                            callback(err);
+                        } else if (cgs) {
+                            hw.submission.crossGradings = CrossGrading.stripCrossGradings(cgs);
+                            callback(null, hw);
+                        } else {
+                            callback(null, hw);
+                        }
+                    });
+                } else {
+                    callback(null, hw);
+                }
             }
         ], utils.defaultHandler(res));
     });

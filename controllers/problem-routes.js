@@ -27,17 +27,19 @@ var async = require('async'),
     },
 
     showProblemSubmission = function (req, res) {
-        ProblemSubmission.findById(req.params.psid).populate('grading').exec(function (err, ps) {
-            var data, grading;
+        ProblemSubmission.findById(req.params.psid).populate('grading author').exec(function (err, ps) {
+            var data, grading, author;
             if (err) {
                 data = 500;
             } else if (ps) {
+                author = ps.author.strip();
                 if (ps.grading) {
                     grading = ps.grading.strip();
-                    data = ps.strip();
-                    data.grading = grading;
-                } else {
-                    data = ps.strip();
+                }
+                data = ps.strip();
+                data.author = author;
+                if (grading) {
+                    data.grading.grading;
                 }
             } else {
                 data = 400;

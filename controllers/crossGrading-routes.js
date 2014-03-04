@@ -15,14 +15,45 @@ module.exports = function (app) {
 
     // GET /api/cgs/hws/:hwsid
     // get all cgs by hwsid
-    app.get('/api/cgs/hws/:hwsid', utils.auth.auth, function (req, res) {
+    app.get('/api/cgs/hws/:hwsid', utils.auth.admin, function (req, res) {
         CrossGrading.findBySubmission(req.params.hwsid, stripCrossGradingsHandler(res));
     });
 
     // GET /api/cgs/hw/:hwid
     // get all cgs by hwid
-    app.get('/api/cgs/hw/:hwid', utils.auth.auth, function (req, res) {
-        CrossGrading.findByHomework(req.params.hwid, stripCrossGradingsHandler(res));
+    app.get('/api/cgs/hw/:hwid', utils.auth.admin, function (req, res) {
+        async.parallel({
+            hw: function (callback) {
+                Homework.findById(req.params.hwid, callback);
+            },
+            cgs: function (callback) {
+                CrossGrading.find({ homework: req.params.hwid }).populate('author submission').exec(callback);
+            }
+        }, function (err, results) {
+            var cgs = results.cgs,
+                hw = results.hw,
+                author,
+                submission,
+                content,
+                i;
+            if (err) {
+                res.send(500, err);
+            } else if (cgs) {
+                for (i = 0; i < cgs.length; i = i + 1) {
+                    author = cgs[i].author.strip();
+                    submission = cgs[i].submission.strip();
+                    content = cgs[i].pair(hw);
+                    cgs[i] = cgs[i].strip();
+                    cgs[i].author = author;
+                    cgs[i].submission = submission;
+                    cgs[i].content = content;
+                }
+                res.send(cgs);
+            } else {
+                res.send(404);
+            }
+        })
+        // CrossGrading.findByHomework(req.params.hwid, stripCrossGradingsHandler(res));
     });
 
     // GET /api/cgs/author/:uid
@@ -86,14 +117,19 @@ module.exports = function (app) {
                 async.map(cgs, function (cg, cb) {
                     cg.homework = hwid;
                     cg.updateContentQuestions(questions, cb);
-                }, callback);
+                }, function (err, cgs) {
+                    // console.log('5');
+                    // console.log(err);
+                    // console.log(cgs);
+                    callback(err, cgs);
+                });
             }
-        ], emptyHandler(res));
+        ], utils.emptyHandler(res));
     });
 
     // DELETE /api/cgs
     // reset cross grading
-    app.post('/api/cgs', utils.auth.admin, function (req, res) {
+    app.delete('/api/cgs', utils.auth.admin, function (req, res) {
         async.waterfall([
             function (callback) {
                 // 1. find all cgs by hwid (in body)

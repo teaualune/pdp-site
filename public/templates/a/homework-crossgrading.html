@@ -1,1 +1,47 @@
 <h3>Start Cross Grading</h3>
+<form class="pdp-form pure-form pure-form-aligned" name="questionForm" ng-hide="loading || cgs">
+    <fieldset>
+        <div class="pure-control-group" ng-repeat="question in questions">
+            <label for="q{{ $index }}">Question {{ $index + 1 }}</label>
+            <input name="q{{ $index }}" type="text" value="{{ question.question }}" />
+            <div class="form-control-handle">
+                <select name="t{{ $index }}" value="{{ question.type }}">
+                    <option>comment</option>
+                    <option>score</option>
+                </select>
+                <button ng-click="remove($index)" class="pure-button button-delete">Remove</button>
+            </div>
+        </div>
+        <div class="pure-control-group">
+            <label for="replica">Replica per Submission</label>
+            <input type="number" name="replica" ng-model="replicaCount" min="1" />
+        </div>
+        <div class="pure-controls">
+            <button ng-click="add()" class="pure-button button-add"><i class="fa fa-plus"></i>Add</button>
+            <button ng-click="start()" ng-disabled="questions.length === 0" class="pure-button button-save">Start!</button>
+        </div>
+    </fieldset>
+</form>
+<div class="pdp-table" ng-show="!loading && cgs">
+    <table class="pure-table pure-table-striped">
+        <thead><tr>
+            <th>Submission</th>
+            <th>Author</th>
+            <th>Content</th>
+        </tr></thead>
+        <tbody><tr ng-repeat="cg in cgs">
+            <td>
+                <a href="{{ cg.submission.filePath }}">File</a> &amp; <a ui-sref="homework.detail.stats.grading({ id: cg.submission._id })">Grades</span>
+            </td>
+            <td>
+                <h4>{{ cg.author.nickname }}</h4>{{ cg.author.email }}
+            </td>
+            <td>
+                <div ng-repeat="c in cg.content">
+                    <h4>Q{{ $index + 1 }}. {{ c.question }}</h4>
+                    <p>{{ c.answer }}</p>
+                </div>
+            </td>
+        </tr></tbody>
+    </table>
+</div>

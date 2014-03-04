@@ -15,6 +15,12 @@
                 data.append('file', file);
             }
             return data;
+        },
+        defaultQuesion = function () {
+            return {
+                question: 'Please give some comments for this submission.',
+                type: 'comment'
+            };
         };
 
     app.config(['$stateProvider', '$urlRouterProvider', function (sp, urp) {
@@ -167,22 +173,48 @@
             };
             s.cancel = function () {
                 state.go('homework.detail.stats');
-            }
+            };
         }
     ]);
 
     app.controller('CrossGradingHWCtrl', [
         '$scope',
         '$stateParams',
+        '$state',
         'Homework',
-        function (s, sp, HW) {
+        'CrossGrading',
+        function (s, sp, state, HW, CG) {
             s.loading = true;
             s.hwid = sp.hwid;
-            HW.show(sp.hwid, function (hw) {
+            s.questions = [];
+            CG.showByHw(s.hwid, function (cgs) {
+                if (cgs && cgs.length !== 0) {
+                    s.cgs = cgs;
+                }
+                console.log(s.detailHW);
                 s.loading = false;
-                s.detailHW = hw;
-                s.toggleListHeader();
+            }, function () {
+                s.loading = false;
             });
+            s.start = function () {
+                CG.start({
+                    hwid: s.hwid,
+                    questions: CG.toQuestionObject(s.questions),
+                    count: s.replicaCount
+                }, function () {
+                    state.go('homework.detail.crossgrading', {}, {
+                        reload: true
+                    });
+                }, function (err) {
+                    console.log(err);
+                });
+            };
+            s.add = function () {
+                s.questions.push(defaultQuesion());
+            };
+            s.remove = function (index) {
+                s.questions.splice(index, 1);
+            };
         }
     ]);
 

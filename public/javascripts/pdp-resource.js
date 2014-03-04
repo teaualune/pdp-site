@@ -134,6 +134,24 @@
         });
     }]);
 
+    p.factory('CrossGrading', ['Restangular', function (R) {
+        return {
+            showByHw: function (hwid, done, fail) {
+                return R.one('cgs/hw', hwid).get().then(done, fail);
+            },
+            start: function (data, done, fail) {
+                R.all('cgs').customPOST(data, '').then(done, fail);
+            },
+            toQuestionObject: function (questionArray) {
+                var qo = {}, i = 0;
+                for (i; i < questionArray.length; i = i + 1) {
+                    qo['q' + i] = questionArray[i];
+                }
+                return qo;
+            }
+        };
+    }]);
+
     p.factory('DestroyAlert', function () {
         return [
             'Are you sure you want to delete it?',
