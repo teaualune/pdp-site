@@ -1,6 +1,10 @@
 <h3>Start Cross Grading</h3>
 <form class="pdp-form pure-form pure-form-aligned" name="questionForm" ng-hide="loading || cgs">
     <fieldset>
+        <div class="pure-control-group">
+            <label for="replica">Replica per Submission</label>
+            <input type="number" name="replica" ng-model="replicaCount" min="1" />
+        </div>
         <div class="pure-control-group" ng-repeat="question in questions">
             <label for="q{{ $index }}">Question {{ $index + 1 }}</label>
             <input name="q{{ $index }}" type="text" value="{{ question.question }}" />
@@ -11,10 +15,6 @@
                 </select>
                 <button ng-click="remove($index)" class="pure-button button-delete">Remove</button>
             </div>
-        </div>
-        <div class="pure-control-group">
-            <label for="replica">Replica per Submission</label>
-            <input type="number" name="replica" ng-model="replicaCount" min="1" />
         </div>
         <div class="pure-controls">
             <button ng-click="add()" class="pure-button button-add"><i class="fa fa-plus"></i>Add</button>
@@ -44,4 +44,7 @@
             </td>
         </tr></tbody>
     </table>
+</div>
+<div class="grading" ng-show="!loading && cgs">
+    <button ng-click="reset()" class="pure-button button-delete">Reset Cross Grading</button>
 </div>

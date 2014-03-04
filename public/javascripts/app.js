@@ -49,11 +49,6 @@
         function (s, HW, Global, state, lie) {
             HW.index(function (homeworks) {
                 s.hws = homeworks;
-                if (s.hws.length > 0) {
-                    state.go('homework.detail.overview', {
-                        hwid: s.hws[0]._id
-                    });
-                }
             });
             s.toggleListHeader = function () {
                 var hwid = lie.findHwid(),
@@ -83,11 +78,6 @@
         function (s, Problem, Global, state, lie) {
             Problem.index(function (problems) {
                 s.problems = problems;
-                if (s.problems.length > 0) {
-                    state.go('problem.detail.overview', {
-                        pid: s.problems[0]._id
-                    });
-                }
             });
             s.toggleListHeader = function () {
                 var pid = lie.findPid(),

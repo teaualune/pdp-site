@@ -52,8 +52,7 @@ module.exports = function (app) {
             } else {
                 res.send(404);
             }
-        })
-        // CrossGrading.findByHomework(req.params.hwid, stripCrossGradingsHandler(res));
+        });
     });
 
     // GET /api/cgs/author/:uid
@@ -133,20 +132,15 @@ module.exports = function (app) {
         async.waterfall([
             function (callback) {
                 // 1. find all cgs by hwid (in body)
-                CrossGrading.findByHomework(req.body.hwid, callback);
+                CrossGrading.findByHomework(req.query.hwid, callback);
             },
-            function (submissions, callback) {
-                // TODO
+            function (cgs, callback) {
                 // 2. delete all cgs
-                callback(null, submissions, []);
-            },
-            function (submissions, students, callback) {
-                // TODO
-                // 3. find all hws by hwid
-                callback(null, submissions, students);
-            },
-            function (submissions, students, callback) {
-                // 4. clear crossGrading
+                console.log(cgs);
+                async.map(cgs, function (cg, cb) {
+                    console.log(cg);
+                    CrossGrading.findByIdAndRemove(cg._id, cb);
+                }, callback);
             }
         ], utils.emptyHandler(res));
     });

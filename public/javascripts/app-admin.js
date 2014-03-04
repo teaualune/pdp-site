@@ -183,15 +183,16 @@
         '$state',
         'Homework',
         'CrossGrading',
-        function (s, sp, state, HW, CG) {
+        'DestroyAlert',
+        function (s, sp, state, HW, CG, da) {
             s.loading = true;
             s.hwid = sp.hwid;
             s.questions = [];
             CG.showByHw(s.hwid, function (cgs) {
                 if (cgs && cgs.length !== 0) {
                     s.cgs = cgs;
+                    console.log(cgs);
                 }
-                console.log(s.detailHW);
                 s.loading = false;
             }, function () {
                 s.loading = false;
@@ -209,6 +210,15 @@
                     console.log(err);
                 });
             };
+            s.reset = function () {
+                if (confirm(da[0]) && confirm(da[1]) && confirm(da[2])) {
+                    CG.reset(s.hwid, function () {
+                        state.go('homework.detail.crossgrading', {}, {
+                            reload: true
+                        });
+                    });
+                }
+            }
             s.add = function () {
                 s.questions.push(defaultQuesion());
             };

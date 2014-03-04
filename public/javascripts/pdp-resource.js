@@ -142,6 +142,9 @@
             start: function (data, done, fail) {
                 R.all('cgs').customPOST(data, '').then(done, fail);
             },
+            reset: function (hwid, done) {
+                R.all('cgs').customDELETE('', { hwid: hwid }).then(done, done);
+            },
             toQuestionObject: function (questionArray) {
                 var qo = {}, i = 0;
                 for (i; i < questionArray.length; i = i + 1) {
@@ -154,9 +157,9 @@
 
     p.factory('DestroyAlert', function () {
         return [
-            'Are you sure you want to delete it?',
-            'Are you really sure you want to delete it?',
-            'Are you really really sure you want to delete it?'
+            'Are you sure?',
+            'Are you really sure?',
+            'Are you really really sure?'
         ];
     });
 
