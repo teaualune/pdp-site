@@ -47,7 +47,25 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 1. Register a new account first.
 2. Run MongoDB shell by `./mongo` where `mongo` resides in `bin` folder of MongoDB path.
 3. In the interactive mode run the following commands. Change email field to the email of registered account:
+
+```sh
+use pdp
+
+db.users.update({ email: "r0x922xxx@csie.ntu.edu.tw" }, { $set: { admin:true } })
 ```
-> use pdp
-> db.users.update({ email:"r0x922xxx@csie.ntu.edu.tw" }, { $set: { admin:true } })
+
+### Reset Homework or Problem Numbers
+
+This project uses [mongoose-auto-increment](https://github.com/codetunnel/mongoose-auto-increment) to assign incrementing IDs to created homework or problems.
+However, simply deletes those instances do not decrease the counting number.
+In order to do so or reset the number, please follow the database operations:
+
+```sh
+use pdp
+
+# reset Homework count to 1
+db["mongoose-auto-increments"].update({ model: "Homework" }, { $set: { count: 1 }})
+
+# decrease Problem count by 1
+db["mongoose-auto-increments"].update({ model: "Problem" }, { $inc: { count: -1 }})
 ```
