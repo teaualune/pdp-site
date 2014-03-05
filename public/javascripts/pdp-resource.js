@@ -156,11 +156,9 @@
             },
             toQuestionObject: function (questionArray) {
                 var qo = {}, i = 0;
-                console.log(questionArray);
                 for (i; i < questionArray.length; i = i + 1) {
                     qo['q' + i] = questionArray[i];
                 }
-                console.log(qo);
                 return qo;
             }
         };

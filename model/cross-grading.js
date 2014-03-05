@@ -104,18 +104,32 @@ crossGradingSchema.statics.bucketing = function (submissions, students, replicaC
                 });
             });
             return b;
-        }(students)),
-        cgs = [];
-    _.each(submissions, function (submission, i) {
-        var j, k;
-        for (j = i; j < bucket.length; j = j + 1) {
-            k = j % bucket.length;
-            if (!bucket[k].student.equals(submission._id) && bucket[k].submissions.length < replicaCount) {
-                bucket[k].submissions.push(submission._id);
-                break;
+        }(shuffled)),
+        cgs = [],
+        r = 0,
+        containsId = function (array, id) {
+            var i = 0,
+                contains = false;
+            for (i; i < array.length; i = i + 1) {
+                if (array[i].equals(id)) {
+                    contains = true;
+                    break;
+                }
             }
-        }
-    });
+            return contains;
+        };
+    for (r; r < replicaCount; r = r + 1) {
+        _.each(submissions, function (submission, i) {
+            var j, k;
+            for (j = 0; j < bucket.length; j = j + 1) {
+                k = (i + j + r) % bucket.length;
+                if (!bucket[k].student.equals(submission.author) && bucket[k].submissions.length < replicaCount && !containsId(bucket[k].submissions, submission._id)) {
+                    bucket[k].submissions.push(submission._id);
+                    break;
+                }
+            }
+        });
+    }
     console.log(bucket);
     _.each(bucket, function (b) {
         var i, cg;
@@ -124,10 +138,9 @@ crossGradingSchema.statics.bucketing = function (submissions, students, replicaC
             cg._id = new mongoose.Types.ObjectId;
             cg.author = b.student;
             cg.submission = b.submissions[i];
+            cgs.push(cg);
         }
-        cgs.push(cg);
     });
-    console.log(cgs);
     return cgs;
 };
 

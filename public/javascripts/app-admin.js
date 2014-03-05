@@ -206,7 +206,7 @@
                         reload: true
                     });
                 }, function (err) {
-                    console.log(err);
+                    alert(err.data);
                 });
             };
             s.reset = function () {
