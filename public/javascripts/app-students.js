@@ -150,7 +150,6 @@
         'LocationIDExtracter',
         function (s, sp, CG, state, Global, lie) {
             CG.index(Global.me._id, function (cgs) {
-                console.log(cgs);
                 s.cgs = cgs;
                 Global.cgs = cgs;
             });

@@ -5,17 +5,19 @@
     <h4>Comment</h4>
     <p>{{ submission.grading.comment }}</p>
 </section>
-<section ng-show="submission.crossGradings[0]">
+<section ng-show="detailHW.cgs">
     <h3>Cross Gradings</h3>
     <div class="pdp-table">
         <table class="pure-table pure-table-striped">
             <thead><tr>
-                <th>Score</th>
-                <th>Comment</th>
+                <th ng-repeat="(k, v) in detailHW.cgs[0].content">
+                    {{ v.question }}
+                </th>
             </tr></thead>
-            <tbody><tr ng-repeat="grade in submission.crossGradings">
-                <th><strong>{{ grade.score }}</strong></th>
-                <th><p>{{ grade.comment }}</p></th>
+            <tbody><tr ng-repeat="cg in detailHW.cgs">
+                <td ng-repeat="v in cg.content">
+                    {{ v.answer }}
+                </td>
             </tr></tbody>
         </table>
     </div>

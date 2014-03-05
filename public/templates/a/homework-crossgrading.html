@@ -1,4 +1,4 @@
-<h3>Start Cross Grading</h3>
+<h3 ng-hide="cgs">Start Cross Grading</h3>
 <form class="pdp-form pure-form pure-form-aligned" name="questionForm" ng-hide="loading || cgs">
     <fieldset>
         <div class="pure-control-group">
@@ -22,6 +22,14 @@
         </div>
     </fieldset>
 </form>
+<div class="grading">
+    <h3 ng-show="cgs">Cross Grading Overview</h3>
+    <ul>
+        <li ng-repeat="(k, v) in cgs[0].content">
+            <i>Q{{ $index + 1 }}.</i>&nbsp;{{ v.question }}
+        </li>
+    </ul>
+</div>
 <div class="pdp-table" ng-show="!loading && cgs">
     <table class="pure-table pure-table-striped">
         <thead><tr>
@@ -38,8 +46,7 @@
             </td>
             <td>
                 <div ng-repeat="(k, v) in cg.content">
-                    <h4>Q{{ $index + 1 }}. {{ v.question }}</h4>
-                    <p>{{ v.answer }}</p>
+                    <i>Q{{ $index + 1 }}.</i>&nbsp;{{ v.answer }}
                 </div>
             </td>
         </tr></tbody>

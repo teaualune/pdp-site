@@ -240,11 +240,13 @@ module.exports = function (app) {
     // get homework submission by user and homework id
     // hws is put under hw
     app.get('/api/user/:uid/hw/:hwid', utils.auth.self, function (req, res) {
+        var questions;
         async.waterfall([
             function (callback) {
                 Homework.findById(req.params.hwid, callback);
             },
             function (hw, callback) {
+                questions = { crossGradingQuestions: hw.crossGradingQuestions };
                 callback(null, hw.strip());
             },
             function (hw, callback) {
@@ -268,10 +270,14 @@ module.exports = function (app) {
             function (hw, callback) {
                 if (hw.submission) {
                     CrossGrading.findBySubmission(hw.submission._id, function (err, cgs) {
+                        var i;
                         if (err) {
                             callback(err);
-                        } else if (cgs) {
-                            hw.submission.crossGradings = CrossGrading.stripCrossGradings(cgs);
+                        } else if (cgs && cgs.length !== 0) {
+                            for (i = 0; i < cgs.length; i = i + 1) {
+                                cgs[i].content = cgs[i].pair(questions);
+                            }
+                            hw.cgs = cgs;
                             callback(null, hw);
                         } else {
                             callback(null, hw);
