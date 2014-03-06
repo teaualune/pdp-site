@@ -68,4 +68,10 @@ db["mongoose-auto-increments"].update({ model: "Homework" }, { $set: { count: 1 
 
 # decrease Problem count by 1
 db["mongoose-auto-increments"].update({ model: "Problem" }, { $inc: { count: -1 }})
+
 ```
+
+### License
+
+[MIT License](http://opensource.org/licenses/MIT)
+
