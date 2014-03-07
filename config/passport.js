@@ -19,7 +19,8 @@ module.exports = function (passport) {
         User.findById(id, done);
     });
 
-    passport.use('local-signup', new LocalStrategy(strategyConfig, function (req, email, password, done) {
+    passport.use('local-signup', new LocalStrategy(strategyConfig, function (req, _email, password, done) {
+        var email = emailValidation.normalize(_email);
         User.findByEmail(email, function (err, user) {
             var newUser;
             if (err) {
