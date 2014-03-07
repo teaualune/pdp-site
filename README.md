@@ -71,7 +71,50 @@ db["mongoose-auto-increments"].update({ model: "Problem" }, { $inc: { count: -1 
 
 ```
 
+### Code Structure
+
+* `config`
+  * Utility functions for helping configurations.
+* `controllers`
+  * Routing modules to handle each HTTP requests.
+  * `index.js`
+    * Routes collector.
+  * `auth.js`
+    * Provide authentication-related middleware.
+  * `main.js`
+    * Login and registration related routers.
+  * `routes-utils.js`
+    * Utility middleware and functions for helping routers.
+* `model`
+  * Define database schema and related helper functions.
+* `public`
+  * `javascripts`
+    * Front-end JavaScript code base.
+    * `pdp-resource.js`
+      * Ajax functions for RESTful requests.
+      * Depends on Restangular for general RESTful calls and HTML5 file APIs for file upload.
+    * `app.js`
+      * Define controllers shared between admin and students.
+      * Heavily depends on AngularUI Router.
+    * `app-admin.js`
+      * Admin-related controllers.
+    * `app-students.js`
+      * Student-related controllers.
+  * `stylesheets`
+    * CSS files.
+  * `templates`
+    * HTML code fragments used by Angular.js.
+    * `a`
+      * Admin account related view fragments.
+    * `s`
+      * Student account related view fragments.
+* `views`
+  * Ejs view fragments.
+* `app.js`
+  * Main entry and startup point of the application.
+* `settings.json`
+  * Contains settings that can be adjusted according to different environments.
+
 ### License
 
 [MIT License](http://opensource.org/licenses/MIT)
-
