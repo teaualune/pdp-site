@@ -45,7 +45,8 @@ module.exports = function (passport) {
         });
     }));
 
-    passport.use('local-login', new LocalStrategy(strategyConfig, function (req, email, password, done) {
+    passport.use('local-login', new LocalStrategy(strategyConfig, function (req, _email, password, done) {
+        var email = emailValidation.normalize(_email);
         User.findByEmail(email, function (err, user) {
             if (err) {
                 return done(err);

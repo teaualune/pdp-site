@@ -1,4 +1,4 @@
-var ntuEmail = /^([b|r|d][0-9]{8})@([a-z]+\.)?ntu\.edu\.tw$/;
+var ntuEmail = /^([b|r|d|p][0-9]{8})@([a-z]+\.)?ntu\.edu\.tw$/;
 
 exports.validate = function (email) {
     return ntuEmail.test(exports.normalize(email));
