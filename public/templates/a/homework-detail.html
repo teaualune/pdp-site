@@ -9,6 +9,10 @@
             <label for="description">* Description</label>
             <textarea rows="10" name="description" ng-model="detailHW.description" required ng-readonly="!editing"></textarea>
         </div>
+        <div class="pure-control-group">
+            <label for="deadline">* Deadline<br />(yyyy-MM-dd&nbsp;HH:mm)</label>
+            <input type="text" name="deadline" ng-model="detailHW.deadline" placeholder="yyyy-MM-dd HH:mm" ng-pattern="/[0-9]{4}\-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}/" required ng-readonly="!editing" />
+        </div>
         <div class="pure-control-group" ng-show="(detailHW.manualFilePath != '' && !editing) || !editingNew">
             <label>File<br />(Uploaded)</label>
             <a href="{{ detailHW.manualFilePath }}">File</a>

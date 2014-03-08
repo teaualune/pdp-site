@@ -5,6 +5,7 @@
                 file = D.getElementById('file').files[0];
             data.append('title', object.title);
             data.append('description', object.description);
+            data.append('deadline', object.deadline);
             if (object.sampleInput) {
                 data.append('sampleInput', object.sampleInput);
             }
@@ -245,6 +246,8 @@
                     state.go('homework', {}, {
                         reload: true
                     });
+                }, function (err) {
+                    alert(err.data);
                 });
             };
         }
@@ -308,6 +311,8 @@
                     state.go('problem', {}, {
                         reload: true
                     });
+                }, function (err) {
+                    alert(err.data);
                 });
             };
         }

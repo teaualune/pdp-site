@@ -2,11 +2,13 @@ var mongoose = require('mongoose'),
     autoIncrement = require('mongoose-auto-increment'),
     submission = require('./submission'),
     path2url = require('../config/path2url'),
+    formatDate = require('../config/DateHelper').format,
     Schema = mongoose.Schema,
 
     homeworkSchema = new Schema({
         title: String,
         description: String,
+        deadline: Number, // Unix timestamp
         manualFilePath: String,
 
         // mixed type
@@ -32,6 +34,7 @@ homeworkSchema.methods.strip = function () {
         _id: this._id,
         title: this.title,
         description: this.description,
+        deadline: formatDate(this.deadline),
         manualFilePath: path2url.one(this.manualFilePath)
     };
 };

@@ -59,17 +59,22 @@ module.exports = function (app) {
     // POST /api/problem
     // create a new problem
     app.post('/api/problem', utils.auth.admin.concat(utils.uploadFile('problem')), function (req, res) {
-        var filePath;
+        var filePath,
+            deadline = (new Date(req.body.deadline)).getTime();
         if (req.body.file) {
             filePath = req.body.file.path;
         } else {
             filePath = '';
+        }
+        if (!deadline) {
+            return res.send(400, 'invalide deadline date format');
         }
         Problem.create({
             title: req.body.title,
             description: req.body.description,
             sampleInput: req.body.sampleInput,
             sampleOutput: req.body.sampleOutput,
+            deadline: deadline,
             manualFilePath: filePath
         }, utils.defaultHandler(res, stripOne));
     });
@@ -107,10 +112,12 @@ module.exports = function (app) {
                 }
             },
             function (problem, callback) {
+                var deadline = new Date(req.body.deadline);
                 problem.title = req.body.title || problem.title;
                 problem.description = req.body.description || problem.description;
                 problem.sampleInput = req.body.sampleInput || problem.sampleInput;
                 problem.sampleOutput = req.body.sampleOutput || problem.sampleOutput;
+                problem.deadline = deadline.getTime() || problem.deadline;
                 problem.save(callback);
             }
         ], utils.defaultHandler(res, stripOne));
@@ -199,21 +206,32 @@ module.exports = function (app) {
     // POST /api/user/:uid/ps
     // create or update a problem submission
     app.post('/api/user/:uid/problem', utils.auth.self.concat(utils.uploadFile('ps')), function (req, res) {
-        if (req.body.file) {
-            ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.body.pid, function (err, ps) {
-                var studentID = emailValidation.getStudentID(req.user.email),
-                    fileName = ProblemSubmission.submissionFileName(studentID, req.body.pid),
-                    filePath = getSubmissionFilePath(fileName, req.body.file.extension);
-                if (err) {
-                    res.send(500);
-                } else if (ps) {
+        async.waterfall([
+            function (callback) {
+                if (req.body.file) {
+                    callback(null);
+                } else {
+                    callback('missing file');
+                }
+            },
+            function (callback) {
+                Problem.findById(req.body.pid, callback);
+            },
+            function (problem, callback) {
+                utils.isSubmissionExpired(problem.deadline, callback);
+            },
+            function (callback) {
+                ProblemSubmission.findByAuthorAndHomework(req.params.uid, req.body.pid, callback);
+            },
+            function (ps, callback) {
+                if (ps) {
                     // update
                     fs.unlink(ps.filePath, function (err) {
                         // ignore err
                         fs.rename(req.body.file.path, filePath, function (err) {
                             // ignore err
                             ps.filePath = filePath;
-                            ps.save(utils.defaultHandler(res, stripOne));
+                            ps.save(callback);
                         });
                     });
                 } else {
@@ -225,13 +243,11 @@ module.exports = function (app) {
                             author: req.params.uid,
                             target: pid,
                             filePath: filePath
-                        }, utils.defaultHandler(res, stripOne));
+                        }, callback);
                     });
                 }
-            });
-        } else {
-            res.send(400);
-        }
+            }
+        ], utils.defaultHandler(res, stripOne));
     });
 
     // GET /api/user/:uid/ps/:psid

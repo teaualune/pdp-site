@@ -45,6 +45,14 @@ module.exports = {
             });
         };
     },
+    isSubmissionExpired: function (deadline, callback) {
+        var now = (new Date()).getTime();
+        if (now > deadline) {
+            callback('submission has missed the deadline');
+        } else {
+            callback(null);
+        }
+    },
     defaultHandler: function (res, plugin) {
         return function (err, resource) {
             if (err) {

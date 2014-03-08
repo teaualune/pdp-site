@@ -60,15 +60,20 @@ module.exports = function (app) {
     // POST /api/hw
     // create a new homework
     app.post('/api/hw', utils.auth.admin.concat(utils.uploadFile(hwFolder)), function (req, res) {
-        var filePath;
+        var filePath,
+            deadline = (new Date(req.body.deadline)).getTime();
         if (req.body.file) {
             filePath = req.body.file.path;
         } else {
             filePath = '';
         }
+        if (!deadline) {
+            return res.send(400, 'invalid deadline date format');
+        }
         Homework.create({
             title: req.body.title,
             description: req.body.description,
+            deadline: deadline,
             manualFilePath: filePath
         }, utils.defaultHandler(res, stripOne));
     });
@@ -106,8 +111,10 @@ module.exports = function (app) {
                 }
             },
             function (hw, callback) {
+                var deadline = new Date(req.body.deadline);
                 hw.title = req.body.title || hw.title;
                 hw.description = req.body.description || hw.description;
+                hw.deadline = deadline.getTime() || hw.deadline;
                 hw.save(callback);
             }
         ], utils.defaultHandler(res, stripOne));
@@ -195,21 +202,32 @@ module.exports = function (app) {
     // POST /api/user/:uid/hw
     // create or update a homework submission
     app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile(hwsFolder)), function (req, res) {
-        if (req.body.file) {
-            HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, function (err, hws) {
-                var studentID = emailValidation.getStudentID(req.user.email),
-                    fileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid),
-                    filePath = getSubmissionFilePath(fileName, req.body.file.extension);
-                if (err) {
-                    res.send(500);
-                } else if (hws) {
+        async.waterfall([
+            function (callback) {
+                if (req.body.file) {
+                    callback(null);
+                } else {
+                    callback('missing file');
+                }
+            },
+            function (callback) {
+                Homework.findById(req.body.hwid, callback);
+            },
+            function (hw, callback) {
+                utils.isSubmissionExpired(hw.deadline, callback);
+            },
+            function (callback) {
+                HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, callback);
+            },
+            function (hws, callback) {
+                if (hws) {
                     // update
                     fs.unlink(hws.filePath, function (err) {
                         // ignore err
                         fs.rename(req.body.file.path, filePath, function (err) {
                             // ignore err
                             hws.filePath = filePath;
-                            hws.save(utils.defaultHandler(res, stripOne));
+                            hws.save(callback);
                         });
                     });
                 } else {
@@ -221,13 +239,11 @@ module.exports = function (app) {
                             author: req.params.uid,
                             target: hwid,
                             filePath: filePath
-                        }, utils.defaultHandler(res, stripOne));
+                        }, callback);
                     });
                 }
-            });
-        } else {
-            res.send(400);
-        }
+            }
+        ], utils.defaultHandler(res, stripOne));
     });
 
     // GET /api/user/:uid/hws/:hwsid

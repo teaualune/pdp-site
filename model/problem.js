@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     autoIncrement = require('mongoose-auto-increment'),
     submission = require('./submission'),
     path2url = require('../config/path2url'),
+    formatDate = require('../config/DateHelper').format,
     Schema = mongoose.Schema,
 
     problemSchema = new Schema({
@@ -9,6 +10,7 @@ var mongoose = require('mongoose'),
         description: String,
         sampleInput: String,
         sampleOutput: String,
+        deadline: Number, // Unix timestamp
         manualFilePath: String
     }),
     problemSubmissionSchema = new Schema(submission.schema('Problem'));
@@ -25,6 +27,7 @@ problemSchema.methods.strip = function () {
         description: this.description,
         sampleInput: this.sampleInput,
         sampleOutput: this.sampleOutput,
+        deadline: formatDate(this.deadline),
         manualFilePath: path2url.one(this.manualFilePath)
     };
 };

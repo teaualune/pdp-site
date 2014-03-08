@@ -27,7 +27,7 @@
             templateUrl: '/templates/s/homework-detail.html'
         }).state('homework.detail.submission', {
             url: '/submission',
-            templateUrl: '/templates/s/homework-submission.html'
+            templateUrl: '/templates/s/submission.html'
         }).state('homework.detail.grades', {
             url: '/grades',
             templateUrl: '/templates/s/homework-grades.html'
@@ -46,7 +46,7 @@
             templateUrl: '/templates/s/problem-detail.html'
         }).state('problem.detail.submission', {
             url: '/submission',
-            templateUrl: '/templates/s/problem-submission.html'
+            templateUrl: '/templates/s/submission.html'
         }).state('problem.detail.grades', {
             url: '/grades',
             templateUrl: '/templates/s/problem-grades.html'
@@ -78,6 +78,8 @@
             s.hwid = sp.hwid;
             HW.showSubmission(Global.me._id, sp.hwid, function (hw) {
                 s.detailHW = hw;
+                s.deadline = hw.deadline;
+                s.expired = (new Date(hw.deadline)).getTime() < (new Date()).getTime();
                 s.submission = hw.submission;
                 s.loading = false;
                 s.toggleListHeader();
