@@ -67,7 +67,7 @@ module.exports = function (app) {
             filePath = '';
         }
         if (!deadline) {
-            return res.send(400, 'invalide deadline date format');
+            return res.send(400, 'invalid deadline date format');
         }
         Problem.create({
             title: req.body.title,
