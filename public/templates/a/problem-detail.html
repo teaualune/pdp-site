@@ -21,7 +21,7 @@
             <label for="deadline">* Deadline<br />(yyyy-MM-dd&nbsp;HH:mm)</label>
             <input type="text" name="deadline" ng-model="detailProblem.deadline" placeholder="yyyy-MM-dd HH:mm" ng-pattern="/[0-9]{4}\-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}/" required ng-readonly="!editing" />
         </div>
-        <div class="pure-control-group" ng-show="(detailProblem.manualFilePath != '' && !editing) || !editingNew">
+        <div class="pure-control-group" ng-show="(detailProblem.manualFilePath || detailProblem.manualFilePath != '') && !editing && !editingNew">
             <label>File<br />(Uploaded)</label>
             <a href="{{ detailProblem.manualFilePath }}">File</a>
         </div>

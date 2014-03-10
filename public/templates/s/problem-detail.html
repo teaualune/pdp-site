@@ -4,5 +4,8 @@
 <p>{{ detailProblem.sampleInput }}</p>
 <h3>Sample Output</h3>
 <p>{{ detailProblem.sampleOutput }}</p>
-<h4>File</h4>
-<a href="{{ detailProblem.manualFilePath }}">File</a>
+<h4 ng-class="expired ? 'expired' : ''">Deadline: {{ deadline }}</h4>
+<div class="grading" ng-show="detailProblem.manualFilePath && detailProblem.manualFilePath != ''">
+    <h4>File</h4>
+    <a href="{{ detailProblem.manualFilePath }}">File</a>
+</div>

@@ -1,5 +1,7 @@
 <h3>{{ detailHW.title }}</h3>
 <p>{{ detailHW.description }}</p>
 <h4 ng-class="expired ? 'expired' : ''">Deadline: {{ deadline }}</h4>
-<h4>File</h4>
-<a href="{{ detailHW.manualFilePath }}">File</a>
+<div class="grading" ng-show="detailHW.manualFilePath && detailHW.manualFilePath != ''">
+    <h4>File</h4>
+    <a href="{{ detailHW.manualFilePath }}">File</a>
+</div>

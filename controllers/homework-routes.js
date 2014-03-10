@@ -202,6 +202,9 @@ module.exports = function (app) {
     // POST /api/user/:uid/hw
     // create or update a homework submission
     app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile(hwsFolder)), function (req, res) {
+        var studentID = emailValidation.getStudentID(req.user.email),
+            fileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid),
+            filePath = getSubmissionFilePath(fileName, req.body.file.extension);
         async.waterfall([
             function (callback) {
                 if (req.body.file) {

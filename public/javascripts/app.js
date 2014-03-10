@@ -6,6 +6,10 @@
         A.element(D.getElementById('menu')).toggleClass('on');
     });
 
+    A.element(D.getElementsByClassName('menu-item')).on('click', function () {
+        A.element(D.getElementById('menu')).removeClass('on');
+    });
+
     app.controller('SettingsCtrl', ['$scope', 'Global', function (s, Global) {
         s.user = Global.me;
         s.editing = false;

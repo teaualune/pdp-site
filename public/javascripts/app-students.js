@@ -117,6 +117,8 @@
             s.pid = sp.pid;
             Problem.showSubmission(Global.me._id, sp.pid, function (problem) {
                 s.detailProblem = problem;
+                s.deadline = problem.deadline;
+                s.expired = (new Date(problem.deadline)).getTime() < (new Date()).getTime();
                 s.submission = problem.submission;
                 s.loading = false;
                 s.toggleListHeader();

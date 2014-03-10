@@ -206,6 +206,9 @@ module.exports = function (app) {
     // POST /api/user/:uid/ps
     // create or update a problem submission
     app.post('/api/user/:uid/problem', utils.auth.self.concat(utils.uploadFile('ps')), function (req, res) {
+        var studentID = emailValidation.getStudentID(req.user.email),
+            fileName = ProblemSubmission.submissionFileName(studentID, req.body.pid),
+            filePath = getSubmissionFilePath(fileName, req.body.file.extension);
         async.waterfall([
             function (callback) {
                 if (req.body.file) {
@@ -221,7 +224,7 @@ module.exports = function (app) {
                 utils.isSubmissionExpired(problem.deadline, callback);
             },
             function (callback) {
-                ProblemSubmission.findByAuthorAndHomework(req.params.uid, req.body.pid, callback);
+                ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.body.pid, callback);
             },
             function (ps, callback) {
                 if (ps) {
