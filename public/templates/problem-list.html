@@ -10,6 +10,12 @@
                     <li ng-repeat="problem in problems" ng-class="{ 'pure-menu-selected' : problem.active }">
                         <a ui-sref=".detail.overview({ pid: problem._id })">{{ problem.title }}</a>
                     </li>
+                    <li ng-show="admin">
+                        <a ui-sref=".new">
+                            <i class="fa fa-plus"></i>
+                            New
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

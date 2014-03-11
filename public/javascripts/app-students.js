@@ -16,7 +16,7 @@
 
         sp.state('homework', {
             url: '/homework',
-            templateUrl: '/templates/s/homework.html'
+            templateUrl: '/templates/homework-list.html'
         }).state('homework.detail', {
             abstract: true,
             url: '/:hwid',
@@ -35,7 +35,7 @@
 
         sp.state('problem', {
             url: '/problem',
-            templateUrl: '/templates/s/problem.html'
+            templateUrl: '/templates/problem-list.html'
         }).state('problem.detail', {
             abstract: true,
             url: '/:pid',

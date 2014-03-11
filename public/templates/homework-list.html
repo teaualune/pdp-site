@@ -10,7 +10,7 @@
                     <li ng-repeat="hw in hws" ng-class="{ 'pure-menu-selected' : hw.active }">
                         <a ui-sref=".detail.overview({ hwid: hw._id })">{{ hw.title }}</a>
                     </li>
-                    <li>
+                    <li ng-show="admin">
                         <a ui-sref=".new">
                             <i class="fa fa-plus"></i>
                             New

@@ -29,7 +29,7 @@
 
         sp.state('homework', {
             url: '/homework',
-            templateUrl: '/templates/a/homework.html'
+            templateUrl: '/templates/homework-list.html'
         }).state('homework.new', {
             url: '/new',
             templateUrl: '/templates/a/homework-detail.html',
@@ -58,7 +58,7 @@
 
         sp.state('problem', {
             url: '/problem',
-            templateUrl: '/templates/a/problem.html'
+            templateUrl: '/templates/problem-list.html'
         }).state('problem.new', {
             url: '/new',
             templateUrl: '/templates/a/problem-detail.html',

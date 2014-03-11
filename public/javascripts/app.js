@@ -59,6 +59,7 @@
         '$state',
         'LocationIDExtracter',
         function (s, HW, Global, state, lie) {
+            s.admin = Global.me.admin;
             HW.index(function (homeworks) {
                 s.hws = homeworks;
             });
@@ -88,6 +89,7 @@
         '$state',
         'LocationIDExtracter',
         function (s, Problem, Global, state, lie) {
+            s.admin = Global.me.admin;
             Problem.index(function (problems) {
                 s.problems = problems;
             });

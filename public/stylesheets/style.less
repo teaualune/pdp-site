@@ -178,6 +178,7 @@ ul {
     li a:hover, .pure-menu-selected a {
         color: @color-black;
         background: @color-light-grey;
+        white-space: normal;
     }
 
     &.pure-menu-open {
@@ -228,7 +229,11 @@ ul {
     padding: 0 @padding-base;
 
     p {
-        white-space: pre;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        white-space: pre-wrap;
+        word-wrap: break-word;
     }
 }
 

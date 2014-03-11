@@ -23,11 +23,15 @@ userSchema.methods.validPassword = function (password) {
 };
 
 userSchema.methods.strip = function () {
-    return {
-        _id: this._id,
-        email: this.email,
-        nickname: this.nickname
-    };
+    var stripped = {
+            _id: this._id,
+            email: this.email,
+            nickname: this.nickname,
+        };
+    if (this.admin) {
+        stripped.admin = true;
+    }
+    return stripped;
 };
 
 userSchema.statics.stripUsers = function (users) {
