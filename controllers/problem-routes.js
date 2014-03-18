@@ -235,6 +235,8 @@ module.exports = function (app) {
                             // ignore err
                             ps.filePath = filePath;
                             ps.save(callback);
+							ps.state = 0;
+							ps.result = "";
                         });
                     });
                 } else {
@@ -245,7 +247,9 @@ module.exports = function (app) {
                             _id: new mongoose.Types.ObjectId,
                             author: req.params.uid,
                             target: pid,
-                            filePath: filePath
+                            filePath: filePath,
+							state: 0,
+							result: ""
                         }, callback);
                     });
                 }
