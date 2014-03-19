@@ -9,6 +9,9 @@
                 data.append('file', file);
             }
             return data;
+        },
+        toUTCDeadline = function (deadline) {
+            return deadline.replace(' ', 'T') + ':00';
         };
 
     app.config(['$stateProvider', '$urlRouterProvider', function (sp, urp) {
@@ -77,9 +80,10 @@
             s.loading = true;
             s.hwid = sp.hwid;
             HW.showSubmission(Global.me._id, sp.hwid, function (hw) {
+                var utcDeadline = toUTCDeadline(hw.deadline);
                 s.detailHW = hw;
                 s.deadline = hw.deadline;
-                s.expired = (new Date(hw.deadline)).getTime() < (new Date()).getTime();
+                s.expired = (new Date(utcDeadline)).getTime() < (new Date()).getTime();
                 s.submission = hw.submission;
                 s.loading = false;
                 s.toggleListHeader();
@@ -116,9 +120,10 @@
             s.loading = true;
             s.pid = sp.pid;
             Problem.showSubmission(Global.me._id, sp.pid, function (problem) {
+                var utcDeadline = toUTCDeadline(problem.deadline);
                 s.detailProblem = problem;
                 s.deadline = problem.deadline;
-                s.expired = (new Date(problem.deadline)).getTime() < (new Date()).getTime();
+                s.expired = (new Date(utcDeadline)).getTime() < (new Date()).getTime();
                 s.submission = problem.submission;
                 s.loading = false;
                 s.toggleListHeader();

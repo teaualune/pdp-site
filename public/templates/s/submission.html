@@ -1,4 +1,4 @@
-<form class="pdp-form pure-form pure-form-stacked" name="submissionForm" ng-hide="expired">
+<form class="pdp-form pure-form pure-form-stacked" name="submissionForm" ng-hide="expired && !submission">
     <fieldset>
         <legend>Submit Your Answer</legend>
         <div class="submitted-file" ng-show="submission">
@@ -10,4 +10,4 @@
         <button ng-click="upload()" class="pure-button button-save">Upload</button>
     </fieldset>
 </form>
-<div ng-show="expired">(´・ω・`) You have missed the deadline...</div>
+<div ng-show="expired && !submission">(´・ω・`) You have missed the deadline...</div>
