@@ -14,8 +14,8 @@ module.exports = {
                 ref: 'User'
             },
             filePath: String,
-			state: Number,
-			result: String,
+            state: Number,
+            result: String,
             grading: { // teacher's grading
                 type: ObjectId,
                 ref: 'Grading'
