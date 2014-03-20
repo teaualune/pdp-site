@@ -12,7 +12,7 @@ var async = require('async'),
     hwFolder = _UD.homework,
     hwsFolder = _UD.homeworkSubmission,
     getSubmissionFilePath = function (submissionFileName, extension) {
-        return path.join(utils.uploadDir(), 'hws', submissionFileName + extension);
+        return path.join(utils.uploadDir(), hwsFolder, submissionFileName + extension);
     },
     Homework = _H.Homework,
     HomeworkSubmission = _H.HomeworkSubmission,
@@ -202,9 +202,6 @@ module.exports = function (app) {
     // POST /api/user/:uid/hw
     // create or update a homework submission
     app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile(hwsFolder)), function (req, res) {
-        var studentID = emailValidation.getStudentID(req.user.email),
-            fileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid),
-            filePath = getSubmissionFilePath(fileName, req.body.file.extension);
         async.waterfall([
             function (callback) {
                 if (req.body.file) {
@@ -223,6 +220,9 @@ module.exports = function (app) {
                 HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, callback);
             },
             function (hws, callback) {
+                var studentID = emailValidation.getStudentID(req.user.email),
+                    fileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid),
+                    filePath = getSubmissionFilePath(fileName, req.body.file.extension);
                 if (hws) {
                     // update
                     fs.unlink(hws.filePath, function (err) {
@@ -230,6 +230,7 @@ module.exports = function (app) {
                         fs.rename(req.body.file.path, filePath, function (err) {
                             // ignore err
                             hws.filePath = filePath;
+                            hws.revision = hws.revision + 1;
                             hws.save(callback);
                         });
                     });
@@ -241,7 +242,8 @@ module.exports = function (app) {
                             _id: new mongoose.Types.ObjectId,
                             author: req.params.uid,
                             target: hwid,
-                            filePath: filePath
+                            filePath: filePath,
+                            revision: 0
                         }, callback);
                     });
                 }

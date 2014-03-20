@@ -44,7 +44,7 @@
             templateUrl: '/templates/a/homework-detail.html'
         }).state('homework.detail.stats', {
             url: '/stats',
-            templateUrl: '/templates/a/stats.html',
+            templateUrl: '/templates/a/homework-stats.html',
             controller: 'StatsHWCtrl'
         }).state('homework.detail.stats.grading', {
             url: '/grading/:id',
@@ -73,7 +73,7 @@
             templateUrl: '/templates/a/problem-detail.html'
         }).state('problem.detail.stats', {
             url: '/stats',
-            templateUrl: '/templates/a/stats.html',
+            templateUrl: '/templates/a/problem-stats.html',
             controller: 'StatsProblemCtrl'
         }).state('problem.detail.stats.grading', {
             url: '/grading/:id',

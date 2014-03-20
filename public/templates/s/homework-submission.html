@@ -1,0 +1,13 @@
+<form class="pdp-form pure-form pure-form-stacked" name="submissionForm" ng-hide="expired && !submission">
+    <fieldset>
+        <legend>Submit Your Answer</legend>
+        <div class="submitted-file" ng-show="submission">
+            <label>File You Have Uploaded</label>
+            <a href="{{ submission.filePath }}">File</a>
+        </div>
+        <label for="file">Upload File</label>
+        <input type="file" name="file" id="file" />
+        <button ng-click="upload()" class="pure-button button-save">Upload</button>
+    </fieldset>
+</form>
+<div ng-show="expired && !submission">(´・ω・`) You have missed the deadline...</div>

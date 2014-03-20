@@ -44,8 +44,8 @@ problemSubmissionSchema.statics.findByAuthor = submission.findByAuthor();
 problemSubmissionSchema.statics.findByProblem = submission.findByTarget();
 problemSubmissionSchema.statics.findByAuthorAndProblem = submission.findByAuthorAndTarget();
 
-problemSubmissionSchema.statics.submissionFileName = function (studentID, pid) {
-    return 'problem' + pid + '-' + studentID;
+problemSubmissionSchema.statics.submissionFileName = function (studentID, pid, revision) {
+    return 'problem' + pid + '-' + studentID + '-v' + revision;
 };
 
 problemSubmissionSchema.methods.strip = submission.strip();

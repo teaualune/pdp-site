@@ -30,7 +30,7 @@
             templateUrl: '/templates/s/homework-detail.html'
         }).state('homework.detail.submission', {
             url: '/submission',
-            templateUrl: '/templates/s/submission.html'
+            templateUrl: '/templates/s/homework-submission.html'
         }).state('homework.detail.grades', {
             url: '/grades',
             templateUrl: '/templates/s/homework-grades.html'
@@ -49,7 +49,7 @@
             templateUrl: '/templates/s/problem-detail.html'
         }).state('problem.detail.submission', {
             url: '/submission',
-            templateUrl: '/templates/s/submission.html'
+            templateUrl: '/templates/s/problem-submission.html'
         }).state('problem.detail.grades', {
             url: '/grades',
             templateUrl: '/templates/s/problem-grades.html'

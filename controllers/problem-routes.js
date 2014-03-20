@@ -11,7 +11,7 @@ var async = require('async'),
     psFolder = _UD.problemSubmission,
     emailValidation = require('../config/email-validation'),
     getSubmissionFilePath = function (submissionFileName, extension) {
-        return path.join(utils.uploadDir(), 'ps', submissionFileName + extension);
+        return path.join(utils.uploadDir(), psFolder, submissionFileName + extension);
     },
     Problem = P.Problem,
     ProblemSubmission = P.ProblemSubmission,
@@ -58,7 +58,7 @@ module.exports = function (app) {
 
     // POST /api/problem
     // create a new problem
-    app.post('/api/problem', utils.auth.admin.concat(utils.uploadFile('problem')), function (req, res) {
+    app.post('/api/problem', utils.auth.admin.concat(utils.uploadFile(problemFolder)), function (req, res) {
         var filePath,
             deadline = (new Date(req.body.deadline)).getTime();
         if (req.body.file) {
@@ -87,7 +87,7 @@ module.exports = function (app) {
 
     // PUT /api/problem/:pid
     // update problem
-    app.put('/api/problem/:pid', utils.auth.admin.concat(utils.uploadFile('problem')), function (req, res) {
+    app.put('/api/problem/:pid', utils.auth.admin.concat(utils.uploadFile(problemFolder)), function (req, res) {
         async.waterfall([
             function (callback) {
                 Problem.findById(req.params.pid, callback);
@@ -205,10 +205,8 @@ module.exports = function (app) {
 
     // POST /api/user/:uid/ps
     // create or update a problem submission
-    app.post('/api/user/:uid/problem', utils.auth.self.concat(utils.uploadFile('ps')), function (req, res) {
-        var studentID = emailValidation.getStudentID(req.user.email),
-            fileName = ProblemSubmission.submissionFileName(studentID, req.body.pid),
-            filePath = getSubmissionFilePath(fileName, req.body.file.extension);
+    // nupdated submission does not overwrite previous file, thus forms a series of submissions
+    app.post('/api/user/:uid/problem', utils.auth.self.concat(utils.uploadFile(psFolder)), function (req, res) {
         async.waterfall([
             function (callback) {
                 if (req.body.file) {
@@ -227,15 +225,14 @@ module.exports = function (app) {
                 ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.body.pid, callback);
             },
             function (ps, callback) {
+                var studentID = emailValidation.getStudentID(req.user.email),
+                    fileName = ProblemSubmission.submissionFileName(studentID, req.body.pid, ps ? ps.revision + 1 : 0),
+                    filePath = getSubmissionFilePath(fileName, req.body.file.extension);
                 if (ps) {
                     // update
-                    fs.unlink(ps.filePath, function (err) {
-                        // ignore err
-                        fs.rename(req.body.file.path, filePath, function (err) {
-                            // ignore err
-                            ps.filePath = filePath;
-                            ps.save(callback);
-                        });
+                    fs.rename(req.body.file.path, filePath, function (err) {
+                        ps.filePaths.push(filePath);
+                        ps.save(callback);
                     });
                 } else {
                     // create
@@ -245,7 +242,8 @@ module.exports = function (app) {
                             _id: new mongoose.Types.ObjectId,
                             author: req.params.uid,
                             target: pid,
-                            filePath: filePath
+                            filePaths: [ filePath ],
+                            revision: 0
                         }, callback);
                     });
                 }

@@ -1,0 +1,30 @@
+<h3>Submission Stats</h3>
+<h4>Submits/Students:&nbsp;{{ submitsCount }}/{{ submissions.length }}</h4>
+<div class="pdp-table">
+    <table class="pure-table pure-table-striped">
+        <thead><tr>
+            <th>Students</th>
+            <th>Submission Status</th>
+            <th>Grading</th>
+        </tr></thead>
+        <tbody><tr ng-repeat="sub in submissions">
+            <td>
+                <h4>{{ sub.author.nickname }}</h4>{{ sub.author.email }}
+            </td>
+            <td>
+                <span ng-if="sub.submission">Files:<ul>
+                    <li ng-repeat="file in sub.submissions.filePaths">
+                        <a href="{{ file }}">Rev{{ $index }}</a>
+                    </li>
+                </ul></span>
+                <span ng-if="sub.submission">File: <a href="{{ sub.submission.filePath }}">Download</a></span>
+                <span ng-if="!sub.submission">Not submitted yet</span>
+            </td>
+            <td>
+                <p ng-show="sub.submission.grading">{{ sub.submission.grading.score }}</p>
+                <a ui-sref=".grading({ id: sub.submission._id })">Grades</a>
+            </td>
+        </tr></tbody>
+    </table>
+</div>
+<ui-view class="grading" />
