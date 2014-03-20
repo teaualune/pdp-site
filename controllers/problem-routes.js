@@ -236,6 +236,7 @@ module.exports = function (app) {
                             ps.filePath = filePath;
                             ps.save(callback);
                             ps.state = 0;
+                            ps.time = 0.0;
                             ps.result = "";
                         });
                     });
@@ -249,6 +250,7 @@ module.exports = function (app) {
                             target: pid,
                             filePath: filePath,
                             state: 0,
+                            time: 0.0,
                             result: ""
                         }, callback);
                     });
