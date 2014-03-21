@@ -9,9 +9,11 @@
                 </li>
             </ul>
         </div>
-        <label for="file">Upload File</label>
-        <input type="file" name="file" id="file" />
-        <button ng-click="upload()" class="pure-button button-save">Upload</button>
+        <div ng-hide="expired">
+            <label for="file">Upload File</label>
+            <input type="file" name="file" id="file" />
+            <button ng-click="upload()" class="pure-button button-save">Upload</button>
+        </div>
     </fieldset>
 </form>
 <div ng-show="expired && !submission">(´・ω・`) You have missed the deadline...</div>
