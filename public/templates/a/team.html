@@ -1,0 +1,34 @@
+<div ng-controller="TeamCtrl">
+    <h3>Organize Teams</h3>
+    <div class="loading" ng-show="loading">
+        <img src="/images/indicator.gif" alt="loading" width="33" height="33" />
+    </div>
+    <ul class="pure-g-r" ng-hide="loading">
+        <li class="pure-u-1-4 team-block" ng-repeat="(id, team) in teams">
+            <h4>{{ team.name }}</h4>
+            <ul ui-on-drop="onDropToTeam($data, id)">
+                <li ng-repeat="student in team.students track by student._id" ui-draggable="true" drag="student" on-drop-success="dropSuccess($event, $index, student, team.students)">
+                    <strong>{{ student.nickname }}</strong>
+                    <span>{{ student.email }}</span>
+                </li>
+            </ul>
+        </li>
+        <li class="pure-u-1-4 team-block">
+            <h4>New Team</h4>
+            <form>
+                <label>Name</label>
+                <input type="text" ng-model="newTeamName" />
+                <button ng-click="newTeam()" class="pure-button button-save">New</button>
+            </form>
+        </li>
+        <li class="pure-u-1 team-block">
+            <h4>Students w/o Team</h4>
+            <ul>
+                <li ng-repeat="student in noTeamStudents track by student._id" ui-draggable="true" drag="student" on-drop-success="dropSuccess($event, $index, student, noTeamStudents)">
+                    <strong>{{ student.nickname }}</strong>
+                    <span>{{ student.email }}</span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

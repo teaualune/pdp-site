@@ -19,5 +19,9 @@
                 <button ng-click="edit()" class="pure-button button-edit" ng-hide="editing">Edit</button>
             </div>
         </li>
+        <li ng-show="user.team">
+            <label>Team {{ user.team._id }}</label>
+            <div><strong>{{ user.team.name }}</strong></div>
+        </li>
     </ul>
 </div>

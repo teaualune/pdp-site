@@ -3,7 +3,8 @@ var main = require('./main'),
     userRoutes = require('./user-routes'),
     homeworkRoutes = require('./homework-routes'),
     problemRoutes = require('./problem-routes'),
-    crossGradingRoutes = require('./crossGrading-routes');
+    crossGradingRoutes = require('./crossGrading-routes'),
+    teamRoutes = require('./team-routes');
 
 module.exports = function (app, passport) {
 
@@ -22,5 +23,7 @@ module.exports = function (app, passport) {
     problemRoutes(app);
 
     crossGradingRoutes(app);
+
+    teamRoutes(app);
 
 };

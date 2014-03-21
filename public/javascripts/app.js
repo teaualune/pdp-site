@@ -1,6 +1,6 @@
 (function (A, D) {
 
-    var app = A.module('app', ['pdpResource', 'ui.router']);
+    var app = A.module('app', ['pdpResource', 'ui.router', 'ngDragDrop']);
 
     A.element(D.getElementById('menu-toggle')).on('click', function () {
         A.element(D.getElementById('menu')).toggleClass('on');

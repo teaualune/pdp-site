@@ -3,7 +3,9 @@
     <ul>
         <li class="menu-item"><a href="#/homework" class="item">Homework</a></li><!--
      --><li class="menu-item"><a href="#/problem" class="item">Problems</a></li><!--
-     --><% if (!locals.user.admin) { %><!--
+     --><% if (locals.user.admin) { %><!--
+     --><li class="menu-item"><a href="#/team" class="item">Team</a></li><!--
+     --><% } else { %><!--
      --><li class="menu-item"><a href="#/cross-gradings" class="item">Cross Gradings</a></li><!--
      --><% } %><!--
      --><li class="menu-item"><a href="#/settings" class="item fa fa-gear"></a></li><!--

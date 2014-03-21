@@ -16,6 +16,21 @@
             },
             me: function (callback) {
                 return R.all('user').customGET('me').then(callback);
+            },
+            assignTeam: function (user, tid, callback) {
+                return R.one('user', user._id).customPUT({ tid: tid }, 'team').then(callback);
+            },
+            students: function (callback) {
+                return R.all('user').getList({ admin: 0 }).then(callback);
+            },
+            teamMembers: function (tid, callback) {
+                return R.one('team', tid).customGET('users').then(callback);
+            },
+            teams: function (callback) {
+                return R.all('team').getList().then(callback);
+            },
+            newTeam: function (name, callback) {
+                return R.all('team').customPOST({ name: name }, '').then(callback);
             }
         };
     }]);

@@ -8,6 +8,10 @@ var mongoose = require('mongoose'),
         email: String,
         nickname: String,
         password: String,
+        team: {
+            type: Number, // team id
+            ref: 'Team'
+        },
         admin: {
             type: Boolean,
             default: false
@@ -27,6 +31,7 @@ userSchema.methods.strip = function () {
             _id: this._id,
             email: this.email,
             nickname: this.nickname,
+            team: this.team
         };
     if (this.admin) {
         stripped.admin = true;

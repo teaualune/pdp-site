@@ -97,11 +97,7 @@
                     s.loading = true;
                     HW.uploadSubmission(Global.me._id, data, function () {
                         s.loading = false;
-                        state.go('homework.detail.submission', {
-                            hwid: s.detailHW._id
-                        }, {
-                            reload: true
-                        });
+                        state.go('homework.detail.submission', { hwid: s.detailHW._id }, { reload: true });
                     });
                 } else {
                     alert('Please choose file to upload.');
@@ -137,11 +133,7 @@
                     s.loading = true;
                     Problem.uploadSubmission(Global.me._id, data, function () {
                         s.loading = false;
-                        state.go('problem.detail.submission', {
-                            pid: s.detailProblem._id
-                        }, {
-                            reload: true
-                        });
+                        state.go('problem.detail.submission', { pid: s.detailProblem._id }, { reload: true });
                     });
                 } else {
                     alert('Please choose file to upload.');

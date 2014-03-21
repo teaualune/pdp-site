@@ -84,6 +84,10 @@
         sp.state('settings', {
             url: '/settings',
             templateUrl: '/templates/settings.html'
+        }).state('team', {
+            url: '/team',
+            templateUrl: '/templates/a/team.html',
+            controller: 'TeamCtrl'
         });
     }]);
 
@@ -106,11 +110,7 @@
                 s.loading = true;
                 HW.update(s.detailHW._id, prepareFormData(s.detailHW), function () {
                     s.loading = false;
-                    state.go('homework.detail.overview', {
-                        hwid: s.detailHW._id
-                    }, {
-                        reload: true
-                    });
+                    state.go('homework.detail.overview', { hwid: s.detailHW._id }, { reload: true });
                 });
             };
             s.edit = function () {
@@ -119,9 +119,7 @@
             s.destroy = function () {
                 if (confirm(da[0]) && confirm(da[1]) && confirm(da[2])) {
                     s.detailHW.remove();
-                    state.go('homework', {}, {
-                        reload: true
-                    });
+                    state.go('homework', {}, { reload: true });
                 }
             };
         }
@@ -203,9 +201,7 @@
                     questions: CG.toQuestionObject(s.questions),
                     count: s.replicaCount
                 }, function () {
-                    state.go('homework.detail.crossgrading', {}, {
-                        reload: true
-                    });
+                    state.go('homework.detail.crossgrading', {}, { reload: true });
                 }, function (err) {
                     alert(err.data);
                 });
@@ -213,9 +209,7 @@
             s.reset = function () {
                 if (confirm(da[0]) && confirm(da[1]) && confirm(da[2])) {
                     CG.reset(s.hwid, function () {
-                        state.go('homework.detail.crossgrading', {}, {
-                            reload: true
-                        });
+                        state.go('homework.detail.crossgrading', {}, { reload: true });
                     });
                 }
             }
@@ -243,9 +237,7 @@
             s.save = function () {
                 s.loading = true;
                 HW.create(prepareFormData(s.detailHW), function () {
-                    state.go('homework', {}, {
-                        reload: true
-                    });
+                    state.go('homework', {}, { reload: true });
                 }, function (err) {
                     alert(err.data);
                 });
@@ -272,11 +264,7 @@
                 s.loading = true;
                 Problem.update(s.detailProblem._id, prepareFormData(s.detailProblem), function () {
                     s.loading = false;
-                    state.go('problem.detail.overview', {
-                        pid: s.detailProblem._id
-                    }, {
-                        reload: true
-                    });
+                    state.go('problem.detail.overview', { pid: s.detailProblem._id }, { reload: true });
                 });
             };
             s.edit = function () {
@@ -285,9 +273,7 @@
             s.destroy = function () {
                 if (confirm(da[0]) && confirm(da[1]) && confirm(da[2])) {
                     s.detailProblem.remove();
-                    state.go('problem', {}, {
-                        reload: true
-                    });
+                    state.go('problem', {}, { reload: true });
                 }
             };
         }
@@ -308,9 +294,7 @@
             s.save = function () {
                 s.loading = true;
                 Problem.create(prepareFormData(s.detailProblem), function () {
-                    state.go('problem', {}, {
-                        reload: true
-                    });
+                    state.go('problem', {}, { reload: true });
                 }, function (err) {
                     alert(err.data);
                 });
@@ -366,6 +350,50 @@
             s.cancel = function () {
                 state.go('problem.detail.stats');
             }
+        }
+    ]);
+
+    app.controller('TeamCtrl', [
+        '$scope',
+        'User',
+        '$state',
+        function (s, User, state) {
+            var tempStudent;
+            s.loading = true;
+            User.students(function (students) {
+                User.teams(function(teams) {
+                    var i;
+                    s.teams = {};
+                    s.noTeamStudents = [];
+                    for (i = 0; i < teams.length; i = i + 1) {
+                        s.teams[teams[i]._id] = teams[i];
+                        s.teams[teams[i]._id].students = [];
+                    }
+                    for (i = 0; i < students.length; i = i + 1) {
+                        if (students[i].team) {
+                            s.teams[students[i].team._id].students.push(students[i]);
+                        } else {
+                            s.noTeamStudents.push(students[i]);
+                        }
+                    }
+                    s.loading = false;
+                });
+            });
+            s.onDropToTeam = function ($data, tid) {
+                User.assignTeam($data, tid, function () {
+                    s.teams[tid].students.push(tempStudent);
+                    console.log(s.teams[tid])
+                    tempStudent = null;
+                });
+            };
+            s.dropSuccess = function ($event, $index, student, students) {
+                tempStudent = students.splice($index, 1)[0];
+            };
+            s.newTeam = function () {
+                User.newTeam(s.newTeamName, function () {
+                    state.go('team', {}, { reload: true });
+                });
+            };
         }
     ]);
 

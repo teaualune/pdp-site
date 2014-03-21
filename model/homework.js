@@ -47,11 +47,6 @@ homeworkSchema.statics.stripHomeworks = function (homeworks) {
     return stripped;
 };
 
-// _hwSubmissionSchema.crossGradings = [{
-//     type: Schema.Types.ObjectId,
-//     ref: 'CrossGrading'
-// }];
-
 homeworkSubmissionSchema = new Schema(_hwSubmissionSchema);
 
 homeworkSubmissionSchema.statics.findByAuthor = submission.findByAuthor();
