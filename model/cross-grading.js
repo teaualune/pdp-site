@@ -80,15 +80,15 @@ crossGradingSchema.methods.updateContentQuestions = function (questions, callbac
 };
 
 crossGradingSchema.statics.findBySubmission = function (hwsid, callback) {
-    this.find({ submission: hwsid }, callback);
+    return this.find({ submission: hwsid }, callback);
 };
 
 crossGradingSchema.statics.findByHomework = function (hwid, callback) {
-    this.find({ homework: hwid }, callback);
+    return this.find({ homework: hwid }, callback);
 };
 
 crossGradingSchema.statics.findByAuthor = function (uid, callback) {
-    this.find({ author: uid }, callback);
+    return this.find({ author: uid }, callback);
 };
 
 // return array of created cross gradings

@@ -4,6 +4,7 @@ var async = require('async'),
     fs = require('fs'),
     P = require('../model/problem'),
     User = require('../model/user'),
+    Team = require('../model/team'),
     Grading = require('../model/grading'),
     utils = require('./routes-utils'),
     _UD = require('../settings.json').uploadDir,
@@ -75,7 +76,8 @@ module.exports = function (app) {
             sampleInput: req.body.sampleInput,
             sampleOutput: req.body.sampleOutput,
             deadline: deadline,
-            manualFilePath: filePath
+            manualFilePath: filePath,
+            isGroup: req.body.isGroup === '1' ? true : false
         }, utils.defaultHandler(res, stripOne));
     });
 
@@ -139,34 +141,37 @@ module.exports = function (app) {
     // get all problem submissions of a problem
     // return an array of { author: User, submission: ProblemSubmission } objects
     app.get('/api/problem/:pid/ps', utils.auth.admin, function (req, res) {
-        // ProblemSubmission.findByProblem(req.params.pid, utils.defaultHandler(res, stripAllProblemSubmissions));
-        async.parallel({
-            authors: function (callback) {
-                User.findStudents(callback);
+        async.waterfall([
+            function (callback) {
+                Problem.findById(req.params.pid, callback);
             },
-            submissions: function (callback) {
-                ProblemSubmission.findByProblem(req.params.pid, callback);
+            function (problem, callback) {
+                var parallel = {};
+                parallel.submissions = function (cb) {
+                    ProblemSubmission.findByProblem(req.params.pid, cb);
+                };
+                if (problem.isGroup) {
+                    parallel.teams = function (cb) {
+                        Team.find({}, cb);
+                    };
+                } else {
+                    parallel.authors = function (cb) {
+                        User.find({ admin: false }, cb);
+                    };
+                }
+                async.parallel(parallel, callback);
             }
-        }, function (err, results) {
-            var data, i, j;
+        ], function (err, results) {
             if (err) {
                 res.send(500);
             } else if (results.authors && results.submissions) {
-                data = [];
-                for (i = 0; i < results.authors.length; i = i + 1) {
-                    data[i] = {
-                        author: results.authors[i].strip(),
-                        submission: null
-                    };
-                    for (j = 0; j < results.submissions.length; j = j + 1) {
-                        if (data[i].author._id.equals(results.submissions[j].author)) {
-                            data[i].submission = results.submissions[j].strip();
-                            results.submissions.splice(j, 1);
-                            break;
-                        }
-                    }
-                }
-                res.send(data);
+                res.send(utils.createAuthorSubmissionArray(results.authors, results.submissions, 'author', function (a, b) {
+                    return a.equals(b);
+                }));
+            } else if (results.authors && results.submissions) {
+                res.send(utils.createAuthorSubmissionArray(results.teams, results.submissions, 'team', function (a, b) {
+                    return a === b;
+                }));
             } else {
                 res.send(400);
             }
@@ -177,36 +182,42 @@ module.exports = function (app) {
     // get all {problem, problem submission} of a user
     // ps is put under problem
     app.get('/api/user/:uid/problem', utils.auth.self, function (req, res) {
-        Problem.find({}, function (err, problems) {
-            if (err) {
-                res.send(500);
-            } else if (problems) {
-                async.map(problems, function (problem, callback) {
-                    var stripped = problem.strip();
-                    ProblemSubmission.findOne({
-                        author: req.params.uid,
-                        target: problem._id
-                    }, function (err, ps) {
-                        if (err) {
-                            callback(err);
-                        } else if (ps) {
-                            stripped.submision = ps.strip();
-                            callback(null, stripped);
-                        } else {
-                            callback(null, stripped);
+        var team;
+        async.waterfall([
+            function (callback) {
+                User.findById(req.params.uid, callback);
+            },
+            function (user, callback) {
+                team = user.team;
+                Problem.find({}, callback);
+            },
+            function (problems, callback) {
+                async.map(problems, function (problem, cb) {
+                    var stripped = problem.strip(),
+                        query = {
+                            target: problem._id
+                        };
+                    if (problem.isGroup) {
+                        query.team = team;
+                    } else {
+                        query.author = req.params.uid;
+                    }
+                    ProblemSubmission.findOne(query, function (err, ps) {
+                        if (ps) {
+                            stripped.submission = ps.strip();
                         }
+                        cb(err, stripped);
                     });
-                }, utils.defaultHandler(res));
-            } else {
-                res.send(400);
+                }, callback);
             }
-        });
+        ], utils.defaultHandler(res));
     });
 
     // POST /api/user/:uid/ps
     // create or update a problem submission
     // nupdated submission does not overwrite previous file, thus forms a series of submissions
     app.post('/api/user/:uid/problem', utils.auth.self.concat(utils.uploadFile(psFolder)), function (req, res) {
+        var isGroup = false;
         async.waterfall([
             function (callback) {
                 if (req.body.file) {
@@ -219,14 +230,18 @@ module.exports = function (app) {
                 Problem.findById(req.body.pid, callback);
             },
             function (problem, callback) {
+                isGroup = problem.isGroup;
                 utils.isSubmissionExpired(problem.deadline, callback);
             },
             function (callback) {
+                if (isGroup) {
+                    ProblemSubmission.findByTeamAndProblem(req.user.team, req.body.pid, callback);
+                }
                 ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.body.pid, callback);
             },
             function (ps, callback) {
-                var studentID = emailValidation.getStudentID(req.user.email),
-                    fileName = ProblemSubmission.submissionFileName(studentID, req.body.pid, ps ? ps.revision + 1 : 0),
+                var authorID = isGroup ? 'team' + req.user.team : emailValidation.getStudentID(req.user.email),
+                    fileName = ProblemSubmission.submissionFileName(authorID, req.body.pid, ps ? ps.revision + 1 : 0),
                     filePath = getSubmissionFilePath(fileName, req.body.file.extension);
                 if (ps) {
                     // update
@@ -237,14 +252,19 @@ module.exports = function (app) {
                 } else {
                     // create
                     fs.rename(req.body.file.path, filePath, function (err) {
-                        var pid = parseInt(req.body.pid, 10);
-                        ProblemSubmission.create({
+                        var pid = parseInt(req.body.pid, 10),
+                            newSubmission;
+                        newSubmission = {
                             _id: new mongoose.Types.ObjectId,
                             author: req.params.uid,
                             target: pid,
                             filePaths: [ filePath ],
                             revision: 0
-                        }, callback);
+                        };
+                        if (isGroup) {
+                            newSubmission.team = req.user.team;
+                        }
+                        ProblemSubmission.create(newSubmission, callback);
                     });
                 }
             }
@@ -261,18 +281,26 @@ module.exports = function (app) {
     // get problem submission by user and problem id
     // ps is under problem
     app.get('/api/user/:uid/problem/:pid', utils.auth.self, function (req, res) {
+        var team;
         async.waterfall([
             function (callback) {
+                User.findById(req.params.uid, callback);
+            },
+            function (user, callback) {
+                team = user.team;
                 Problem.findById(req.params.pid, callback);
             },
             function (problem, callback) {
                 callback(null, problem.strip());
             },
             function (problem, callback) {
-                ProblemSubmission.findOne({
-                    author: req.params.uid,
-                    target: req.params.pid
-                }).populate('grading').exec(function (err, ps) {
+                var query = { target: req.params.pid };
+                if (hw.isGroup) {
+                    query.team = team;
+                } else {
+                    query.author = req.params.uid;
+                }
+                ProblemSubmission.findOne(query).populate('grading').exec(function (err, ps) {
                     if (err) {
                         callback(err);
                     } else if (ps) {

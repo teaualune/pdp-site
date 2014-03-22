@@ -6,6 +6,7 @@
             data.append('title', object.title);
             data.append('description', object.description);
             data.append('deadline', object.deadline);
+            data.append('isGroup', object.isGroup);
             if (object.sampleInput) {
                 data.append('sampleInput', object.sampleInput);
             }
@@ -236,6 +237,7 @@
             s.loading = false;
             s.save = function () {
                 s.loading = true;
+                s.detailHW.isGroup = s.isGroup;
                 HW.create(prepareFormData(s.detailHW), function () {
                     state.go('homework', {}, { reload: true });
                 }, function (err) {
@@ -293,6 +295,7 @@
             s.loading = false;
             s.save = function () {
                 s.loading = true;
+                s.detailProblem.isGroup = s.isGroup;
                 Problem.create(prepareFormData(s.detailProblem), function () {
                     state.go('problem', {}, { reload: true });
                 }, function (err) {
@@ -382,7 +385,6 @@
             s.onDropToTeam = function ($data, tid) {
                 User.assignTeam($data, tid, function () {
                     s.teams[tid].students.push(tempStudent);
-                    console.log(s.teams[tid])
                     tempStudent = null;
                 });
             };

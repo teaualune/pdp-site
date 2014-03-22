@@ -8,8 +8,11 @@
             <th>Grading</th>
         </tr></thead>
         <tbody><tr ng-repeat="sub in submissions">
-            <td>
+            <td ng-show="sub.author">
                 <h4>{{ sub.author.nickname }}</h4>{{ sub.author.email }}
+            </td>
+            <td ng-show="sub.team">
+                <h4>Team {{ sub.team._id }}</h4>{{ sub.team.name }}
             </td>
             <td>
                 <span ng-if="sub.submission">Files:<ul>

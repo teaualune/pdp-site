@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
         description: String,
         deadline: Number, // Unix timestamp
         manualFilePath: String,
+        isGroup: Boolean,
 
         // mixed type
         // {
@@ -35,7 +36,8 @@ homeworkSchema.methods.strip = function () {
         title: this.title,
         description: this.description,
         deadline: formatDate(this.deadline),
-        manualFilePath: path2url.one(this.manualFilePath)
+        manualFilePath: path2url.one(this.manualFilePath),
+        isGroup: this.isGroup
     };
 };
 
@@ -52,6 +54,7 @@ homeworkSubmissionSchema = new Schema(_hwSubmissionSchema);
 homeworkSubmissionSchema.statics.findByAuthor = submission.findByAuthor();
 homeworkSubmissionSchema.statics.findByHomework = submission.findByTarget();
 homeworkSubmissionSchema.statics.findByAuthorAndHomework = submission.findByAuthorAndTarget();
+homeworkSubmissionSchema.statics.findByTeamAndHomework = submission.findByTeamAndTarget();
 
 homeworkSubmissionSchema.statics.submissionFileName = function (studentID, hwid) {
     return 'hw' + hwid + '-' + studentID;

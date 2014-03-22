@@ -21,6 +21,12 @@
             <label for="deadline">* Deadline<br />(yyyy-MM-dd&nbsp;HH:mm)</label>
             <input type="text" name="deadline" ng-model="detailProblem.deadline" placeholder="yyyy-MM-dd HH:mm" ng-pattern="/[0-9]{4}\-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}/" required ng-readonly="!editing" />
         </div>
+        <div class="pure-control-group">
+            <label for="isGroup">Team Submission?</label>
+            <input type="checkbox" name="isGroup" ng-model="isGroup" ng-true-value="1" ng-false-value="0" ng-show="editingNew" />
+            <span ng-show="!editing && detailHW.isGroup">Yes</span>
+            <span ng-show="!editing && !detailHW.isGroup">No</span>
+        </div>
         <div class="pure-control-group" ng-show="(detailProblem.manualFilePath || detailProblem.manualFilePath != '') && !editing && !editingNew">
             <label>File<br />(Uploaded)</label>
             <a href="{{ detailProblem.manualFilePath }}">File</a>

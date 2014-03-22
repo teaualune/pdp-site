@@ -13,6 +13,10 @@ module.exports = {
                 type: ObjectId,
                 ref: 'User'
             },
+            team: {
+                type: Number,
+                ref: 'Team'
+            },
             filePath: String,
             filePaths: [String], // multiple revision
             revision: Number, // revision number
@@ -24,18 +28,26 @@ module.exports = {
     },
     findByAuthor: function () {
         return function (authorID, callback) {
-            this.find({ author: authorID }, callback);
+            return this.find({ author: authorID }, callback);
         };
     },
     findByTarget: function () {
         return function (targetID, callback) {
-            this.find({ target: targetID }, callback);
+            return this.find({ target: targetID }, callback);
         };
     },
     findByAuthorAndTarget: function () {
         return function (authorID, targetID, callback) {
-            this.findOne({
+            return this.findOne({
                 author: authorID,
+                target: targetID
+            }, callback);
+        };
+    },
+    findByTeamAndTarget: function () {
+        return function (teamID, targetID, callback) {
+            return this.findOne({
+                team: teamID,
                 target: targetID
             }, callback);
         };

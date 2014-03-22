@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
         sampleInput: String,
         sampleOutput: String,
         deadline: Number, // Unix timestamp
-        manualFilePath: String
+        manualFilePath: String,
+        isGroup: Boolean,
     }),
     problemSubmissionSchema = new Schema(submission.schema('Problem'));
 
@@ -28,7 +29,8 @@ problemSchema.methods.strip = function () {
         sampleInput: this.sampleInput,
         sampleOutput: this.sampleOutput,
         deadline: formatDate(this.deadline),
-        manualFilePath: path2url.one(this.manualFilePath)
+        manualFilePath: path2url.one(this.manualFilePath),
+        isGroup: this.isGroup
     };
 };
 
@@ -43,6 +45,7 @@ problemSchema.statics.stripProblems = function (problems) {
 problemSubmissionSchema.statics.findByAuthor = submission.findByAuthor();
 problemSubmissionSchema.statics.findByProblem = submission.findByTarget();
 problemSubmissionSchema.statics.findByAuthorAndProblem = submission.findByAuthorAndTarget();
+problemSubmissionSchema.statics.findByTeamAndProblem = submission.findByTeamAndTarget();
 
 problemSubmissionSchema.statics.submissionFileName = function (studentID, pid, revision) {
     return 'problem' + pid + '-' + studentID + '-v' + revision;

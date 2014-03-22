@@ -4,6 +4,7 @@ var async = require('async'),
     fs = require('fs'),
     _H = require('../model/homework'),
     User = require('../model/user'),
+    Team = require('../model/team'),
     Grading = require('../model/grading'),
     CrossGrading = require('../model/cross-grading'),
     utils = require('./routes-utils'),
@@ -74,7 +75,8 @@ module.exports = function (app) {
             title: req.body.title,
             description: req.body.description,
             deadline: deadline,
-            manualFilePath: filePath
+            manualFilePath: filePath,
+            isGroup: req.body.isGroup === '1' ? true : false
         }, utils.defaultHandler(res, stripOne));
     });
 
@@ -135,34 +137,39 @@ module.exports = function (app) {
     // GET /api/hw/:hwid/hws
     // get all homework submissions of a homework
     // return an array of { author: User, submission: HomeworkSubmission } objects
+    // or return an array of { team: Team, submission: HomeworkSubbmision } objects for isGroup homeworks
     app.get('/api/hw/:hwid/hws', utils.auth.admin, function (req, res) {
-        async.parallel({
-            authors: function (callback) {
-                User.findStudents(callback);
+        async.waterfall([
+            function (callback) {
+                Homework.findById(req.params.hwid, callback);
             },
-            submissions: function (callback) {
-                HomeworkSubmission.findByHomework(req.params.hwid, callback);
+            function (hw, callback) {
+                var parallel = {};
+                parallel.submissions = function (cb) {
+                    HomeworkSubmission.findByHomework(req.params.hwid, cb);
+                };
+                if (hw.isGroup) {
+                    parallel.teams = function (cb) {
+                        Team.find({}, cb);
+                    };
+                } else {
+                    parallel.authors = function (cb) {
+                        User.find({ admin: false }, cb);
+                    };
+                }
+                async.parallel(parallel, callback);
             }
-        }, function (err, results) {
-            var data, i, j;
+        ], function (err, results) {
             if (err) {
                 res.send(500);
             } else if (results.authors && results.submissions) {
-                data = [];
-                for (i = 0; i < results.authors.length; i = i + 1) {
-                    data[i] = {
-                        author: results.authors[i].strip(),
-                        submission: null
-                    };
-                    for (j = 0; j < results.submissions.length; j = j + 1) {
-                        if (data[i].author._id.equals(results.submissions[j].author)) {
-                            data[i].submission = results.submissions[j].strip();
-                            results.submissions.splice(j, 1);
-                            break;
-                        }
-                    }
-                }
-                res.send(data);
+                res.send(utils.createAuthorSubmissionArray(results.authors, results.submissions, 'author', function (a, b) {
+                    return a.equals(b);
+                }));
+            } else if (results.teams && results.submissions) {
+                res.send(utils.createAuthorSubmissionArray(results.teams, results.submissions, 'team', function (a, b) {
+                    return a === b;
+                }));
             } else {
                 res.send(400);
             }
@@ -173,35 +180,41 @@ module.exports = function (app) {
     // get all {homework, homework submission} of a user
     // hws is put under hw
     app.get('/api/user/:uid/hw', utils.auth.self, function (req, res) {
-        Homework.find({}, function (err, homeworks) {
-            if (err) {
-                res.send(500);
-            } else if (homeworks) {
-                async.map(homeworks, function (hw, callback) {
-                    var stripped = hw.strip();
-                    HomeworkSubmission.findOne({
-                        author: req.params.uid,
-                        target: hw._id
-                    }, function (err, hws) {
-                        if (err) {
-                            callback(err);
-                        } else if (hws) {
-                            stripped.submision = hws.strip();
-                            callback(null, stripped);
-                        } else {
-                            callback(null, stripped);
+        var team;
+        async.waterfall([
+            function (callback) {
+                User.findById(req.params.uid, callback);
+            },
+            function (user, callback) {
+                team = user.team;
+                Homework.find({}, callback);
+            },
+            function (homeworks, callback) {
+                async.map(homeworks, function (hw, cb) {
+                    var stripped = hw.strip(),
+                        query = {
+                            target: hw._id
+                        };
+                    if (hw.isGroup) {
+                        query.team = team;
+                    } else {
+                        query.author = req.params.uid;
+                    }
+                    HomeworkSubmission.findOne(query, function (err, hws) {
+                        if (hws) {
+                            stripped.submission = hws.strip();
                         }
+                        cb(err, stripped);
                     });
-                }, utils.defaultHandler(res));
-            } else {
-                res.send(400);
+                }, callback);
             }
-        });
+        ], utils.defaultHandler(res));
     });
 
     // POST /api/user/:uid/hw
     // create or update a homework submission
     app.post('/api/user/:uid/hw', utils.auth.self.concat(utils.uploadFile(hwsFolder)), function (req, res) {
+        var isGroup = false;
         async.waterfall([
             function (callback) {
                 if (req.body.file) {
@@ -214,14 +227,19 @@ module.exports = function (app) {
                 Homework.findById(req.body.hwid, callback);
             },
             function (hw, callback) {
+                isGroup = hw.isGroup;
                 utils.isSubmissionExpired(hw.deadline, callback);
             },
             function (callback) {
-                HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, callback);
+                if (isGroup) {
+                    HomeworkSubmission.findByTeamAndHomework(req.user.team, req.body.hwid, callback);
+                } else {
+                    HomeworkSubmission.findByAuthorAndHomework(req.params.uid, req.body.hwid, callback);
+                }
             },
             function (hws, callback) {
-                var studentID = emailValidation.getStudentID(req.user.email),
-                    fileName = HomeworkSubmission.submissionFileName(studentID, req.body.hwid),
+                var authorID = isGroup ? 'team' + req.user.team : emailValidation.getStudentID(req.user.email),
+                    fileName = HomeworkSubmission.submissionFileName(authorID, req.body.hwid),
                     filePath = getSubmissionFilePath(fileName, req.body.file.extension);
                 if (hws) {
                     // update
@@ -237,14 +255,20 @@ module.exports = function (app) {
                 } else {
                     // create
                     fs.rename(req.body.file.path, filePath, function (err) {
-                        var hwid = parseInt(req.body.hwid, 10);
-                        HomeworkSubmission.create({
+                        var hwid = parseInt(req.body.hwid, 10),
+                            newSubmission;
+                        newSubmission = {
                             _id: new mongoose.Types.ObjectId,
-                            author: req.params.uid,
                             target: hwid,
                             filePath: filePath,
                             revision: 0
-                        }, callback);
+                        };
+                        if (isGroup) {
+                            newSubmission.team = req.user.team;
+                        } else {
+                            newSubmission.author = req.params.uid;
+                        }
+                        HomeworkSubmission.create(newSubmission, callback);
                     });
                 }
             }
@@ -261,9 +285,13 @@ module.exports = function (app) {
     // get homework submission by user and homework id
     // hws is put under hw
     app.get('/api/user/:uid/hw/:hwid', utils.auth.self, function (req, res) {
-        var questions;
+        var questions, team;
         async.waterfall([
             function (callback) {
+                User.findById(req.params.uid, callback);
+            },
+            function (user, callback) {
+                team = user.team;
                 Homework.findById(req.params.hwid, callback);
             },
             function (hw, callback) {
@@ -271,10 +299,13 @@ module.exports = function (app) {
                 callback(null, hw.strip());
             },
             function (hw, callback) {
-                HomeworkSubmission.findOne({
-                    author: req.params.uid,
-                    target: req.params.hwid
-                }).populate('grading').exec(function (err, hws) {
+                var query = { target: req.params.hwid };
+                if (hw.isGroup) {
+                    query.team = team;
+                } else {
+                    query.author = req.params.uid;
+                }
+                HomeworkSubmission.findOne(query).populate('grading').exec(function (err, hws) {
                     if (err) {
                         callback(err);
                     } else if (hws) {

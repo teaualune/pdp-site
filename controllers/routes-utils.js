@@ -76,5 +76,21 @@ module.exports = {
                 res.send(200);
             }
         };
+    },
+    createAuthorSubmissionArray: function (authors, submissions, authorType, equals) {
+        var i, j, data = [];
+        for (i = 0; i < authors.length; i = i + 1) {
+            data[i] = {
+                submission: null
+            };
+            data[i][authorType] = authors[i].strip ? authors[i].strip() : authors[i];
+            for (j = 0; j < submissions.length; j = j + 1) {
+                if (equals(data[i][authorType]._id, submissions[j][authorType])) {
+                    data[i].submission = submissions.splice(j, 1)[0].strip();
+                    break;
+                }
+            }
+        }
+        return data;
     }
 };

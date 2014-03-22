@@ -1,4 +1,5 @@
 <h3>{{ detailHW.title }}</h3>
+<p ng-show="detailHW.isGroup">(Team Submission)</p>
 <p>{{ detailHW.description }}</p>
 <h4 ng-class="expired ? 'expired' : ''">Deadline: {{ deadline }}</h4>
 <div class="grading" ng-show="detailHW.manualFilePath && detailHW.manualFilePath != ''">

@@ -48,11 +48,11 @@ userSchema.statics.stripUsers = function (users) {
 };
 
 userSchema.statics.findByEmail = function (email, callback) {
-    this.findOne({ email: email } ,callback);
+    return this.findOne({ email: email } ,callback);
 };
 
 userSchema.statics.findStudents = function (callback) {
-    this.find({ admin: false }, callback);
+    return this.find({ admin: false }, callback);
 };
 
 module.exports = mongoose.model('User', userSchema);
