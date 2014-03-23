@@ -1,7 +1,13 @@
-nohup node app &
-cd ./program
+#!/bin/bash
 
-#dummy operation for preventing the nohup take over the stdio and user can not enter password
-sudo ls
-nohup sudo -u sandbox-test python bg.py &
+
+nohup node app >/dev/null 2>log &
+
+cd ./program
+if [ 'safe_mode' = 'safe_mode_config' ] ; then
+	nohup sudo -u sandbox-test python bg.py >/dev/null 2>log &
+else
+	nohup python bg.py >/dev/null 2>log &
+fi
+cd ../
 

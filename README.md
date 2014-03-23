@@ -42,6 +42,13 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 6. Create `upload` foler and several subfolders (`hw`, `hws`, `problem` and `ps` for homework description, homework submission, problem description and problem submission respectively) for file uploads. Directory names are specified and configurable in `settings.json`.
 7. Run `node app` in repository folder.
 
+### Quick Installation and Running
+1. Install Nodejs and Mongodb. Set $PATH to these two binaries.
+2. ./config.sh
+3. ./install.sh
+4. ./exec.sh
+If you want to stop it, use `kill.sh`.
+
 ### Assign admin priviledge to a user
 
 1. Register a new account first.

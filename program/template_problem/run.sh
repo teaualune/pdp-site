@@ -15,7 +15,9 @@ do
                 echo "CORRECT"
         else
                 echo "WRONG"
+				break
         fi;
 done
 
+echo "Tests Completed"
 

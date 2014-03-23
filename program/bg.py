@@ -3,6 +3,8 @@ import subprocess
 import os
 import time
 
+TIMEOUT = 60
+
 client = pymongo.MongoClient("localhost", 27017)
 
 db = client.pdp
@@ -30,9 +32,15 @@ while(1):
 		
 		#Launch Program
 		tStart = time.time()
-		respond2 = os.popen('./run.sh').read()
+		respond2 = os.popen('timeout -s 9 ' + str(TIMEOUT) + ' ./run.sh').read()
 		tEnd = time.time()
-		print (tEnd - tStart)
+		duration = (tEnd - tStart)
+		if (respond2.find('Tests Completed') == -1):
+			respond2 = 'Over Time!'
+			duration = 0
+		if (respond2.find('WRONG') >= 0):
+			duration = 0
+		print duration
 		os.chdir("../")
-		subs.update({"_id": item["_id"]}, {"$set": {"state":2, "result":respond1 + respond2, "time":(tEnd - tStart)}})
+		subs.update({"_id": item["_id"]}, {"$set": {"state":2, "result":str(respond1) + str(respond2), "time":duration}})
 
