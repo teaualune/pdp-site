@@ -1,6 +1,6 @@
 #!/bin/bash
 
-array=('socket.h' 'system.h' 'fork' 'exec' 'unistd.h')
+array=('socket.h' 'system.h' 'fork' 'exec' 'unistd.h' 'kill')
 
 
 var=$(gcc -E $1 -o pre_$1 2>&1)
