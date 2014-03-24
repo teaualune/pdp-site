@@ -105,8 +105,7 @@ crossGradingSchema.statics.findByAuthor = function (uid, callback) {
 
 // return array of created cross gradings
 crossGradingSchema.statics.bucketing = function (submissions, students, replicaCount, authorType) {
-    var CrossGrading = this,
-        shuffled = _.shuffle(students),
+    var shuffled = _.shuffle(students),
         bucket = (function (s) {
             var b = [];
             _.each(s, function (e) {
@@ -134,7 +133,8 @@ crossGradingSchema.statics.bucketing = function (submissions, students, replicaC
 };
 
 crossGradingSchema.statics.crossGradingFromBucket = function (bucket) {
-    var cgs = [];
+    var CrossGrading = this,
+        cgs = [];
     _.each(bucket, function (b) {
         var i, cg;
         for (i = 0; i < b.submissions.length; i = i + 1) {
