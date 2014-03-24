@@ -4,6 +4,7 @@ var async = require('async'),
     utils = require('./routes-utils'),
     CrossGrading = require('../model/cross-grading'),
     _H = require('../model/homework'),
+    User = require('../model/user'),
     Homework = _H.Homework,
     HomeworkSubmission = _H.HomeworkSubmission,
     stripCrossGradingsHandler = function (res) {
@@ -114,13 +115,15 @@ module.exports = function (app) {
     app.post('/api/cgs', utils.auth.admin, function (req, res) {
         var hwid = req.body.hwid,
             questions = req.body.questions || {},
-            replicaCount = req.body.count;
+            replicaCount = req.body.count,
+            isGroup = false;
         async.waterfall([
             function (callback) {
                 Homework.findById(hwid, callback);
             },
             function (hw, callback) {
                 // 1. save questions (use markModified)
+                isGroup = hw.isGroup;
                 hw.crossGradingQuestions = questions || {};
                 hw.markModified('crossGradingQuestions');
                 hw.save(callback);
@@ -137,24 +140,53 @@ module.exports = function (app) {
                 } else {
                     students = [];
                     for (i = 0; i < submissions.length; i = i + 1) {
-                        students.push(submissions[i].author);
+                        if (isGroup) {
+                            students.push(submissions[i].team);
+                        } else {
+                            students.push(submissions[i].author);
+                        }
                     }
                     callback(null, submissions, students);
                 }
             },
             function (submissions, students, callback) {
-                // 4. assign (hwsid, uid) mapping
+                // 4. assign (hwsid, uid) or (hwsid, tid) mapping
+                var bucket;
+                if (isGroup) {
+                    bucket = CrossGrading.bucketing(submissions, students, replicaCount, 'team');
+                    // 4.5 replace tid into uids in bucket
+                    async.map(bucket, function (b, cb) {
+                        User.find({ team: b.student }, function (err, students) {
+                            var buckets;
+                            if (students) {
+                                buckets = [];
+                                _.each(students, function (student) {
+                                    buckets.push({
+                                        student: student,
+                                        submissions: b.submissions
+                                    });
+                                });
+                            }
+                            cb(err, buckets);
+                        });
+                    }, function (err, results) {
+                        if (results) {
+                            results = _.flatten(results, true);
+                        }
+                        callback(err, results);
+                    });
+                } else {
+                    bucket = CrossGrading.bucketing(submissions, students, replicaCount, 'author');
+                    callback(null, bucket);
+                }
+            },
+            function (bucket, callback) {
                 // 5. update created cg instances (homework = hwid)
-                var cgs = CrossGrading.bucketing(submissions, students, replicaCount);
+                var cgs = CrossGrading.crossGradingFromBucket(bucket);
                 async.map(cgs, function (cg, cb) {
                     cg.homework = hwid;
                     cg.updateContentQuestions(questions, cb);
-                }, function (err, cgs) {
-                    // console.log('5');
-                    // console.log(err);
-                    // console.log(cgs);
-                    callback(err, cgs);
-                });
+                }, callback);
             }
         ], utils.emptyHandler(res));
     });

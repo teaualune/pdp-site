@@ -23,7 +23,19 @@ var _ = require('underscore'),
         //    ...
         // }
         content: Schema.Types.Mixed
-    });
+    }),
+
+    containsId = function (array, id) {
+        var i = 0,
+            contains = false;
+        for (i; i < array.length; i = i + 1) {
+            if (array[i].equals(id)) {
+                contains = true;
+                break;
+            }
+        }
+        return contains;
+    };
 
 crossGradingSchema.methods.strip = function () {
     return {
@@ -92,7 +104,7 @@ crossGradingSchema.statics.findByAuthor = function (uid, callback) {
 };
 
 // return array of created cross gradings
-crossGradingSchema.statics.bucketing = function (submissions, students, replicaCount) {
+crossGradingSchema.statics.bucketing = function (submissions, students, replicaCount, authorType) {
     var CrossGrading = this,
         shuffled = _.shuffle(students),
         bucket = (function (s) {
@@ -105,32 +117,24 @@ crossGradingSchema.statics.bucketing = function (submissions, students, replicaC
             });
             return b;
         }(shuffled)),
-        cgs = [],
-        r = 0,
-        containsId = function (array, id) {
-            var i = 0,
-                contains = false;
-            for (i; i < array.length; i = i + 1) {
-                if (array[i].equals(id)) {
-                    contains = true;
-                    break;
-                }
-            }
-            return contains;
-        };
-    for (r; r < replicaCount; r = r + 1) {
+        r;
+    for (r = 0; r < replicaCount; r = r + 1) {
         _.each(submissions, function (submission, i) {
             var j, k;
             for (j = 0; j < bucket.length; j = j + 1) {
                 k = (i + j + r) % bucket.length;
-                if (!bucket[k].student.equals(submission.author) && bucket[k].submissions.length < replicaCount && !containsId(bucket[k].submissions, submission._id)) {
+                if (!bucket[k].student.equals(submission[authorType]) && bucket[k].submissions.length < replicaCount && !containsId(bucket[k].submissions, submission._id)) {
                     bucket[k].submissions.push(submission._id);
                     break;
                 }
             }
         });
     }
-    console.log(bucket);
+    return bucket;
+};
+
+crossGradingSchema.statics.crossGradingFromBucket = function (bucket) {
+    var cgs = [];
     _.each(bucket, function (b) {
         var i, cg;
         for (i = 0; i < b.submissions.length; i = i + 1) {

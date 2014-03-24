@@ -77,7 +77,7 @@ module.exports = {
             }
         };
     },
-    createAuthorSubmissionArray: function (authors, submissions, authorType, equals) {
+    createAuthorSubmissionArray: function (authors, submissions, authorType) {
         var i, j, data = [];
         for (i = 0; i < authors.length; i = i + 1) {
             data[i] = {
@@ -85,7 +85,7 @@ module.exports = {
             };
             data[i][authorType] = authors[i].strip ? authors[i].strip() : authors[i];
             for (j = 0; j < submissions.length; j = j + 1) {
-                if (equals(data[i][authorType]._id, submissions[j][authorType])) {
+                if (data[i][authorType]._id.equals(submissions[j][authorType])) {
                     data[i].submission = submissions.splice(j, 1)[0].strip();
                     break;
                 }

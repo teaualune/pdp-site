@@ -9,6 +9,7 @@ var express = require('express'),
     app = express(),
     publicPath = path.join(__dirname, 'public');
 
+require('./model/NumberId');
 require('./config/passport')(passport);
 
 app.set('port', process.env.PORT || 3000);

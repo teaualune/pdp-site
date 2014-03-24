@@ -165,13 +165,9 @@ module.exports = function (app) {
             if (err) {
                 res.send(500);
             } else if (results.authors && results.submissions) {
-                res.send(utils.createAuthorSubmissionArray(results.authors, results.submissions, 'author', function (a, b) {
-                    return a.equals(b);
-                }));
+                res.send(utils.createAuthorSubmissionArray(results.authors, results.submissions, 'author'));
             } else if (results.authors && results.submissions) {
-                res.send(utils.createAuthorSubmissionArray(results.teams, results.submissions, 'team', function (a, b) {
-                    return a === b;
-                }));
+                res.send(utils.createAuthorSubmissionArray(results.teams, results.submissions, 'team'));
             } else {
                 res.send(400);
             }

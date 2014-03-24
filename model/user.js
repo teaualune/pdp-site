@@ -48,7 +48,7 @@ userSchema.statics.stripUsers = function (users) {
 };
 
 userSchema.statics.findByEmail = function (email, callback) {
-    return this.findOne({ email: email } ,callback);
+    return this.findOne({ email: email }, callback);
 };
 
 userSchema.statics.findStudents = function (callback) {
