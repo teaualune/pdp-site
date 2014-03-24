@@ -255,6 +255,7 @@ module.exports = function (app) {
                     fs.rename(req.body.file.path, filePath, function (err) {
                         ps.filePaths.push(filePath);
                         ps.revision = ps.revision + 1;
+                        ps.state = 0;
                         ps.save(callback);
                     });
                 } else {
@@ -268,8 +269,9 @@ module.exports = function (app) {
                             filePaths: [ filePath ],
                             revision: 0,
                             state: 0,
-                            time: 0.0,
-                            result: ''
+                            times: [],
+                            result: '',
+                            judgeHead:0
                         };
                         if (isGroup) {
                             newSubmission.team = req.user.team;

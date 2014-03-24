@@ -22,7 +22,8 @@ module.exports = {
             revision: Number, // revision number
             state: Number,
             result: String,
-            time: Number,
+            times: [Number],
+            judgeHead: Number,
             grading: { // teacher's grading
                 type: ObjectId,
                 ref: 'Grading'

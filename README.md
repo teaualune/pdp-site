@@ -31,6 +31,7 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 * [LESS](http://lesscss.org)
 * [Pure](http://purecss.io)
 * [NIPPON COLORS](http://nipponcolors.com)
+* [PyMongo](https://github.com/mongodb/mongo-python-driver)
 
 ### Installation and Running
 
@@ -44,10 +45,11 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 
 ### Quick Installation and Running
 1. Install Nodejs and Mongodb. Set $PATH to these two binaries.
-2. `./config.sh`
-3. `./install.sh`
-4. `./exec.sh`
-5. If you want to stop it, use `kill.sh`.
+2. Install PyMongo.
+3. `./config.sh`
+4. `./install.sh`
+5. `./exec.sh`
+6. If you want to stop it, use `kill.sh`.
 
 ### Assign admin priviledge to a user
 
