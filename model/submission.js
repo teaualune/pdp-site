@@ -54,7 +54,17 @@ module.exports = {
     },
     strip: function () {
         return function () {
-            this.filePath = path2url.one(this.filePath);
+            var filePaths, i;
+            if (this.filePath) {
+                this.filePath = path2url.one(this.filePath);
+            }
+            if (this.filePaths) {
+                filePaths = [];
+                for (i = 0; i < this.filePaths.length; i = i + 1) {
+                    filePaths.push(path2url.one(this.filePaths[i]));
+                }
+                this.filePaths = filePaths;
+            }
             return this;
         };
     },

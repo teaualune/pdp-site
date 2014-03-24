@@ -295,7 +295,7 @@ module.exports = function (app) {
             },
             function (problem, callback) {
                 var query = { target: req.params.pid };
-                if (hw.isGroup) {
+                if (problem.isGroup) {
                     query.team = team;
                 } else {
                     query.author = req.params.uid;
