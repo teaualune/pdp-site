@@ -29,19 +29,29 @@ var async = require('async'),
     },
 
     showHomeworkSubmission = function (req, res) {
-        HomeworkSubmission.findById(req.params.hwsid).populate('grading author').exec(function (err, hws) {
-            var data, grading, author;
+        HomeworkSubmission.findById(req.params.hwsid).populate('grading author team').exec(function (err, hws) {
+            var data, grading, author, team;
             if (err) {
                 data = 500;
             } else if (hws) {
-                author = hws.author.strip();
                 if (hws.grading) {
                     grading = hws.grading.strip();
                 }
+                if (hws.author) {
+                    author = hws.author.strip();
+                }
+                if (hws.team) {
+                    team = hws.team;
+                }
                 data = hws.strip();
-                data.author = author;
                 if (grading) {
-                    data.grading.grading;
+                    data.grading = grading;
+                }
+                if (author) {
+                    data.author = author;
+                }
+                if (team) {
+                    data.team = team;
                 }
             } else {
                 data = 400;
@@ -146,7 +156,7 @@ module.exports = function (app) {
             function (hw, callback) {
                 var parallel = {};
                 parallel.submissions = function (cb) {
-                    HomeworkSubmission.findByHomework(req.params.hwid, cb);
+                    HomeworkSubmission.findByHomework(req.params.hwid).populate('grading').exec(cb);
                 };
                 if (hw.isGroup) {
                     parallel.teams = function (cb) {

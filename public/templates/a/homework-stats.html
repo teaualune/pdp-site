@@ -19,7 +19,7 @@
                 <span ng-if="!sub.submission">Not submitted yet</span>
             </td>
             <td>
-                <p ng-show="sub.submission.grading">{{ sub.submission.grading.score }}</p>
+                <strong ng-show="sub.submission.grading">{{ sub.submission.grading.score }}<br /></strong>
                 <a ui-sref=".grading({ id: sub.submission._id })">Grades</a>
             </td>
         </tr></tbody>

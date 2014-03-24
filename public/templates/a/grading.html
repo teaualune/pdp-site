@@ -1,4 +1,4 @@
-<h3 class="grading">Grades Submission written by {{ submission.author.email }}</h3>
+<h3 class="grading">Grades Submission written by {{ submission.author.email }}{{ submission.team.name ? ' Team ' + submission.team.name : '' }}</h3>
 <form class="pdp-form pure-form pure-form-aligned" name="gradingForm">
     <fieldset>
         <div class="pure-control-group">

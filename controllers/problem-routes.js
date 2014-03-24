@@ -28,19 +28,29 @@ var async = require('async'),
     },
 
     showProblemSubmission = function (req, res) {
-        ProblemSubmission.findById(req.params.psid).populate('grading author').exec(function (err, ps) {
+        ProblemSubmission.findById(req.params.psid).populate('grading author team').exec(function (err, ps) {
             var data, grading, author;
             if (err) {
                 data = 500;
             } else if (ps) {
-                author = ps.author.strip();
                 if (ps.grading) {
                     grading = ps.grading.strip();
                 }
+                if (ps.author) {
+                    author = ps.author.strip();
+                }
+                if (ps.team) {
+                    team = ps.team;
+                }
                 data = ps.strip();
-                data.author = author;
                 if (grading) {
-                    data.grading.grading;
+                    data.grading = grading;
+                }
+                if (author) {
+                    data.author = author;
+                }
+                if (team) {
+                    data.team = team;
                 }
             } else {
                 data = 400;
@@ -148,7 +158,7 @@ module.exports = function (app) {
             function (problem, callback) {
                 var parallel = {};
                 parallel.submissions = function (cb) {
-                    ProblemSubmission.findByProblem(req.params.pid, cb);
+                    ProblemSubmission.findByProblem(req.params.pid).populate('grading').exec(cb);
                 };
                 if (problem.isGroup) {
                     parallel.teams = function (cb) {
@@ -253,13 +263,14 @@ module.exports = function (app) {
                             newSubmission;
                         newSubmission = {
                             _id: new mongoose.Types.ObjectId,
-                            author: req.params.uid,
                             target: pid,
                             filePaths: [ filePath ],
                             revision: 0
                         };
                         if (isGroup) {
                             newSubmission.team = req.user.team;
+                        } else {
+                            newSubmission.author = req.params.uid;
                         }
                         ProblemSubmission.create(newSubmission, callback);
                     });
