@@ -266,7 +266,10 @@ module.exports = function (app) {
                             _id: new mongoose.Types.ObjectId,
                             target: pid,
                             filePaths: [ filePath ],
-                            revision: 0
+                            revision: 0,
+                            state: 0,
+                            time: 0.0,
+                            result: ''
                         };
                         if (isGroup) {
                             newSubmission.team = req.user.team;

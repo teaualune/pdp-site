@@ -20,6 +20,9 @@ module.exports = {
             filePath: String,
             filePaths: [String], // multiple revision
             revision: Number, // revision number
+            state: Number,
+            result: String,
+            time: Number,
             grading: { // teacher's grading
                 type: ObjectId,
                 ref: 'Grading'
