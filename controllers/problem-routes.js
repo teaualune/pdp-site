@@ -232,8 +232,9 @@ module.exports = function (app) {
             function (callback) {
                 if (isGroup) {
                     ProblemSubmission.findByTeamAndProblem(req.user.team, req.body.pid, callback);
+                } else {
+                    ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.body.pid, callback);
                 }
-                ProblemSubmission.findByAuthorAndProblem(req.params.uid, req.body.pid, callback);
             },
             function (ps, callback) {
                 var authorID = isGroup ? 'team' + req.user.team : emailValidation.getStudentID(req.user.email),
