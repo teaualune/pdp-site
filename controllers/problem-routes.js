@@ -254,6 +254,7 @@ module.exports = function (app) {
                     // update
                     fs.rename(req.body.file.path, filePath, function (err) {
                         ps.filePaths.push(filePath);
+                        ps.revision = ps.revision + 1;
                         ps.save(callback);
                     });
                 } else {
