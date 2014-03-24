@@ -34,3 +34,9 @@ style.css
 # change this location via settings.json
 
 upload
+
+# judges system files
+
+program/problem_data
+program/sandbox
+
