@@ -150,6 +150,7 @@ module.exports = function (app) {
     // GET /api/problem/:pid/ps
     // get all problem submissions of a problem
     // return an array of { author: User, submission: ProblemSubmission } objects
+    // or return an array of { team: Team, submission: ProblemSubmission } objects for isGroup problems
     app.get('/api/problem/:pid/ps', utils.auth.admin, function (req, res) {
         async.waterfall([
             function (callback) {
@@ -176,7 +177,7 @@ module.exports = function (app) {
                 res.send(500);
             } else if (results.authors && results.submissions) {
                 res.send(utils.createAuthorSubmissionArray(results.authors, results.submissions, 'author'));
-            } else if (results.authors && results.submissions) {
+            } else if (results.teams && results.submissions) {
                 res.send(utils.createAuthorSubmissionArray(results.teams, results.submissions, 'team'));
             } else {
                 res.send(400);

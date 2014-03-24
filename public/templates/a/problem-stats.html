@@ -16,11 +16,10 @@
             </td>
             <td>
                 <span ng-if="sub.submission">Files:<ul>
-                    <li ng-repeat="file in sub.submissions.filePaths">
+                    <li ng-repeat="file in sub.submission.filePaths">
                         <a href="{{ file }}">Rev {{ $index }}</a>
                     </li>
                 </ul></span>
-                <span ng-if="sub.submission">File: <a href="{{ sub.submission.filePath }}">Download</a></span>
                 <span ng-if="!sub.submission">Not submitted yet</span>
             </td>
             <td>
