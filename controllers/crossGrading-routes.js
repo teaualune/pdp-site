@@ -135,7 +135,7 @@ module.exports = function (app) {
             function (submissions, callback) {
                 // 3. find all valid students
                 var i, students;
-                if (submissions.length <= 1 || submissions.length <= replicaCount) {
+                if (submissions.length <= replicaCount) {
                     callback('no enough submissions');
                 } else {
                     students = [];
