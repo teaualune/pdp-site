@@ -8,7 +8,7 @@
             <div class="pure-menu pure-menu-open">
                 <ul>
                     <li ng-repeat="cg in cgs" ng-class="{ 'pure-menu-selected' : cg.active }">
-                        <a ui-sref=".detail.overview({ id: cg._id })">Submission {{ $index + 1 }}<br />({{ cg.homework.title }})</a>
+                        <a ui-sref=".detail({ id: cg._id })">Submission {{ $index + 1 }}<br />({{ cg.homework.title }})</a>
                     </li>
                 </ul>
             </div>
