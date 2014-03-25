@@ -5,6 +5,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     autoIncrement = require('mongoose-auto-increment'),
     settings = require('./settings.json'),
+    auth = require('./controllers/auth'),
 
     app = express(),
     publicPath = path.join(__dirname, 'public');
@@ -32,6 +33,8 @@ app.use(require('less-middleware')({
     src: publicPath
 }));
 app.use(express.static(publicPath));
+app.use('/' + settings.uploadDir.root + '/' + settings.uploadDir.homeworkSubmission, auth.uploadDir);
+app.use('/' + settings.uploadDir.root + '/' + settings.uploadDir.problemSubmission, auth.uploadDir);
 app.use('/' + settings.uploadDir.root, express.static(path.join(__dirname, settings.uploadDir.root)));
 
 if ('development' === app.get('env')) {
