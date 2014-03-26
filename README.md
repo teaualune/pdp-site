@@ -32,6 +32,7 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 * [Pure](http://purecss.io)
 * [NIPPON COLORS](http://nipponcolors.com)
 * [PyMongo](https://github.com/mongodb/mongo-python-driver)
+* Special Thanks: [ぬー。](http://www.pixiv.net/member.php?id=5278692)
 
 ### Installation and Running
 
