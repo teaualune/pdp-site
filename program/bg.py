@@ -22,7 +22,7 @@ def runTest(filePath, target):
 	respond1 = os.popen('./compile.sh ' + fileName[1]).read()
 	if (len(respond1) > 0):
 		os.chdir("../")
-		return ('WRONG FILE', 0)
+		return ('WRONG FILE:' + respond1, 0)
 
 	#Launch Program
 	tStart = time.time()
@@ -51,6 +51,12 @@ print "python:" + db.name + " is connected"
 
 subs = db.problemsubmissions
 users = db.users
+
+#reset those are not correctly ended
+for item in subs.find({"state":2}):
+	subs.update({"_id": item["_id"]}, {"$set": {"state":1}})
+
+
 while(1):
 	for item in subs.find({"state":0}):
 		subs.update({"_id": item["_id"]}, {"$set": {"state":1}})

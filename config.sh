@@ -2,11 +2,14 @@
 
 #Judge Directory
 mkdir ./program/sandbox
+mkdir ./program/problem_data
+
 #Website Directories
 mkdir upload
 cd upload
 mkdir hw hws problem ps
 cd ../
+
 cp ./.exec.sh ./exec.sh
 
 echo "Do you want to config with sandbox-user?"
