@@ -1,7 +1,8 @@
 <h3>Grades</h3>
 <section ng-show="submission" class="grading-results pure-g-r">
      <div class="pure-u-1-4" ng-show="submission.state == 3" >
-        <img src="images/42190217.png" />
+		 <img ng-if="submission.times[submission.judgeHead - 1] != 0" ng-src="{{ correctImageSrc  }}" />
+		<img ng-if="submission.times[submission.judgeHead - 1] == 0" ng-src="{{ wrongImageSrc  }}" />
     </div>
     <div class="pure-u-1-4" ng-show="submission.state == 2">
         <img src="/images/7454525.gif" />
@@ -62,7 +63,7 @@
 </section>
 <section class="grading-results pure-g-r" ng-hide="submission">
     <div class="pure-u-1-4">
-        <img src="images/41847742.png" />
+        <img ng-if="submission" src="images/41847742.png" />
     </div>
     <p class="pure-u-3-4">You haven't submit your answer yet.</p>
 </section>

@@ -13,7 +13,6 @@
         toUTCDeadline = function (deadline) {
             return deadline.replace(' ', 'T') + ':00';
         };
-
     app.config(['$stateProvider', '$urlRouterProvider', function (sp, urp) {
         urp.otherwise('/homework');
 
@@ -115,6 +114,13 @@
         function (s, sp, Problem, state, Global) {
             s.loading = true;
             s.pid = sp.pid;
+            s.wrongRandSrc = 'images/39310850.png';
+            s.correctRandSrc = 'images/39310850.png';
+            var wrongImageArray = ['39310850.png', '39333364.png', '39354170.png', '39377812.png',
+                                   '39395742.png', '39413634.png'];
+            var correctImageArray = ['42190217.png', '34831923.jpg', '36792055.jpg', '36810710.jpg',
+                                     '38276020.png', '38356719.png', '38818557.png', '38858485.png'];
+ 
             Problem.showSubmission(Global.me._id, sp.pid, function (problem) {
                 var utcDeadline = toUTCDeadline(problem.deadline);
                 s.detailProblem = problem;
@@ -122,6 +128,8 @@
                 s.expired = (new Date(utcDeadline)).getTime() < (new Date()).getTime();
                 s.submission = problem.submission;
                 s.loading = false;
+                s.wrongImageSrc = getRandomImage(wrongImageArray);
+                s.correctImageSrc = getRandomImage(correctImageArray);
                 s.toggleListHeader();
             }, function () {
                 s.loading = false;
@@ -131,6 +139,8 @@
                 var data = uploadData('pid', s.detailProblem._id);
                 if (data) {
                     s.loading = true;
+                    s.wrongImageSrc = getRandomImage(wrongImageArray);
+                    s.correctImageSrc = getRandomImage(correctImageArray);
                     Problem.uploadSubmission(Global.me._id, data, function () {
                         s.loading = false;
                         state.go('problem.detail.submission', { pid: s.detailProblem._id }, { reload: true });
@@ -139,6 +149,11 @@
                     alert('Please choose file to upload.');
                 }
             };
+            
+            function getRandomImage(imgArray) {
+                var r = Math.floor(Math.random() * imgArray.length);
+                return '/images/' + imgArray[r];
+            }
         }
     ]);
 
