@@ -40,3 +40,6 @@ upload
 program/problem_data
 program/sandbox
 
+./log
+./program/log
+
