@@ -36,7 +36,7 @@ def runTest(filePath, target):
 		duration = 0
 	
 	duration = round(duration, 2)
-	print duration
+	print 'End executing - ' + str(duration) + ' s'
 
 	os.chdir("../")
 	return (str(respond1) + str(respond2), duration)
@@ -73,5 +73,6 @@ while(1):
 			timeRecord.append(duration)
 			counter += 1
 
-		subs.update({"_id": item["_id"]}, {"$set": {"state":3, "result":respond, "times":timeRecord, "judgeHead":counter}})
+		subs.update({"_id": item["_id"]}, {"$set": {"times":timeRecord, "judgeHead":counter}})
+		subs.update({"_id": item["_id"], "state":{"$gt": 0 }}, {"$set": {"state":3, "result":respond}})
 

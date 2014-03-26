@@ -1,6 +1,11 @@
 <form class="pdp-form pure-form pure-form-stacked" name="submissionForm" ng-hide="expired && !submission">
     <fieldset>
         <legend>Submit Your Answer</legend>
+        <div ng-hide="expired">
+            <label for="file">Upload File</label>
+            <input type="file" name="file" id="file" />
+            <button ng-click="upload()" class="pure-button button-save">Upload</button>
+        </div>
         <div class="submitted-file" ng-show="submission">
             <label>Files You Have Uploaded</label>
             <ul>
@@ -8,11 +13,6 @@
                     <a href="{{ file }}">Rev {{ $index }}</a>
                 </li>
             </ul>
-        </div>
-        <div ng-hide="expired">
-            <label for="file">Upload File</label>
-            <input type="file" name="file" id="file" />
-            <button ng-click="upload()" class="pure-button button-save">Upload</button>
         </div>
     </fieldset>
 </form>

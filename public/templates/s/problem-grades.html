@@ -1,22 +1,68 @@
 <h3>Grades</h3>
-<section ng-show="submission" class="grading-results">
+<section ng-show="submission" class="grading-results pure-g-r">
+     <div class="pure-u-1-4" ng-show="submission.state == 3" >
+        <img src="images/42190217.png" />
+    </div>
+    <div class="pure-u-1-4" ng-show="submission.state == 2">
+        <img src="/images/7454525.gif" />
+    </div>
+    <div class="pure-u-1-4" ng-show="submission.state <= 1">
+        <img src="images/40240730.png" />
+    </div>   
+<div class="pure-u-3-4">
     <h4>Execution Result:</h4>
     <div ng-show="submission.state == 3" >
         <p>{{ submission.result }}</p>
         <br />
-        <p>Total Time: {{ submission.times }}</p>
-        <img src="images/42190217.png" />
+        <p>Total Time: {{ submission.times[submission.judgeHead - 1] }} s</p>
     </div>
     <div ng-show="submission.state == 2">
         <p>Running~~~ F5 to refresh</p>
-        <img src="/images/7454525.gif" />
     </div>
-    <div ng-show="submission.state == 1">
+    <div ng-show="submission.state <= 1">
         <p>Waiting... F5 to refresh</p>
-        <img src="images/40240730.png" />
     </div>
-    <h4>Score: <strong>{{ submission.grading.score }}</strong></h4>
-    <h4>Comment</h4>
-    <p>{{ submission.grading.comment }}</p>
+</div>
+    <div class="pdp-table pure-u-1">
+        <table class="pure-table pure-table-striped">
+            <thead><tr>
+                <th>
+                    Revision
+                </th>
+                <th>
+                    Execution time
+                </th>
+                <th>
+                    State
+                </th>
+            </tr></thead>
+            <tbody><tr ng-repeat="file in submission.filePaths">
+                <td>
+					<a href="{{ file }}">Rev {{ $index }}</a>
+                </td>
+                <td>
+					{{ submission.times[$index] }} <strong ng-if="$index < submission.judgeHead">s</strong>
+                </td>
+				<td ng-if="$index < submission.judgeHead && submission.times[$index] != 0">
+					pass
+                </td>
+                <td ng-if="$index < submission.judgeHead && submission.times[$index] == 0">
+                    failed
+                </td>
+				<td ng-if="$index >= submission.judgeHead">
+                    judging
+                </td>
+            </tr></tbody>
+        </table>
+    </div>
+
+    <h4 class="pure-u-1">Score: <strong>{{ submission.grading.score }}</strong></h4>
+    <h4 class="pure-u-1">Comment</h4>
+    <p class="pure-u-1">{{ submission.grading.comment }}</p>
 </section>
-<p ng-hide="submission">You haven't submit your answer yet.</p>
+<section class="grading-results pure-g-r" ng-hide="submission">
+    <div class="pure-u-1-4">
+        <img src="images/41847742.png" />
+    </div>
+    <p class="pure-u-3-4">You haven't submit your answer yet.</p>
+</section>
