@@ -2,6 +2,10 @@
 <form class="pdp-form pure-form pure-form-aligned" name="gradingForm">
     <fieldset>
         <div class="pure-control-group">
+            <label>File</label>
+            <a href="{{ submission.filePath }}">Download</a>
+        </div>
+        <div class="pure-control-group">
             <label for="score">* Score</label>
             <input type="number" name="score" ng-model="submission.grading.score" min="0" max="100" required />
         </div>

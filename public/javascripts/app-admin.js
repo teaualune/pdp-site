@@ -172,7 +172,7 @@
                 });
             };
             s.cancel = function () {
-                state.go('homework.detail.stats');
+                state.go('^', {}, { reload: true });
             };
         }
     ]);
@@ -351,7 +351,7 @@
                 });
             };
             s.cancel = function () {
-                state.go('problem.detail.stats');
+                state.go('^', {}, { reload: true });
             }
         }
     ]);
