@@ -18,6 +18,7 @@
                 <span ng-if="sub.submission">Files:<ul>
                     <li ng-repeat="file in sub.submission.filePaths">
                         <a href="{{ file }}">Rev {{ $index }}</a>
+                        {{ sub.submission.times[$index] }} s
                     </li>
                 </ul></span>
                 <span ng-if="!sub.submission">Not submitted yet</span>
