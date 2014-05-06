@@ -7,7 +7,28 @@
             <th>Submission Status</th>
             <th>Grading</th>
         </tr></thead>
-        <tbody><tr ng-repeat="sub in submissions">
+        <tbody><tr ng-repeat="sub in submissions" ng-if="!sub.submission.grading">
+            <td ng-show="sub.author">
+                <h4>{{ sub.author.nickname }}</h4>{{ sub.author.email }}
+            </td>
+            <td ng-show="sub.team">
+                <h4>Team {{ sub.team._id }}</h4>{{ sub.team.name }}
+            </td>
+            <td>
+                <span ng-if="sub.submission">Files:<ul>
+                    <li ng-repeat="file in sub.submission.filePaths">
+                        <a href="{{ file }}">Rev {{ $index }}</a>
+                        {{ sub.submission.times[$index] }} s
+                    </li>
+                </ul></span>
+                <span ng-if="!sub.submission">Not submitted yet</span>
+            </td>
+            <td>
+                <strong ng-show="sub.submission.grading">{{ sub.submission.grading.score }}<br /></strong>
+                <a ui-sref=".grading({ id: sub.submission._id })">Grades</a>
+            </td>
+        </tr>
+        <tr ng-repeat="sub in submissions" ng-if="sub.submission.grading">
             <td ng-show="sub.author">
                 <h4>{{ sub.author.nickname }}</h4>{{ sub.author.email }}
             </td>
@@ -28,6 +49,6 @@
                 <a ui-sref=".grading({ id: sub.submission._id })">Grades</a>
             </td>
         </tr></tbody>
-    </table>
+   </table>
 </div>
 <ui-view class="grading" />

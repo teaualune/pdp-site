@@ -26,3 +26,8 @@
     </table>
 </div>
 <ui-view class="grading" />
+<div>
+    <div ng-repeat="sub in submissions">
+        {{ sub.author.email }},{{ sub.submission.grading.score }}
+    </div>
+</div>

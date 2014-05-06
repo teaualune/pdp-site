@@ -3,8 +3,9 @@ import subprocess
 import os
 import time
 import json
+import time
 
-TIMEOUT = 60
+TIMEOUT = 90
 
 
 def runTest(filePath, target):
@@ -81,4 +82,5 @@ while(1):
 
 		subs.update({"_id": item["_id"]}, {"$set": {"times":timeRecord, "judgeHead":counter}})
 		subs.update({"_id": item["_id"], "state":{"$gt": 0 }}, {"$set": {"state":3, "result":respond}})
+	time.sleep(1)
 
