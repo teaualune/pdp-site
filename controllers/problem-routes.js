@@ -29,7 +29,7 @@ var async = require('async'),
 
     showProblemSubmission = function (req, res) {
         ProblemSubmission.findById(req.params.psid).populate('grading author team').exec(function (err, ps) {
-            var data, grading, author;
+            var data, grading, author, team;
             if (err) {
                 data = 500;
             } else if (ps) {
