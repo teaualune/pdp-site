@@ -36,10 +36,11 @@ Express web app for assignments upload and cross grading for PDP course in NTU C
 
 ### Installation and Running
 
+0. Install __yarn__ by following [the instructions](https://yarnpkg.com/lang/en/docs/install/).
 1. Install Node.js and MongoDB; and use `npm install -g bower` to install Bower.
 2. Clone this repository.
-3. Run `npm install` in repository folder.
-4. Start MongoDB by `./mongod -dbpath /path/to/db` where `mongod` resides in `bin` folder of MongoDB path and `/path/to/db` an abitrary folder to place database records.
+3. Run `yarn install` in repository folder.
+4. Start MongoDB by `mongod -dbpath <DB_PATH>` where `mongod` resides in `bin` folder of MongoDB path and `<DB_PATH>` is an abitrary folder to place database records.
 5. Run `bower install` in repository folder.
 6. Create `upload` foler and several subfolders (`hw`, `hws`, `problem` and `ps` for homework description, homework submission, problem description and problem submission respectively) for file uploads. Directory names are specified and configurable in `settings.json`.
 7. Run `node app` in repository folder.

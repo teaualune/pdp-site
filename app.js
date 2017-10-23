@@ -10,6 +10,8 @@ var express = require('express'),
     app = express(),
     publicPath = path.join(__dirname, 'public');
 
+var methodOverride = require('method-override');
+
 require('./model/NumberId');
 require('./config/passport')(passport);
 
@@ -20,7 +22,7 @@ app.use(express.favicon(path.join(publicPath, 'images', 'favicon.ico')));
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(express.methodOverride());
+app.use(methodOverride());
 app.use(express.cookieParser(settings.cookieKey));
 app.use(express.session({
     secret: settings.sessionKey
@@ -41,7 +43,7 @@ if ('development' === app.get('env')) {
     app.use(express.errorHandler());
 }
 
-mongoose.connect('mongodb://' + settings.dbhost);
+mongoose.connection.openUri('mongodb://' + settings.dbhost);
 autoIncrement.initialize(mongoose.connection);
 
 require('./controllers')(app, passport);

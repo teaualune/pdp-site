@@ -1,11 +1,11 @@
 {
-    "name": "pdp-site",
-    "version": "0.0.1",
-    "private": true,
-    "dependencies": {
-        "angular": "latest",
-        "angular-ui-router": "0.2.8-bowratic-tedium",
-        "restangular": "latest",
-        "angular-dragdrop": "https://github.com/teaualune/angular-dragdrop.git"
-    }
+  "name": "pdp-site",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "angular": "1.4.2",
+    "restangular": "1.5.2",
+    "angular-dragdrop": "https://github.com/teaualune/angular-dragdrop.git",
+    "angular-ui-router": "^0.2.8-bowratic-tedium"
+  }
 }

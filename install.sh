@@ -2,7 +2,7 @@
 
 
 #Nodejs Package Installation
-npm install
 npm install -g bower
+yarn install
 bower install
 
