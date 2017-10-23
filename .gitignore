@@ -45,3 +45,4 @@ program/log
 exec.sh
 pdp_judge_user_config
 
+db/
