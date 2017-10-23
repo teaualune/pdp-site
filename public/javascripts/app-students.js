@@ -117,9 +117,14 @@
             s.wrongRandSrc = 'images/39310850.png';
             s.correctRandSrc = 'images/39310850.png';
             var wrongImageArray = ['39310850.png', '39333364.png', '39354170.png', '39377812.png',
-                                   '39395742.png', '39413634.png'];
+                                   '39395742.png', '39413634.png', '58162933_p0_master1200.jpg',
+                                   '58162933_p1_master1200.jpg', '58997710_p0.png', '59291932_p0.png',
+                                   '59466612_p0_master1200.jpg', '59661271_p0.png', '59871341_p0.png'];
             var correctImageArray = ['42190217.png', '34831923.jpg', '36792055.jpg', '36810710.jpg',
-                                     '38276020.png', '38356719.png', '38818557.png', '38858485.png'];
+                                     '38276020.png', '38356719.png', '38818557.png', '38858485.png',
+                                     '60062408_p0.png', '62494394_p0.png', '62773158_p0.png',
+                                     '63096478_p0.png', '53398704_p0.png', '50488807_p0.png',
+                                     '50216515_p0.png', '48263756_p0.png', '45354816_p0.png'];
  
             Problem.showSubmission(Global.me._id, sp.pid, function (problem) {
                 var utcDeadline = toUTCDeadline(problem.deadline);

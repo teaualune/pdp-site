@@ -1,6 +1,7 @@
 # mac
 
 .DS_Store
+.directory
 
 # node.js
 
