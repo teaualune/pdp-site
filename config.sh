@@ -15,7 +15,7 @@ cp ./.exec.sh ./exec.sh
 echo "Do you want to config with sandbox-user?"
 select yn in "Yes" "No"; do
 	case $yn in
-	Yes ) 
+	Yes )
 #Create judge sandbox user account
 sudo useradd sandbox-test
 
